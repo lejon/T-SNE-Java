@@ -118,7 +118,7 @@ public class TSneDemo {
     
     public static void tsne_mnist(int nistSize) {
         System.out.println("Running example on " + nistSize + " MNIST digits...");
-        double [][] X = nistReadStringDouble(ASCIIFile.read(new File("src/main/resources/datasets/" + nistSize + "_X.txt"))); // ASCIIFile.readDoubleArray(new File("mnist2500_X.txt"));
+        double [][] X = nistReadStringDouble(ASCIIFile.read(new File("src/main/resources/datasets/mnist" + nistSize + "_X.txt"))); // ASCIIFile.readDoubleArray(new File("mnist2500_X.txt"));
     	String [] labels = new ASCIIFile(new File("src/main/resources/datasets/mnist2500_labels.txt")).readLines();
     	for (int i = 0; i < labels.length; i++) {
 			labels[i] = labels[i].trim().substring(0, 1);
@@ -141,11 +141,11 @@ public class TSneDemo {
     public static void main(String [] args) {
         System.out.println("Runs t-SNE on various dataset.");
         //pca_iris();
-        tsne_iris();
+        //tsne_iris();
         //tsne_mnist(250);
         //tsne_mnist(500);
         //tsne_mnist(1000);
-        //tsne_mnist(2500);
+        tsne_mnist(2500);
     }
 
 }
