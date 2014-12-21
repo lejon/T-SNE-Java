@@ -10,7 +10,6 @@ import org.math.io.files.ASCIIFile;
 import org.math.io.parser.ArrayString;
 import org.math.plot.FrameView;
 import org.math.plot.Plot2DPanel;
-import org.math.plot.Plot3DPanel;
 import org.math.plot.PlotPanel;
 import org.math.plot.plots.ColoredScatterPlot;
 import org.math.plot.plots.ScatterPlot;

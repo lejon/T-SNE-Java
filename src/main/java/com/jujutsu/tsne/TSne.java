@@ -8,7 +8,6 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
@@ -883,7 +882,6 @@ public class TSne {
 
 	static class R {
 		double [][] P;
-		@SuppressWarnings("unused")
 		double [] beta;
 		double H;
 	}
