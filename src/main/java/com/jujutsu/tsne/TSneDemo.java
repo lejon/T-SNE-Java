@@ -52,14 +52,14 @@ public class TSneDemo {
     }
 	
 	public static void pca_iris() {
-    	double [][] X = nistReadStringDouble(ASCIIFile.read(new File("iris_X.txt")), ",");
+    	double [][] X = nistReadStringDouble(ASCIIFile.read(new File("src/main/resources/datasets/iris_X.txt")), ",");
     	System.out.println("Input is = " + X.length + " x " + X[0].length + " => \n" + ArrayString.printDoubleArray(X));
     	double [][] Y = TSne.pca(X,2);
     	System.out.println("Result is = " + Y.length + " x " + Y[0].length + " => \n" + ArrayString.printDoubleArray(Y));
     }
     
     public static void tsne_iris() {
-    	double [][] X = nistReadStringDouble(ASCIIFile.read(new File("/Users/eralljn/Research/Datasets/iris_X.txt")), ","); // ASCIIFile.readDoubleArray(new File("mnist2500_X.txt"));
+    	double [][] X = nistReadStringDouble(ASCIIFile.read(new File("src/main/resources/datasets/iris_X.txt")), ","); // ASCIIFile.readDoubleArray(new File("mnist2500_X.txt"));
         System.out.println("Shape is: " + X.length + " x " + X[0].length);
 		double [][] Y = TSne.tsne(X, 2, initial_dims, perplexity);
         System.out.println("Shape is: " + Y.length + " x " + Y[0].length);
@@ -117,69 +117,10 @@ public class TSneDemo {
         plotframe.setVisible(true);
     }
     
-    public static void tsne_trdb() {
-    	double [][] X = nistReadStringDouble(ASCIIFile.read(new File("trdb-tsne.txt")), ","); // ASCIIFile.readDoubleArray(new File("mnist2500_X.txt"));
-        System.out.println("Shape is: " + X.length + " x " + X[0].length);
-        double [][] Y = TSne.tsne(X, 2, initial_dims, perplexity);
-        System.out.println("Shape is: " + Y.length + " x " + Y[0].length);
-        
-        String [] labels = new ASCIIFile(new File("trdb-tsne-labels.txt")).readLines();
-
-        Plot2DPanel plot = new Plot2DPanel();
-        ColoredScatterPlot trdbPlot = new ColoredScatterPlot("trdb", Y, labels);
-        plot.plotCanvas.setNotable(true);
-        plot.plotCanvas.setNoteCoords(true);
-        plot.plotCanvas.addPlot(trdbPlot);
-                
-        FrameView plotframe = new FrameView(plot);
-        plotframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        plotframe.setVisible(true);
-    }
-    
-    public static void tsne_trdb_lda() {
-    	double [][] X = nistReadStringDouble(ASCIIFile.read(new File("TRDB-Theta.txt")), ","); // ASCIIFile.readDoubleArray(new File("mnist2500_X.txt"));
-        System.out.println("Shape is: " + X.length + " x " + X[0].length);
-        double [][] Y = TSne.tsne(X, 2, initial_dims, perplexity);
-        System.out.println("Shape is: " + Y.length + " x " + Y[0].length);
-        
-        String [] labels = new ASCIIFile(new File("TRDB-Labels.txt")).readLines();
-
-        Plot2DPanel plot = new Plot2DPanel();
-        ColoredScatterPlot trdbPlot = new ColoredScatterPlot("trdb", Y, labels);
-        plot.plotCanvas.setNotable(true);
-        plot.plotCanvas.setNoteCoords(true);
-        plot.plotCanvas.addPlot(trdbPlot);
-                
-        FrameView plotframe = new FrameView(plot);
-        plotframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        plotframe.setVisible(true);
-    }
-
-    public static void tsne_trdb3D() {
-    	double [][] X = nistReadStringDouble(ASCIIFile.read(new File("trdb-tsne.txt")), ","); // ASCIIFile.readDoubleArray(new File("mnist2500_X.txt"));
-        System.out.println("Shape is: " + X.length + " x " + X[0].length);
-        double [][] Y = TSne.tsne(X, 3, initial_dims, perplexity, 200, false);
-        System.out.println("Shape is: " + Y.length + " x " + Y[0].length);
-        
-        String [] labels = new ASCIIFile(new File("trdb-tsne-labels.txt")).readLines();
-
-        Plot3DPanel plot = new Plot3DPanel();
-        ColoredScatterPlot trdbPlot = new ColoredScatterPlot("trdb", Y, labels);
-        plot.plotCanvas.setNotable(true);
-        plot.plotCanvas.setNoteCoords(true);
-        plot.plotCanvas.addPlot(trdbPlot);
-                
-        FrameView plotframe = new FrameView(plot);
-        plotframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        plotframe.setVisible(true);
-    }
-
-    public static void tsne_mnist() {
-    	int nistSize = 2500;
-    	//int nistSize = 500;
+    public static void tsne_mnist(int nistSize) {
         System.out.println("Running example on " + nistSize + " MNIST digits...");
-        double [][] X = nistReadStringDouble(ASCIIFile.read(new File("/Users/eralljn/Research/Datasets/MNist/mnist" + nistSize + "_X.txt"))); // ASCIIFile.readDoubleArray(new File("mnist2500_X.txt"));
-    	String [] labels = new ASCIIFile(new File("/Users/eralljn/Research/Datasets/MNist/mnist2500_labels.txt")).readLines();
+        double [][] X = nistReadStringDouble(ASCIIFile.read(new File("src/main/resources/datasets/" + nistSize + "_X.txt"))); // ASCIIFile.readDoubleArray(new File("mnist2500_X.txt"));
+    	String [] labels = new ASCIIFile(new File("src/main/resources/datasets/mnist2500_labels.txt")).readLines();
     	for (int i = 0; i < labels.length; i++) {
 			labels[i] = labels[i].trim().substring(0, 1);
 		}
@@ -197,37 +138,15 @@ public class TSneDemo {
         plotframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         plotframe.setVisible(true);
     }
-
-    public static void tsne_embeddings() {
-    	int nistSize = 500;
-        System.out.println("Running example on " + nistSize + " MNIST digits...");
-        double [][] X = nistReadStringDouble(ASCIIFile.read(new File("embeddings-data.txt")));
-        String [] labels = new ASCIIFile(new File("embeddings-labels.txt")).readLines();
-        System.out.println("Shape is: " + X.length + " x " + X[0].length);
-        double [][] Y = TSne.tsne(X, 2, initial_dims, perplexity);
-        System.out.println("Result is = " + Y.length + " x " + Y[0].length + " => \n" + ArrayString.printDoubleArray(Y));
-        Plot2DPanel plot = new Plot2DPanel();
-        
-        ColoredScatterPlot trdbPlot = new ColoredScatterPlot("trdb", Y, labels);
-        plot.plotCanvas.setNotable(true);
-        plot.plotCanvas.setNoteCoords(true);
-        plot.plotCanvas.addPlot(trdbPlot);
-                
-        FrameView plotframe = new FrameView(plot);
-        plotframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        plotframe.setVisible(true);
-    }
     
     public static void main(String [] args) {
-        System.out.println("Run Y = tsne.tsne(X, no_dims, perplexity) to perform t-SNE on your dataset.");
+        System.out.println("Runs t-SNE on various dataset.");
         //pca_iris();
-        //tsne_random();
-        //tsne_iris();
-        tsne_mnist();
-        //tsne_trdb();
-        //tsne_trdb_lda();
-        //tsne_trdb3D();
-        //tsne_embeddings();
+        tsne_iris();
+        //tsne_mnist(250);
+        //tsne_mnist(500);
+        //tsne_mnist(1000);
+        //tsne_mnist(2500);
     }
 
 }
