@@ -735,7 +735,7 @@ public class TSne {
 	}
 
 	public static double [][] tsne(double[][] X, int k, int initial_dims, double perplexity) {
-		return tsne(X,k,initial_dims, perplexity, 1500, false);
+		return tsne(X,k,initial_dims, perplexity, 1000, false);
 	}
 
 	public static double [][] tsne(double[][] X, int no_dims, int initial_dims, double perplexity, int max_iter, boolean use_pca) {
@@ -805,7 +805,9 @@ public class TSne {
 				logdivide = replaceNaN(logdivide,0);
 				double C = sum(times(P , logdivide));
 				System.out.println("Iteration " + (iter + 1) + ": error is " + C);
-			} else System.out.println("Iteration " + (iter + 1));
+			} else if((iter + 1) % 100 == 0) {
+				System.out.println("Iteration " + (iter + 1));
+			}
 
 			// Stop lying about P-values
 			if (iter == 100)
