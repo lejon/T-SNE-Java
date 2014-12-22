@@ -12,6 +12,7 @@ import org.math.plot.FrameView;
 import org.math.plot.Plot2DPanel;
 import org.math.plot.PlotPanel;
 import org.math.plot.plots.ColoredScatterPlot;
+import org.math.plot.plots.IconScatterPlot;
 import org.math.plot.plots.ScatterPlot;
 
 public class TSneDemo {
@@ -138,14 +139,37 @@ public class TSneDemo {
         plotframe.setVisible(true);
     }
     
+    public static void tsne_mnist_icons(int nistSize) {
+        System.out.println("Running example on " + nistSize + " MNIST digits...");
+        double [][] X = nistReadStringDouble(ASCIIFile.read(new File("src/main/resources/datasets/mnist" + nistSize + "_X.txt"))); // ASCIIFile.readDoubleArray(new File("mnist2500_X.txt"));
+    	String [] imgfiles = new String[nistSize];
+    	for (int i = 0; i < imgfiles.length; i++) {
+			imgfiles[i] = "imgs/img" + i + ".png";
+		}
+        System.out.println("Shape is: " + X.length + " x " + X[0].length);
+        double [][] Y = TSne.tsne(X, 2, initial_dims, perplexity);
+        System.out.println("Result is = " + Y.length + " x " + Y[0].length + " => \n" + ArrayString.printDoubleArray(Y));
+        Plot2DPanel plot = new Plot2DPanel();
+        
+        IconScatterPlot setosaPlot = new IconScatterPlot("setosa", Y, imgfiles);
+        plot.plotCanvas.setNotable(true);
+        plot.plotCanvas.setNoteCoords(true);
+        plot.plotCanvas.addPlot(setosaPlot);
+                
+        FrameView plotframe = new FrameView(plot);
+        plotframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        plotframe.setVisible(true);
+    }
+    
     public static void main(String [] args) {
         System.out.println("Runs t-SNE on various dataset.");
         //pca_iris();
         //tsne_iris();
         //tsne_mnist(250);
+        tsne_mnist_icons(500);
         //tsne_mnist(500);
         //tsne_mnist(1000);
-        tsne_mnist(2500);
+        //tsne_mnist(2500);
     }
 
 }
