@@ -22,6 +22,10 @@ public class TSneBinaryDemo {
 		System.out.println("Shape is: " + matrix.length + " x " + matrix[0].length);
 		double [][] Y = TSne.tsne(matrix, 2, initial_dims, perplexity, 2500, false);
 		System.out.println("Result is = " + Y.length + " x " + Y[0].length + " => \n" + ArrayString.printDoubleArray(Y));
+		displayResult(Y);
+	}
+
+	static void displayResult(double[][] Y) {
 		Plot2DPanel plot = new Plot2DPanel();
 
 		ScatterPlot dataPlot = new ScatterPlot("Data", PlotPanel.COLORLIST[0], Y);
