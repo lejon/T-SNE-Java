@@ -59,7 +59,7 @@ public class TSneDemo {
     }
     
     public static void tsne_iris() {
-    	double [][] X = nistReadStringDouble(ASCIIFile.read(new File("src/main/resources/datasets/iris_X.txt")), ","); // ASCIIFile.readDoubleArray(new File("mnist2500_X.txt"));
+    	double [][] X = nistReadStringDouble(ASCIIFile.read(new File("src/main/resources/datasets/iris_X.txt")), ",");
         System.out.println("Shape is: " + X.length + " x " + X[0].length);
 		double [][] Y = TSne.tsne(X, 2, initial_dims, perplexity);
         System.out.println("Shape is: " + Y.length + " x " + Y[0].length);
@@ -119,7 +119,7 @@ public class TSneDemo {
     
     public static void tsne_mnist(int nistSize) {
         System.out.println("Running example on " + nistSize + " MNIST digits...");
-        double [][] X = nistReadStringDouble(ASCIIFile.read(new File("src/main/resources/datasets/mnist" + nistSize + "_X.txt"))); // ASCIIFile.readDoubleArray(new File("mnist2500_X.txt"));
+        double [][] X = nistReadStringDouble(ASCIIFile.read(new File("src/main/resources/datasets/mnist" + nistSize + "_X.txt")));
     	String [] labels = new ASCIIFile(new File("src/main/resources/datasets/mnist2500_labels.txt")).readLines();
     	for (int i = 0; i < labels.length; i++) {
 			labels[i] = labels[i].trim().substring(0, 1);
@@ -141,7 +141,7 @@ public class TSneDemo {
     
     public static void tsne_mnist_icons(int nistSize) {
         System.out.println("Running example on " + nistSize + " MNIST digits...");
-        double [][] X = nistReadStringDouble(ASCIIFile.read(new File("src/main/resources/datasets/mnist" + nistSize + "_X.txt"))); // ASCIIFile.readDoubleArray(new File("mnist2500_X.txt"));
+        double [][] X = nistReadStringDouble(ASCIIFile.read(new File("src/main/resources/datasets/mnist" + nistSize + "_X.txt")));
     	String [] imgfiles = new String[nistSize];
     	for (int i = 0; i < imgfiles.length; i++) {
 			imgfiles[i] = "imgs/img" + i + ".png";
@@ -162,12 +162,12 @@ public class TSneDemo {
     }
     
     public static void main(String [] args) {
-        System.out.println("Runs t-SNE on various dataset.");
+        System.out.println("TSneDemo: Runs t-SNE on various dataset.");
         //pca_iris();
         //tsne_iris();
         //tsne_mnist(250);
-        tsne_mnist_icons(500);
-        //tsne_mnist(500);
+        //tsne_mnist_icons(500);
+        tsne_mnist(500);
         //tsne_mnist(1000);
         //tsne_mnist(2500);
     }
