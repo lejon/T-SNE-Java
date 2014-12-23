@@ -147,7 +147,7 @@ public class TSneDemo {
 			imgfiles[i] = "imgs/img" + i + ".png";
 		}
         System.out.println("Shape is: " + X.length + " x " + X[0].length);
-        double [][] Y = TSne.tsne(X, 2, initial_dims, perplexity);
+        double [][] Y = TSne.tsne(X, 2, initial_dims, perplexity, 2000, false);
         System.out.println("Result is = " + Y.length + " x " + Y[0].length + " => \n" + ArrayString.printDoubleArray(Y));
         Plot2DPanel plot = new Plot2DPanel();
         
