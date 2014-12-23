@@ -68,8 +68,9 @@ public class TSneBinaryDemo {
 	}
 
 	public static double [][] loadData(String [] args) {
-		String usage = "Usage: TSneBinaryDemo [option] -asMatrix ROWS COLS file \nAvailable options:\n  -endian <big|little, default = big>\n  -data <double|float|int, default = double>";
-
+		String usage = "Usage: TSneBinaryDemo [options] -asMatrix ROWS COLS file \nAvailable options:\n  -endian <big|little, default = big>\n  -data <double|float|int, default = double>" 
+				     + "Example: TSneBinaryDemo -data double -asMatrix 1000 20 Theta_DxK_1000_20_05000.BINARY";
+		
 		File file = null;
 		String dataType = "double";
 		String endianness = BinaryFile.BIG_ENDIAN;
