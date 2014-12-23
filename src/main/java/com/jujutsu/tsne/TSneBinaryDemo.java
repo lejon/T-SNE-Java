@@ -76,6 +76,7 @@ public class TSneBinaryDemo {
 		String endianness = BinaryFile.BIG_ENDIAN;
 		int rows = 0;
 		int cols = 0;
+		int printSampleSize = 10;
 
 		for (int i = 1; i < args.length; i++) {
 			if (args[i].equals("-endian")) {
@@ -105,37 +106,35 @@ public class TSneBinaryDemo {
 		if (dataType.equals("double")) {
 			double[] d = BinaryFile.readDoubleArray(file, endianness);
 			double [][] matrix = doubleArrayToMatrix(d,rows,cols);
-			for (int i = 0; i < matrix.length; i++) {
-				for (int j = 0; j < matrix[0].length; j++) {
-					System.out.print(matrix[i][j] + ",");
-				}
-				System.out.println();
-			}              	
+			printDataSample(printSampleSize, matrix);              	
 			return matrix;
 		} else if (dataType.equals("float")) {
 			float[] d = BinaryFile.readFloatArray(file, endianness);
 			double [][] matrix = floatArrayToMatrix(d,rows,cols);
-			for (int i = 0; i < matrix.length; i++) {
-				for (int j = 0; j < matrix[0].length; j++) {
-					System.out.print(matrix[i][j] + ",");
-				}
-				System.out.println();
-			}              	
+			printDataSample(printSampleSize, matrix);              	
 			return matrix;				
 		} else if (dataType.equals("int")) {
 			int[] d = BinaryFile.readIntArray(file, endianness);
 			double [][] matrix = intArrayToMatrix(d,rows,cols);
-			for (int i = 0; i < matrix.length; i++) {
-				for (int j = 0; j < matrix[0].length; j++) {
-					System.out.print(matrix[i][j] + ",");
-				}
-				System.out.println();
-			}
+			printDataSample(printSampleSize, matrix);
 			return matrix;	
 		} else {
 			System.out.println(usage);
 		}
 		return null;
+	}
+
+	static void printDataSample(int printSampleSize, double[][] matrix) {
+		if(matrix!=null) {
+			System.out.println("Loaded ("+printSampleSize+" samples): ");
+			for (int i = 0; i < Math.min(printSampleSize, matrix.length); i++) {
+				for (int j = 0; j < matrix[0].length; j++) {
+					System.out.print(matrix[i][j] + ",");
+				}
+				System.out.println();
+			}
+			System.out.println("...");
+		}
 	}
 
 	public static void main(String[] args) {
