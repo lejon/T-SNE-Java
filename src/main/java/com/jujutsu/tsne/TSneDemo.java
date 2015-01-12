@@ -17,7 +17,7 @@ import org.math.plot.plots.ScatterPlot;
 
 public class TSneDemo {
 	
-	static double perplexity = 40.0;
+	static double perplexity = 20.0;
 	private static int initial_dims = 50;
 
 	public TSneDemo() {}
@@ -54,10 +54,34 @@ public class TSneDemo {
 	public static void pca_iris() {
     	double [][] X = nistReadStringDouble(ASCIIFile.read(new File("src/main/resources/datasets/iris_X.txt")), ",");
     	System.out.println("Input is = " + X.length + " x " + X[0].length + " => \n" + ArrayString.printDoubleArray(X));
-    	double [][] Y = TSne.pca(X,2);
+        PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
+    	double [][] Y = pca.pca(X,2);
     	System.out.println("Result is = " + Y.length + " x " + Y[0].length + " => \n" + ArrayString.printDoubleArray(Y));
     }
-    
+
+	public static void pca_mnist(int nistSize) {
+		double [][] X = nistReadStringDouble(ASCIIFile.read(new File("src/main/resources/datasets/mnist" + nistSize + "_X.txt")));
+    	String [] labels = new ASCIIFile(new File("src/main/resources/datasets/mnist2500_labels.txt")).readLines();
+    	for (int i = 0; i < labels.length; i++) {
+			labels[i] = labels[i].trim().substring(0, 1);
+		}
+    	System.out.println("Input is = " + X.length + " x " + X[0].length + " => \n" + ArrayString.printDoubleArray(X));
+        PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
+    	double [][] Y = pca.pca(X,2);
+    	System.out.println("Result is = " + Y.length + " x " + Y[0].length + " => \n" + ArrayString.printDoubleArray(Y));
+        Plot2DPanel plot = new Plot2DPanel();
+        
+        ColoredScatterPlot setosaPlot = new ColoredScatterPlot("setosa", Y, labels);
+        plot.plotCanvas.setNotable(true);
+        plot.plotCanvas.setNoteCoords(true);
+        plot.plotCanvas.addPlot(setosaPlot);
+                
+        FrameView plotframe = new FrameView(plot);
+        plotframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        plotframe.setVisible(true);
+    }
+
+	
     public static void tsne_iris() {
     	double [][] X = nistReadStringDouble(ASCIIFile.read(new File("src/main/resources/datasets/iris_X.txt")), ",");
         System.out.println("Shape is: " + X.length + " x " + X[0].length);
@@ -127,6 +151,7 @@ public class TSneDemo {
         System.out.println("Shape is: " + X.length + " x " + X[0].length);
         double [][] Y = TSne.tsne(X, 2, initial_dims, perplexity);
         System.out.println("Result is = " + Y.length + " x " + Y[0].length + " => \n" + ArrayString.printDoubleArray(Y));
+        ASCIIFile.write(new File("Java-tsne-result.txt"), ArrayString.printDoubleArray(Y));
         Plot2DPanel plot = new Plot2DPanel();
         
         ColoredScatterPlot setosaPlot = new ColoredScatterPlot("setosa", Y, labels);
@@ -144,10 +169,10 @@ public class TSneDemo {
         double [][] X = nistReadStringDouble(ASCIIFile.read(new File("src/main/resources/datasets/mnist" + nistSize + "_X.txt")));
     	String [] imgfiles = new String[nistSize];
     	for (int i = 0; i < imgfiles.length; i++) {
-			imgfiles[i] = "imgs/img" + i + ".png";
+			imgfiles[i] = "src/main/resources/nistimgs/img" + i + ".png";
 		}
         System.out.println("Shape is: " + X.length + " x " + X[0].length);
-        double [][] Y = TSne.tsne(X, 2, initial_dims, perplexity, 2000, false);
+        double [][] Y = TSne.tsne(X, 2, initial_dims, perplexity, 1000, true);
         System.out.println("Result is = " + Y.length + " x " + Y[0].length + " => \n" + ArrayString.printDoubleArray(Y));
         Plot2DPanel plot = new Plot2DPanel();
         
@@ -164,10 +189,11 @@ public class TSneDemo {
     public static void main(String [] args) {
         System.out.println("TSneDemo: Runs t-SNE on various dataset.");
         //pca_iris();
+        //pca_mnist(1000);
         //tsne_iris();
         //tsne_mnist(250);
-        //tsne_mnist_icons(500);
-        tsne_mnist(500);
+        tsne_mnist_icons(500);
+        //tsne_mnist(500);
         //tsne_mnist(1000);
         //tsne_mnist(2500);
     }
