@@ -6,7 +6,6 @@ import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.ThreadLocalRandom;
 
 import Jama.Matrix;
-import Jama.QRDecomposition;
 
 /**
  *
