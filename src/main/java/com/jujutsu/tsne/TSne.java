@@ -1,29 +1,22 @@
 package com.jujutsu.tsne;
 
 import java.util.Random;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.ThreadLocalRandom;
 
-import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
 import Jama.QRDecomposition;
 
 /**
  *
- * User: Leif Jonsson (leif.jonsson@ericsson.com)
+ * User: Leif Jonsson (leif.jonsson@gmail.com)
  * 
  * This is a port of van der Maaten and Hintons Python implementation of t-sne
  *
  */
 public class TSne {
 	Random rnd = new Random();
-	static ExecutorService	transposerPool = Executors.newFixedThreadPool(4);
-	static BlockingQueue<Object> transposesQueue = new LinkedBlockingQueue<Object>();
 	private static ForkJoinPool pool = new ForkJoinPool();
 
 	/**
@@ -41,7 +34,7 @@ public class TSne {
 	 * @param matrix
 	 * @return
 	 */
-	static double[][] origtranspose(double[][] matrix) {
+	static double[][] naivetranspose(double[][] matrix) {
 		int cols = matrix[0].length;
 		int rows = matrix.length;
 		double[][] transpose = new double[cols][rows];
@@ -70,12 +63,6 @@ public class TSne {
 		} else {
 			MatrixTransposer process = new MatrixTransposer(matrix, transpose,0,rows,ll);                
 			pool.invoke(process);
-//			try {
-//				pool.awaitTermination(50L, TimeUnit.MILLISECONDS);
-//			} catch (InterruptedException e) {
-//				e.printStackTrace();
-//			}
-//			//pool.shutdown();
 		}
 		return transpose;
 	}
@@ -292,7 +279,7 @@ public class TSne {
 	static double [][] mean(double [][] matrix, int axis) {
 		// Axis = 0 => sum columns
 		// Axis = 1 => sum rows
-		// Axis = 3 => global (returns a 1 element array with the result)
+		// Axis = 2 => global (returns a 1 element array with the result)
 		double [][] result;
 		if( axis == 0) {
 			result = new double[1][matrix[0].length];
@@ -552,6 +539,74 @@ public class TSne {
 		}
 		return result;
 	}
+	
+	static double[][] parScalarMultiply(double [][] m1,double [][] m2) {
+		int ll = 600;
+		double [][] result = new double[m1.length][m1[0].length];
+		
+		MatrixOperator process = new MatrixOperator(m1,m2,result, multiplyop, 0, m1.length,ll);                
+		pool.invoke(process);
+		return result;
+	}
+	
+	public interface MatrixOp {
+		double compute(double op1, double op2);
+	}
+	
+	static MatrixOp multiplyop = new MatrixOp() {
+		public double compute(double f1, double f2) {
+			return f1 * f2;
+		}
+	};
+	
+	static class MatrixOperator extends RecursiveAction {
+		static final long serialVersionUID = 1L;
+		double [][] matrix1;
+		double [][] matrix2;
+		double [][] resultMatrix;
+		int startRow = -1;
+		int endRow = -1;
+		int limit = 1000;
+		MatrixOp op;
+
+		public MatrixOperator(double [][] matrix1, double [][] matrix2, double [][] resultMatrix, 
+				MatrixOp op, int startRow, int endRow, int ll) {
+			this.op = op;
+			this.limit = ll;
+			this.matrix1 = matrix1;
+			this.matrix2 = matrix2;
+			this.resultMatrix = resultMatrix;
+			this.startRow = startRow;
+			this.endRow = endRow;
+		}
+
+		@Override
+		protected void compute() {
+			try {
+				if ( (endRow-startRow) <= limit ) {
+					int cols = matrix1[0].length;
+					for (int i = startRow; i < endRow; i++) {
+						for (int j = 0; j < cols; j++) {
+							resultMatrix[i][j] = op.compute(matrix1[i][j], matrix2[i][j]);
+						}
+					}
+				}
+				else {
+					int range = (endRow-startRow);
+					int startRow1 = startRow;
+					int endRow1 = startRow + (range / 2);
+					int startRow2 = endRow1;
+					int endRow2 = endRow;
+					invokeAll(new MatrixOperator(matrix1, matrix2, resultMatrix, op, startRow1, endRow1, limit),
+							new MatrixOperator(matrix1, matrix2, resultMatrix, op, startRow2, endRow2, limit));
+				}
+			}
+			catch ( Exception e ) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 
 	static void assignAtIndex(double[][] num, int[] range, int[] range1, double value) {
 		for (int j = 0; j < range.length; j++) {
@@ -653,6 +708,15 @@ public class TSne {
 		return matrix;
 	}
 
+	static double[][] copyCols(double[][] input, int... indices) {
+		double[][] matrix = new double[indices.length][input.length];
+		for (int i = 0; i < indices.length; i++)
+			for (int j = 0; j < input.length; j++) {
+				matrix[i][j] = input[j][indices[i]];
+			}
+		return matrix;
+	}
+
 	/**
 	 * @param rows
 	 * @param cols
@@ -699,9 +763,18 @@ public class TSne {
 		return matrix;
 	}
 
-	static double[][] divide(double[][] matrix1, double[]... matrix2) {
-		return new QRDecomposition(Matrix.constructWithCopy(matrix2)).solve(Matrix.constructWithCopy(matrix1)).getArray();
+	static double[][] scalarDivide(double[][] numerator, double[][] denom) {
+		double[][] matrix = new double[numerator.length][numerator[0].length];
+		for (int i = 0; i < numerator.length; i++)
+			for (int j = 0; j < numerator[i].length; j++)
+				matrix[i][j] = numerator[i][j] / denom[i][j];
+		return matrix;
 	}
+	
+	static double[][] divide(double[][] matrix1, double[]... matrix2) {
+		return Matrix.constructWithCopy(matrix1)
+				.times(Matrix.constructWithCopy(matrix2).inverse()).getArray();
+ 	}
 
 	static double[][] scalarMult(double[][] m1, double mul) {
 		double[][] matrix = new double[m1.length][m1[0].length];
@@ -710,41 +783,28 @@ public class TSne {
 				matrix[i][j] = m1[i][j] * mul;
 		return matrix;
 	}
-
+	
 	static double[][] times(double[][] m1, double[][] m2) {
-		double[][] array = new double[m1.length][m2[0].length];
-		for (int i = 0; i < array.length; i++)
-			for (int j = 0; j < array[i].length; j++) {
-				double tmp = 0;
-				for (int k = 0; k < m1[0].length; k++)
-					tmp += m1[i][k] * m2[k][j];
-				array[i][j] = tmp;
-			}
-		return array;
-	}
-
-	public static double [][] pca(double [][]X, int no_dims) {
-		System.out.println("Preprocessing the data using PCA...");
-		double[] stdevX = stddev(X);
-		double[] meanX  = colMeans(X);
-		double[][] Z    = normalize(X, meanX, stdevX);
-		double[][] cov  = covariance(Z);
-		EigenvalueDecomposition e = new EigenvalueDecomposition(new Matrix(cov));
-		double[][] V    = e.getV().transpose().getArray();
-		return copyRows(V,no_dims);
+		Matrix A = Matrix.constructWithCopy(m1);
+		Matrix B = Matrix.constructWithCopy(m2);
+		return A.times(B).getArray();
 	}
 
 	public static double [][] tsne(double[][] X, int k, int initial_dims, double perplexity) {
-		return tsne(X,k,initial_dims, perplexity, 1000, false);
+		return tsne(X,k,initial_dims, perplexity, 1000, true);
 	}
 
 	public static double [][] tsne(double[][] X, int no_dims, int initial_dims, double perplexity, int max_iter, boolean use_pca) {
 		//Runs t-SNE on the dataset in the NxD array X to reduce its dimensionality to no_dims dimensions.
 		//The syntax of the function is Y = tsne.tsne(X, no_dims, perplexity), where X is an NxD double [][] array."""
 
-		// Initialize variables
-		if(use_pca) X = pca(X, initial_dims);
 		System.out.println("X:Shape is = " + X.length + " x " + X[0].length);
+		// Initialize variables
+		if(use_pca) {
+			PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
+			X = pca.pca(X, initial_dims);
+			System.out.println("X:Shape after PCA is = " + X.length + " x " + X[0].length);
+		}
 		int n = X.length;
 		double momentum = .5;
 		double initial_momentum = 0.5;
@@ -762,6 +822,8 @@ public class TSne {
 		P = scalarMult(P , 4);					// early exaggeration
 		P = maximum(P, 1e-12);
 
+		System.out.println("Y:Shape is = " + Y.length + " x " + Y[0].length);
+		
 		// Run iterations
 		for (int iter = 0; iter < max_iter; iter++) {
 			// Compute pairwise affinities
@@ -780,9 +842,9 @@ public class TSne {
 			// Compute gradient
 			double [][] PQ = minus(P , Q);
 			for (int i = 0; i < n; i++) {
-				double [][] PQrowi  = copyRows(PQ,i);
-				double [][] numrowi = copyRows(num,i);
-				dY[i] = sum(scalarMultiply(transpose(tile(scalarMultiply(PQrowi, numrowi), no_dims, 1)) , minus(fillWithRow(Y,i) , Y)), 0)[0];
+				double [][] PQcoli  = copyCols(PQ,i);
+				double [][] numcoli = copyCols(num,i);
+				dY[i] = sum(scalarMultiply(transpose(tile(scalarMultiply(PQcoli, numcoli), no_dims, 1)) , minus(fillWithRow(Y,i) , Y)), 0)[0];
 			}
 			// Perform the update
 			if (iter < 20)
@@ -790,7 +852,6 @@ public class TSne {
 			else
 				momentum = final_momentum;
 			gains = plus(scalarMultiply(scalarPlus(gains,.2),  abs(negate(equal(sign(gains),sign(gains))))),
-					// Is the below correct? Above plus, below times...? It is the same in the orig Python impl.
 					scalarMultiply(scalarMult(gains,.8), abs(equal(sign(gains),sign(gains)))));
 
 			assignAllLessThan(gains, min_gain, min_gain);
@@ -800,12 +861,12 @@ public class TSne {
 			Y = minus(Y , tile(mean(Y, 0), n, 1));
 
 			// Compute current value of cost function
-			if (((iter + 1) % 100 == 0) && X.length<100)   {
-				double [][] logdivide = log(divide(P , Q));
+			if ((iter % 100 == 0))   {
+				double [][] logdivide = log(scalarDivide(P , Q));
 				logdivide = replaceNaN(logdivide,0);
-				double C = sum(times(P , logdivide));
+				double C = sum(scalarMultiply(P , logdivide));
 				System.out.println("Iteration " + (iter + 1) + ": error is " + C);
-			} else if((iter + 1) % 100 == 0) {
+			} else if((iter + 1) % 10 == 0) {
 				System.out.println("Iteration " + (iter + 1));
 			}
 
@@ -821,7 +882,7 @@ public class TSne {
 	static R Hbeta (double [][] D, double beta){
 		double [][] P = exp(scalarMult(scalarMult(D,beta),-1));
 		double sumP = sum(P);   // sumP confirmed scalar
-		double H = Math.log(sumP) + beta * sum(times(D,transpose(P))) / sumP;
+		double H = Math.log(sumP) + beta * sum(scalarMultiply(D,P)) / sumP;
 		P = scalarDivide(P,sumP);
 		R r = new R();
 		r.H = H;
@@ -835,6 +896,7 @@ public class TSne {
 		double [][] times   = scalarMult(times(X, transpose(X)), -2);
 		double [][] prodSum = addColumnVector(transpose(times), sum_X);
 		double [][] D       = addRowVector(prodSum, transpose(sum_X));
+		// D seems correct at this point compared to Python version
 		double [][] P       = fillMatrix(n,n,0.0);
 		double [] beta      = fillMatrix(n,n,1.0)[0];
 		double logU         = Math.log(perplexity);
@@ -845,6 +907,7 @@ public class TSne {
 			double betamin = Double.NEGATIVE_INFINITY;
 			double betamax = Double.POSITIVE_INFINITY;
 			double [][] Di = getValuesFromRow(D, i,concatenate(range(0,i),range(i+1,n)));
+
 			R hbeta = Hbeta(Di, beta[i]);
 			double H = hbeta.H;
 			double [][] thisP = hbeta.P;
@@ -855,12 +918,16 @@ public class TSne {
 			while(Math.abs(Hdiff) > tol && tries < 50){
 				if (Hdiff > 0){
 					betamin = beta[i];
-					if (Double.isInfinite(betamax)) beta[i] = beta[i] * 2;
-					else beta[i] = (beta[i] + betamax)/2;
+					if (Double.isInfinite(betamax))
+						beta[i] = beta[i] * 2;
+					else 
+						beta[i] = (beta[i] + betamax) / 2;
 				} else{
 					betamax = beta[i];
-					if (Double.isInfinite(betamin))  beta[i] = beta[i]/ 2;
-					else beta[i] = ( beta[i] + betamin) / 2;
+					if (Double.isInfinite(betamin))  
+						beta[i] = beta[i] / 2;
+					else 
+						beta[i] = ( beta[i] + betamin) / 2;
 				}
 
 				hbeta = Hbeta(Di, beta[i]);
@@ -877,7 +944,7 @@ public class TSne {
 		r.beta = beta;
 		double sigma = mean(sqrt(scalarInverse(beta)));
 
-		System.out.println("Mean of sigma summary: " + sigma);
+		System.out.println("Mean value of sigma: " + sigma);
 
 		return r;
 	}
