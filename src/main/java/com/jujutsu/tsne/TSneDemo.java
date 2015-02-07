@@ -192,9 +192,9 @@ public class TSneDemo {
         //pca_mnist(1000);
         //tsne_iris();
         //tsne_mnist(250);
-        tsne_mnist_icons(500);
+        //tsne_mnist_icons(500);
         //tsne_mnist(500);
-        //tsne_mnist(1000);
+        tsne_mnist(1000);
         //tsne_mnist(2500);
     }
 
