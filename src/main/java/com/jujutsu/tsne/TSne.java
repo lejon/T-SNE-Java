@@ -43,9 +43,12 @@ public class TSne {
 		return transpose;
 	}
 
+	// Unit Tested
 	static double[][] transpose(double[][] matrix) {
 		return transpose(matrix, 1000);
 	}
+	
+	// Unit Tested
 	/**
 	 * Returns a new matrix which is the transpose of input matrix
 	 * @param matrix
@@ -123,32 +126,37 @@ public class TSne {
 				transpose[i][j] = matrix[j][i];
 	}
 
+	// Unit Tested
 	/**
 	 * Destructively sets the values in matrix to its exponentiated value
 	 * @param matrix
 	 * @return same matrix with values exponentiated
 	 */
-	static double [][] exp(double [][] matrix) {
+	static double [][] exp(double [][] m1) {
+		double[][] matrix = new double[m1.length][m1[0].length];
 		for (int i = 0; i < matrix.length; i++) {
 			for (int j = 0; j < matrix[0].length; j++) {
-				matrix[i][j] = Math.exp(matrix[i][j]);
+				matrix[i][j] = Math.exp(m1[i][j]);
 			}
 		}
 		return matrix;
 	}
 
+	// Unit Tested
 	/**
 	 * Destructively sets the values in vector to its square root
 	 * @param vector
 	 * @return same vector with values sqrt'ed
 	 */
-	static double [] sqrt(double [] vector) {
+	static double [] sqrt(double [] v1) {
+		double [] vector = new double[v1.length];
 		for (int i = 0; i < vector.length; i++) {
-			vector[i] = Math.sqrt(vector[i]);
+			vector[i] = Math.sqrt(v1[i]);
 		}
 		return vector;
 	}
 
+	// Unit Tested
 	/**
 	 * @param vector
 	 * @return mean of values in vector
@@ -161,40 +169,46 @@ public class TSne {
 		return sum/vector.length;
 	}
 
+	// Unit Tested
 	/**
 	 * Destructively sets the values in matrix to its log value
 	 * @param matrix
 	 * @return  same matrix with values log'ed
 	 */
-	static double [][] log(double [][] matrix) {
+	static double [][] log(double [][] m1) {
+		double[][] matrix = new double[m1.length][m1[0].length];
 		for (int i = 0; i < matrix.length; i++) {
 			for (int j = 0; j < matrix[0].length; j++) {
-				matrix[i][j] = Math.log(matrix[i][j]);
+				matrix[i][j] = Math.log(m1[i][j]);
 			}
 		}
 		return matrix;
 	}
 
+	// Unit Tested
 	/**
 	 * @param matrix
 	 * @return scalar inverse of matrix
 	 */
-	static double [][] scalarInverse(double [][] matrix) {
+	static double [][] scalarInverse(double [][] m1) {
+		double[][] matrix = new double[m1.length][m1[0].length];
 		for (int i = 0; i < matrix.length; i++) {
 			for (int j = 0; j < matrix[0].length; j++) {
-				matrix[i][j] = 1/matrix[i][j];
+				matrix[i][j] = 1/m1[i][j];
 			}
 		}
 		return matrix;
 	}
 
+	// Unit Tested
 	/**
 	 * @param vector
 	 * @return scalar inverse of vector
 	 */
-	static double [] scalarInverse(double [] vector) {
+	static double [] scalarInverse(double [] v1) {
+		double [] vector = new double[v1.length];
 		for (int i = 0; i < vector.length; i++) {
-			vector[i] = 1/vector[i];
+			vector[i] = 1/v1[i];
 		}
 		return vector;
 	}
@@ -214,6 +228,7 @@ public class TSne {
 		return array;
 	}
 
+	// Unit Tested
 	/**
 	 * Returns a new matrix of booleans where true is set if the values to the two matrices are
 	 * the same at that index
@@ -232,6 +247,46 @@ public class TSne {
 		for (int i = 0; i < matrix1.length; i++) {
 			for (int j = 0; j < matrix1[0].length; j++) {
 				equals[i][j] = Double.compare(matrix1[i][j], matrix2[i][j]) == 0;
+			}
+		}
+		return equals;
+	}
+	
+	/**
+	 * Returns a new matrix of booleans where true is set if the values to the two matrices are
+	 * the same at that index
+	 * @param matrix1
+	 * @param matrix2
+	 * @return new matrix with booelans with values matrix1[i,j] == matrix2[i,j]
+	 */
+	static boolean [][] equal(boolean [][] matrix1, boolean [][] matrix2) {
+		boolean [][] equals = new boolean[matrix1.length][matrix1[0].length];
+		if( matrix1.length != matrix2.length) {
+			throw new IllegalArgumentException("Dimensions does not match");
+		}
+		if( matrix1[0].length != matrix2[0].length) {
+			throw new IllegalArgumentException("Dimensions does not match");
+		}
+		for (int i = 0; i < matrix1.length; i++) {
+			for (int j = 0; j < matrix1[0].length; j++) {
+				equals[i][j] = (matrix1[i][j] == matrix2[i][j]);
+			}
+		}
+		return equals;
+	}
+	
+	/**
+	 * Returns a new matrix of booleans where true is set if the value in the matrix is
+	 * bigger than value
+	 * @param matrix
+	 * @param value
+	 * @return new matrix with booelans with values matrix1[i,j] == matrix2[i,j]
+	 */
+	static boolean [][] biggerThan(double [][] matrix, double value) {
+		boolean [][] equals = new boolean[matrix.length][matrix[0].length];
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < matrix[0].length; j++) {
+				equals[i][j] = Double.compare(matrix[i][j], value) == 1;
 			}
 		}
 		return equals;
@@ -269,12 +324,13 @@ public class TSne {
 		double [][] signs = new double[matrix.length][matrix[0].length];
 		for (int i = 0; i < matrix.length; i++) {
 			for (int j = 0; j < matrix[0].length; j++) {
-				signs[i][j] = matrix[i][j] > 0 ? 1 : (matrix[i][j] < 0 ? -1 : 0);
+				signs[i][j] = matrix[i][j] >= 0 ? 1 : -1;
 			}
 		}
 		return signs;
 	}
 
+	// Unit Tested
 	static double [][] mean(double [][] matrix, int axis) {
 		// Axis = 0 => sum columns
 		// Axis = 1 => sum rows
@@ -312,6 +368,7 @@ public class TSne {
 		return result;
 	}
 
+	// Unit Tested
 	// Should be called dim-sum! :)
 	static double [][] sum(double [][] matrix, int axis) {
 		// Axis = 0 => sum columns
@@ -342,6 +399,7 @@ public class TSne {
 	}
 
 
+	// Unit Tested
 	/**
 	 * @param matrix
 	 * @return sum of all values in the matrix
@@ -373,6 +431,7 @@ public class TSne {
 		return maxed;
 	}
 
+	// Unit Tested
 	/**
 	 * All values in matrix that is less than <code>lessthan</code> is assigned
 	 * the value <code>assign</code>
@@ -381,7 +440,7 @@ public class TSne {
 	 * @param assign
 	 * @return
 	 */
-	static double [][] assignAllLessThan(double[][] matrix, double lessthan, double assign) {
+	static void assignAllLessThan(double[][] matrix, double lessthan, double assign) {
 		for (int i = 0; i < matrix.length; i++) {
 			for (int j = 0; j < matrix[0].length; j++) {
 				if( matrix[i][j] < lessthan) {
@@ -389,9 +448,9 @@ public class TSne {
 				}
 			}
 		}
-		return matrix;
 	}
 
+	// Unit Tested
 	/**
 	 * @param matrix
 	 * @return a new matrix with the values of matrix squared
@@ -470,6 +529,7 @@ public class TSne {
 		return result;
 	}
 
+	// Unit Tested
 	static double [][] tile(double [][] matrix, int rowtimes, int coltimes) {
 		double [][] result = new double[matrix.length*rowtimes][matrix[0].length*coltimes];
 		for (int i = 0, resultrow = 0; i < rowtimes; i++) {
@@ -513,7 +573,8 @@ public class TSne {
 		}
 		return result;
 	}
-
+	
+	// Unit Tested
 	static int [] concatenate(int [] v1,int [] v2) {
 		int [] result = new int[v1.length+v2.length];
 		int index = 0;
@@ -526,6 +587,7 @@ public class TSne {
 		return result;
 	}
 
+	// Unit Tested
 	static double [][] scalarMultiply(double [][] v1,double [][] v2) {
 		if( v1.length != v2.length || v1[0].length != v2[0].length ) {
 			throw new IllegalArgumentException("a and b has to be of equal dimensions");
@@ -716,12 +778,6 @@ public class TSne {
 		return matrix;
 	}
 
-	/**
-	 * @param rows
-	 * @param cols
-	 * @param fillvalue
-	 * @return a new matrix filled with c's
-	 */
 	static double[][] fillMatrix(int rows, int cols, double fillvalue) {
 		double[][] matrix = new double[rows][cols];
 		for (int i = 0; i < matrix.length; i++)
@@ -738,6 +794,7 @@ public class TSne {
 		return matrix;
 	}
 
+	// Unit Tested
 	static double[][] scalarPlus(double[][] m1, double m2) {
 		double[][] matrix = new double[m1.length][m1[0].length];
 		for (int i = 0; i < m1.length; i++)
@@ -746,6 +803,7 @@ public class TSne {
 		return matrix;
 	}
 
+	// Unit Tested
 	static double[][] minus(double[][] m1, double[][] m2) {
 		double[][] matrix = new double[m1.length][m1[0].length];
 		for (int i = 0; i < m1.length; i++)
@@ -754,6 +812,7 @@ public class TSne {
 		return matrix;
 	}
 
+	// Unit Tested
 	static double[][] scalarDivide(double[][] numerator, double denom) {
 		double[][] matrix = new double[numerator.length][numerator[0].length];
 		for (int i = 0; i < numerator.length; i++)
@@ -762,6 +821,7 @@ public class TSne {
 		return matrix;
 	}
 
+	// Unit Tested
 	static double[][] scalarDivide(double[][] numerator, double[][] denom) {
 		double[][] matrix = new double[numerator.length][numerator[0].length];
 		for (int i = 0; i < numerator.length; i++)
@@ -775,6 +835,7 @@ public class TSne {
 				.times(Matrix.constructWithCopy(matrix2).inverse()).getArray();
  	}
 
+	// Unit Tested
 	static double[][] scalarMult(double[][] m1, double mul) {
 		double[][] matrix = new double[m1.length][m1[0].length];
 		for (int i = 0; i < m1.length; i++)
@@ -783,6 +844,7 @@ public class TSne {
 		return matrix;
 	}
 	
+	// Unit Tested
 	static double[][] times(double[][] m1, double[][] m2) {
 		Matrix A = Matrix.constructWithCopy(m1);
 		Matrix B = Matrix.constructWithCopy(m2);
@@ -850,8 +912,8 @@ public class TSne {
 				momentum = initial_momentum;
 			else
 				momentum = final_momentum;
-			gains = plus(scalarMultiply(scalarPlus(gains,.2),  abs(negate(equal(sign(gains),sign(gains))))),
-					scalarMultiply(scalarMult(gains,.8), abs(equal(sign(gains),sign(gains)))));
+			gains = plus(scalarMultiply(scalarPlus(gains,.2), abs(negate(equal(biggerThan(dY,0.0),biggerThan(iY,0.0))))),
+					scalarMultiply(scalarMult(gains,.8), abs(equal(biggerThan(dY,0.0),biggerThan(iY,0.0)))));
 
 			assignAllLessThan(gains, min_gain, min_gain);
 			iY = minus(scalarMult(iY,momentum) , scalarMult(scalarMultiply(gains , dY),eta));
