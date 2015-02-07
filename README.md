@@ -2,7 +2,9 @@ T-SNE-Java
 ==========
 
 
-Pure Java implementation of Van Der Maten and Hinton's t-sne clustering algorithm.
+Pure Java implementation of Van Der Maaten and Hinton's t-sne clustering algorithm.
 
-THIS CODE IS STILL UNDER DEVELOPMENT, IT IS NOT WORKING!!
+This is a simple port of the Python version of T-SNE.
+Lots of room for improvement mostly in terms of speed.
+The goal with this version is ease of understanding, simplicity and as stand alone as possible.  
 
