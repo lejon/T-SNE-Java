@@ -238,7 +238,7 @@ public class MatrixOpVsPython {
 	public void testMinus() {
 		double [][] X = TSneDemo.nistReadStringDouble(ASCIIFile.read(new File("src/main/python/small_ds.txt")));
 		System.out.println("TSne.minus(X, X) = \n" 
-		+ ArrayString.printDoubleArray(TSne.minus(X, X)));
+		+ ArrayString.printDoubleArray(TSne.sMinus(X, X)));
 		double [][] pymin = 
 				{{ 0.,  0.,  0.,  0.,  0.},
 				 { 0.,  0.,  0.,  0.,  0.},
@@ -248,7 +248,25 @@ public class MatrixOpVsPython {
 				 { 0.,  0.,  0.,  0.,  0.},
 				 { 0.,  0.,  0.,  0.,  0.},
 				 };
-		double [][] min = TSne.minus(X, X);
+		double [][] min = TSne.sMinus(X, X);
+		assertEqualDoubleArrays(pymin, min, epsilon);
+	}
+
+	@Test
+	public void testParMinus() {
+		double [][] X = TSneDemo.nistReadStringDouble(ASCIIFile.read(new File("src/main/python/small_ds.txt")));
+		System.out.println("TSne.minus(X, X) = \n" 
+		+ ArrayString.printDoubleArray(TSne.parScalarMinus(X, X)));
+		double [][] pymin = 
+				{{ 0.,  0.,  0.,  0.,  0.},
+				 { 0.,  0.,  0.,  0.,  0.},
+				 { 0.,  0.,  0.,  0.,  0.},
+				 { 0.,  0.,  0.,  0.,  0.},
+				 { 0.,  0.,  0.,  0.,  0.},
+				 { 0.,  0.,  0.,  0.,  0.},
+				 { 0.,  0.,  0.,  0.,  0.},
+				 };
+		double [][] min = TSne.parScalarMinus(X, X);
 		assertEqualDoubleArrays(pymin, min, epsilon);
 	}
 
@@ -385,27 +403,6 @@ public class MatrixOpVsPython {
 		double [][] div = TSne.scalarDivide(X, Y);
 		assertEqualDoubleArrays(pydiv, div, epsilon);
 	}
-
-	@Test
-	public void testDivide() {
-		double [][] X = TSneDemo.nistReadStringDouble(ASCIIFile.read(new File("src/main/python/small_ds.txt")));		
-		double [][] Y = TSneDemo.nistReadStringDouble(ASCIIFile.read(new File("src/main/python/small_ds.txt")));
-		Y = TSne.scalarDivide(Y, 2);
-		System.out.println("Y=\n" + ArrayString.printDoubleArray(Y));
-		System.out.println(" X / (X/2) =" 
-		+ ArrayString.printDoubleArray(TSne.divide(X, Y)));
-		double [][] pydiv = 
-			{{ 2.,  2.,  2.,  2.,  2.},
-			 { 2.,  2.,  2.,  2.,  2.},
-			 { 2.,  2.,  2.,  2.,  2.},
-			 { 2.,  2.,  2.,  2.,  2.},
-			 { 2.,  2.,  2.,  2.,  2.},
-			 { 2.,  2.,  2.,  2.,  2.},
-			 { 2.,  2.,  2.,  2.,  2.},
-			};
-		double [][] div = TSne.divide(X, Y);
-		assertEqualDoubleArrays(pydiv, div, epsilon);
-	}
 	
 	@Test
 	public void testSqrt() {
@@ -449,16 +446,7 @@ public class MatrixOpVsPython {
 		double [][] jlog = TSne.log(X);
 		assertEqualDoubleArrays(pylog, jlog, epsilon);
 	}
-	
-
-	@Test
-	public void testDivide1() {
-	double [][] m1 = {{1.0,2.0,3.0},{3.0,2.0,1.0},{2.0,1.0,3.0}};
-	double [][] m2 = {{4.0,5.0,6.0},{6.0,5.0,4.0},{4.0,6.0,5.0}};
-	System.out.println(" X / (X/2) =" 
-			+ ArrayString.printDoubleArray(TSne.divide(m1,m2)));
-	}
-	
+		
 	@Test 
 	public void testConcatenate() {
 		int [] v1 = {1,2,3,4};
