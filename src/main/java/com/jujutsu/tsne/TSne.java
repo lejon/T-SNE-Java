@@ -9,7 +9,7 @@ import Jama.Matrix;
 
 /**
  *
- * User: Leif Jonsson (leif.jonsson@gmail.com)
+ * Author: Leif Jonsson (leif.jonsson@gmail.com)
  * 
  * This is a port of van der Maaten and Hintons Python implementation of t-sne
  *
@@ -587,8 +587,12 @@ public class TSne {
 		return result;
 	}
 
+	static double [][] scalarMultiply(double [][] m1,double [][] m2) {
+		return parScalarMultiply(m1, m2);
+	}
+	
 	// Unit Tested
-	static double [][] scalarMultiply(double [][] v1,double [][] v2) {
+	static double [][] sMultiply(double [][] v1,double [][] v2) {
 		if( v1.length != v2.length || v1[0].length != v2[0].length ) {
 			throw new IllegalArgumentException("a and b has to be of equal dimensions");
 		}
@@ -609,7 +613,16 @@ public class TSne {
 		pool.invoke(process);
 		return result;
 	}
-	
+
+	static double[][] parScalarMinus(double [][] m1,double [][] m2) {
+		int ll = 600;
+		double [][] result = new double[m1.length][m1[0].length];
+		
+		MatrixOperator process = new MatrixOperator(m1,m2,result, minusop, 0, m1.length,ll);                
+		pool.invoke(process);
+		return result;
+	}
+
 	public interface MatrixOp {
 		double compute(double op1, double op2);
 	}
@@ -619,7 +632,13 @@ public class TSne {
 			return f1 * f2;
 		}
 	};
-	
+
+	static MatrixOp minusop = new MatrixOp() {
+		public double compute(double f1, double f2) {
+			return f1 - f2;
+		}
+	};
+
 	static class MatrixOperator extends RecursiveAction {
 		static final long serialVersionUID = 1L;
 		double [][] matrix1;
@@ -735,33 +754,6 @@ public class TSne {
 		return mean;
 	}
 
-	static double[][] covariance(double[][] matrix) {
-		int rows = matrix.length;
-		int cols = matrix[0].length;
-		double[][] covar = new double[cols][cols];
-		int rank = (rows - 1);
-		double c;
-		double sum1;
-		double sum2;
-		for (int i = 0; i < cols; i++) {
-			for (int j = 0; j < cols; j++) {
-				c = 0;
-				sum1 = 0;
-				sum2 = 0;
-				for (int k = 0; k < rows; k++) {
-					sum1 += matrix[k][i];
-					sum2 += matrix[k][j];
-				}
-				sum1 = sum1 / rows;
-				sum2 = sum2 / rows;
-				for (int k = 0; k < rows; k++)
-					c += (matrix[k][i] - sum1) * (matrix[k][j] - sum2);
-				covar[i][j] = c / rank;
-			}
-		}
-		return covar;
-	}
-
 	static double[][] copyRows(double[][] input, int... indices) {
 		double[][] matrix = new double[indices.length][input[0].length];
 		for (int i = 0; i < indices.length; i++)
@@ -803,8 +795,12 @@ public class TSne {
 		return matrix;
 	}
 
-	// Unit Tested
 	static double[][] minus(double[][] m1, double[][] m2) {
+		return parScalarMinus(m1, m2);
+	}
+	
+	// Unit Tested
+	static double[][] sMinus(double[][] m1, double[][] m2) {
 		double[][] matrix = new double[m1.length][m1[0].length];
 		for (int i = 0; i < m1.length; i++)
 			for (int j = 0; j < m1[0].length; j++)
@@ -830,11 +826,6 @@ public class TSne {
 		return matrix;
 	}
 	
-	static double[][] divide(double[][] matrix1, double[]... matrix2) {
-		return Matrix.constructWithCopy(matrix1)
-				.times(Matrix.constructWithCopy(matrix2).inverse()).getArray();
- 	}
-
 	// Unit Tested
 	static double[][] scalarMult(double[][] m1, double mul) {
 		double[][] matrix = new double[m1.length][m1[0].length];
