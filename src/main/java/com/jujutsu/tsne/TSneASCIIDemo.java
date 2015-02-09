@@ -52,7 +52,8 @@ public class TSneASCIIDemo {
 
     public static void runTSne(double [][] matrix, String [] labels) {
     	System.out.println("Shape is: " + matrix.length + " x " + matrix[0].length);
-    	double [][] Y = TSne.tsne(matrix, 2, initial_dims, perplexity);
+    	TSne tsne = new SimpleTSne();
+    	double [][] Y = tsne.tsne(matrix, 2, initial_dims, perplexity);
     	System.out.println("Result is = " + Y.length + " x " + Y[0].length + " => \n" + ArrayString.printDoubleArray(Y));
     	plot2D(labels, Y);
     }

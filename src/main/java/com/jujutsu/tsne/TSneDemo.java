@@ -85,7 +85,8 @@ public class TSneDemo {
     public static void tsne_iris() {
     	double [][] X = nistReadStringDouble(ASCIIFile.read(new File("src/main/resources/datasets/iris_X.txt")), ",");
         System.out.println("Shape is: " + X.length + " x " + X[0].length);
-		double [][] Y = TSne.tsne(X, 2, initial_dims, perplexity);
+        TSne tsne = new SimpleTSne();
+		double [][] Y = tsne.tsne(X, 2, initial_dims, perplexity);
         System.out.println("Shape is: " + Y.length + " x " + Y[0].length);
         
         double [][] setosa = new double [initial_dims][2];
@@ -141,15 +142,23 @@ public class TSneDemo {
         plotframe.setVisible(true);
     }
     
-    public static void tsne_mnist(int nistSize) {
-        System.out.println("Running example on " + nistSize + " MNIST digits...");
+    public static void tsne_mnist(int nistSize) {        
+        run_tsne_mnist(nistSize,new SimpleTSne());
+    }
+    
+    public static void fast_tsne_mnist(int nistSize) {
+        run_tsne_mnist(nistSize,new FastTSne());
+    }
+    
+    public static void run_tsne_mnist(int nistSize, TSne tsne) {
+        System.out.println("Running FAST on " + nistSize + " MNIST digits...");
         double [][] X = nistReadStringDouble(ASCIIFile.read(new File("src/main/resources/datasets/mnist" + nistSize + "_X.txt")));
     	String [] labels = new ASCIIFile(new File("src/main/resources/datasets/mnist2500_labels.txt")).readLines();
     	for (int i = 0; i < labels.length; i++) {
 			labels[i] = labels[i].trim().substring(0, 1);
 		}
         System.out.println("Shape is: " + X.length + " x " + X[0].length);
-        double [][] Y = TSne.tsne(X, 2, initial_dims, perplexity);
+        double [][] Y = tsne.tsne(X, 2, initial_dims, perplexity);
         System.out.println("Result is = " + Y.length + " x " + Y[0].length + " => \n" + ArrayString.printDoubleArray(Y));
         ASCIIFile.write(new File("Java-tsne-result.txt"), ArrayString.printDoubleArray(Y));
         Plot2DPanel plot = new Plot2DPanel();
@@ -172,7 +181,8 @@ public class TSneDemo {
 			imgfiles[i] = "src/main/resources/nistimgs/img" + i + ".png";
 		}
         System.out.println("Shape is: " + X.length + " x " + X[0].length);
-        double [][] Y = TSne.tsne(X, 2, initial_dims, perplexity, 1000, true);
+        TSne tsne = new SimpleTSne();
+        double [][] Y = tsne.tsne(X, 2, initial_dims, perplexity, 1000, true);
         System.out.println("Result is = " + Y.length + " x " + Y[0].length + " => \n" + ArrayString.printDoubleArray(Y));
         Plot2DPanel plot = new Plot2DPanel();
         
@@ -194,8 +204,9 @@ public class TSneDemo {
         //tsne_mnist(250);
         //tsne_mnist_icons(500);
         //tsne_mnist(500);
-        tsne_mnist(1000);
-        //tsne_mnist(2500);
+        //tsne_mnist(1000);
+        //tsne_mnist(1000);
+        fast_tsne_mnist(2500);
     }
 
 }

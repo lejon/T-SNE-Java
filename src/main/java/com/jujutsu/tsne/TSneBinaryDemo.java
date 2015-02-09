@@ -19,8 +19,9 @@ public class TSneBinaryDemo {
 	public TSneBinaryDemo() {}
 
 	public static void runTSne(double [][] matrix) {
+		TSne tsne = new SimpleTSne();
 		System.out.println("Shape is: " + matrix.length + " x " + matrix[0].length);
-		double [][] Y = TSne.tsne(matrix, 2, initial_dims, perplexity, 2500, false);
+		double [][] Y = tsne.tsne(matrix, 2, initial_dims, perplexity, 2500, false);
 		System.out.println("Result is = " + Y.length + " x " + Y[0].length + " => \n" + ArrayString.printDoubleArray(Y));
 		displayResult(Y);
 	}
