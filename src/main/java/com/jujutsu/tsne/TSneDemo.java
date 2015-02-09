@@ -2,6 +2,7 @@ package com.jujutsu.tsne;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -158,8 +159,11 @@ public class TSneDemo {
 			labels[i] = labels[i].trim().substring(0, 1);
 		}
         System.out.println("Shape is: " + X.length + " x " + X[0].length);
+        System.out.println("Starting TSNE: " + new Date());
         double [][] Y = tsne.tsne(X, 2, initial_dims, perplexity);
-        System.out.println("Result is = " + Y.length + " x " + Y[0].length + " => \n" + ArrayString.printDoubleArray(Y));
+        System.out.println("Finished TSNE: " + new Date());
+        //System.out.println("Result is = " + Y.length + " x " + Y[0].length + " => \n" + ArrayString.printDoubleArray(Y));
+        System.out.println("Result is = " + Y.length + " x " + Y[0].length);
         ASCIIFile.write(new File("Java-tsne-result.txt"), ArrayString.printDoubleArray(Y));
         Plot2DPanel plot = new Plot2DPanel();
         
@@ -206,7 +210,7 @@ public class TSneDemo {
         //tsne_mnist(500);
         //tsne_mnist(1000);
         //tsne_mnist(1000);
-        fast_tsne_mnist(2500);
+        fast_tsne_mnist(500);
     }
 
 }
