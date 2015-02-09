@@ -220,13 +220,10 @@ public class FastTSne implements TSne {
 			subtractEquals(PQ , Q);
 			for (int i = 0; i < n; i++) {
 				DenseMatrix64F PQcoli  = extract(PQ,0,PQ.numRows,i,i+1);
-				transpose(PQcoli);
 				DenseMatrix64F numcoli = extract(num,0,num.numRows,i,i+1);
-				transpose(numcoli);
 				DenseMatrix64F PQnum = new DenseMatrix64F(PQcoli.numRows,PQcoli.numCols);
 				elementMult(PQcoli, numcoli, PQnum);
-				DenseMatrix64F tile = tile(PQnum, no_dims, 1);
-				transpose(tile);
+				DenseMatrix64F tile = tile(PQnum, 1, no_dims);
 				DenseMatrix64F ithrow = fillWithRow(Y,i);
 				subtractEquals(ithrow , Y);
 				DenseMatrix64F tileIthRow = new DenseMatrix64F(tile.numRows,ithrow.numCols);
