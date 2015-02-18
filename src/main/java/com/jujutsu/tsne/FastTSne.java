@@ -145,7 +145,7 @@ public class FastTSne implements TSne {
 	}
 
 	public double [][] tsne(double[][] X, int k, int initial_dims, double perplexity) {
-		return tsne(X,k,initial_dims, perplexity, 1000, true);
+		return tsne(X,k,initial_dims, perplexity, 2000, true);
 	}
 	
 	public static double[][] readBinaryDoubleMatrix(int rows, int columns, String fn) throws FileNotFoundException, IOException {
@@ -165,7 +165,7 @@ public class FastTSne implements TSne {
 	public double [][] tsne(double[][] X, int no_dims, int initial_dims, double perplexity, int max_iter, boolean use_pca) {
 		System.out.println("X:Shape is = " + X.length + " x " + X[0].length);
 		// Initialize variables
-		if(use_pca) {
+		if(use_pca && X[0].length > initial_dims) {
 			PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
 			X = pca.pca(X, initial_dims);
 			System.out.println("X:Shape after PCA is = " + X.length + " x " + X[0].length);
@@ -273,6 +273,7 @@ public class FastTSne implements TSne {
 				elementLog(Pdiv,logdivide);
 				replaceNaN(logdivide,0);
 				elementMult(logdivide,P);
+				replaceNaN(logdivide,0);
 				double C = elementSum(logdivide);
 				System.out.println("Iteration " + (iter + 1) + ": error is " + C);
 			} else if((iter + 1) % 10 == 0) {
