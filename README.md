@@ -7,7 +7,7 @@ Pure Java implementation of Van Der Maaten and Hinton's t-sne clustering algorit
 This is a simple port of the Python version of T-SNE.
 
 There are two versions, one the fastest, uses the EJML library for fast matrix operations, this version is called FastTSne.
-The second version is a more direct but slower version with call-by-value semantics.
+The second version is a more direct but slower version with call-by-value semantics, this version is called TSne.
 
 There is still room for improvements, cleanup is the first that comes to mind. :)
 
