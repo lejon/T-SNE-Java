@@ -16,7 +16,7 @@ proper release at GitHub soon, but for now.
 
 Install Apache Maven, then:
 
-	maven package
+	mvn package
 	
 To run a demo:
 
