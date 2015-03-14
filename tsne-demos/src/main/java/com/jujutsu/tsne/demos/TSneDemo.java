@@ -7,13 +7,20 @@ import java.util.List;
 
 import javax.swing.JFrame;
 
+import org.math.io.files.ASCIIFile;
+import org.math.io.parser.ArrayString;
+import org.math.plot.FrameView;
+import org.math.plot.Plot2DPanel;
+import org.math.plot.PlotPanel;
 import org.math.plot.plots.ColoredScatterPlot;
 import org.math.plot.plots.IconScatterPlot;
+import org.math.plot.plots.ScatterPlot;
 
 import com.jujutsu.tsne.FastTSne;
 import com.jujutsu.tsne.PrincipalComponentAnalysis;
 import com.jujutsu.tsne.SimpleTSne;
 import com.jujutsu.tsne.TSne;
+import com.jujutsu.utils.MatrixUtils;
 
 public class TSneDemo {
 	

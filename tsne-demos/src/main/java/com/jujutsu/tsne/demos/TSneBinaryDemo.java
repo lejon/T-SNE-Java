@@ -4,6 +4,13 @@ import java.io.File;
 
 import javax.swing.JFrame;
 
+import org.math.io.files.BinaryFile;
+import org.math.io.parser.ArrayString;
+import org.math.plot.FrameView;
+import org.math.plot.Plot2DPanel;
+import org.math.plot.PlotPanel;
+import org.math.plot.plots.ScatterPlot;
+
 import com.jujutsu.tsne.SimpleTSne;
 import com.jujutsu.tsne.TSne;
 
