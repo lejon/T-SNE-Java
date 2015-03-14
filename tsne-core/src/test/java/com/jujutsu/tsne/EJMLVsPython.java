@@ -20,7 +20,7 @@ import java.io.File;
 import org.ejml.data.DenseMatrix64F;
 import org.junit.Test;
 
-import com.jujutsu.tsne.demos.MatrixUtils;
+import com.jujutsu.utils.MatrixUtils;
 
 public class EJMLVsPython {
 	

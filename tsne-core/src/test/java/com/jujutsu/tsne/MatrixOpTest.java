@@ -6,7 +6,7 @@ import java.io.File;
 
 import org.junit.Test;
 
-import com.jujutsu.tsne.demos.MatrixUtils;
+import com.jujutsu.utils.MatrixUtils;
 
 public class MatrixOpTest {
 	
