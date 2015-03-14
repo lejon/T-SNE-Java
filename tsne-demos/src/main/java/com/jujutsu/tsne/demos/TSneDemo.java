@@ -157,6 +157,34 @@ public class TSneDemo {
         run_tsne_mnist(nistSize,new FastTSne());
     }
     
+    public static void fast_tsne_mnist(String filename, String labelfilename) {
+    	TSne tsne = new FastTSne();
+    	System.out.println("Running TSne on " + filename);
+        double [][] X = MatrixUtils.simpleRead2DMatrix(new File(filename));
+    	String [] labels = MatrixUtils.simpleReadLines(new File(labelfilename));
+    	for (int i = 0; i < labels.length; i++) {
+			labels[i] = labels[i].trim().substring(0, 1);
+		}
+        System.out.println("Shape is: " + X.length + " x " + X[0].length);
+        System.out.println("Starting TSNE: " + new Date());
+        double [][] Y = tsne.tsne(X, 2, initial_dims, perplexity, 10);
+        System.out.println("Finished TSNE: " + new Date());
+        //System.out.println("Result is = " + Y.length + " x " + Y[0].length + " => \n" + ArrayString.printDoubleArray(Y));
+        System.out.println("Result is = " + Y.length + " x " + Y[0].length);
+        ASCIIFile.write(new File("Java-tsne-result.txt"), ArrayString.printDoubleArray(Y));
+        Plot2DPanel plot = new Plot2DPanel();
+        
+        ColoredScatterPlot setosaPlot = new ColoredScatterPlot("setosa", Y, labels);
+        plot.plotCanvas.setNotable(true);
+        plot.plotCanvas.setNoteCoords(true);
+        plot.plotCanvas.addPlot(setosaPlot);
+                
+        FrameView plotframe = new FrameView(plot);
+        plotframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        plotframe.setVisible(true);
+    }
+
+    
     public static void run_tsne_mnist(int nistSize, TSne tsne) {
         System.out.println("Running FAST on " + nistSize + " MNIST digits...");
         double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/resources/datasets/mnist" + nistSize + "_X.txt"));
@@ -208,6 +236,13 @@ public class TSneDemo {
     
     public static void main(String [] args) {
         System.out.println("TSneDemo: Runs t-SNE on various dataset.");
+        if(args.length==0) {
+        	System.out.println("usage: For the data format that the TSneDemo accepts, look at the file 'src/main/resources/datasets/minst2500_X.txt' file and accompaning label file 'src/main/resources/datasets/mnist2500_labels.txt'.");
+        	System.out.println("       The label file mus have as meny rows as the input matrix");
+        	System.out.println("usage: Example using the data and label file in: tsne-demos/src/main/resources/datasets/");
+        	System.out.println("usage: java -cp target/tsne-demos-0.0.1-SNAPSHOT.jar com.jujutsu.tsne.demos.TSneDemo minst2500_X.txt mnist2500_labels.txt");
+        	System.exit(0);
+        }
         //pca_iris();
         //pca_mnist(1000);
         //tsne_iris();
@@ -216,7 +251,8 @@ public class TSneDemo {
         //tsne_mnist(500);
         //tsne_mnist(1000);
         //tsne_mnist(1000);
-        fast_tsne_mnist(2500);
+        //fast_tsne_mnist(2500);
+        fast_tsne_mnist(args[0], args[1]);
     }
 
 }
