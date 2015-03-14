@@ -7,14 +7,10 @@ Pure Java implementation of Van Der Maaten and Hinton's t-sne clustering algorit
 This is a simple port of the Python version of T-SNE.
 
 The core packages are in "tsne-core" from the toplevel dir. 
-
-Install Apache Maven, then:
-
-	mvn package
 	
 To run a demo:
 
-	java -cp target/tsne-X.X.X-SNAPSHOT.jar com.jujutsu.tsne.TSneDemo
+	java -cp target/tsne-demos-0.0.1-SNAPSHOT.jar com.jujutsu.tsne.demos.TSneDemo
 
 
 This is still a "development" version, i.e it is currently not too useful as a stand alone tool.
