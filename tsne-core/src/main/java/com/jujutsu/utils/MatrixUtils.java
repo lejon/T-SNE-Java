@@ -47,7 +47,10 @@ public class MatrixUtils {
 		
         try (FileReader fr = new FileReader(file);
         	BufferedReader b = new BufferedReader(fr)) {
-            rows.add(b.readLine());
+        	String line;
+        	while ((line = b.readLine()) != null) {
+        		rows.add(line.trim());
+        	}
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
