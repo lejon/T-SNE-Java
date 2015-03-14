@@ -14,6 +14,10 @@ public class SimpleTSne implements TSne {
 		return tsne(X,k,initial_dims, perplexity, 2000, true);
 	}
 
+	public double [][] tsne(double[][] X, int k, int initial_dims, double perplexity, int maxIterations) {
+		return tsne(X,k,initial_dims, perplexity, maxIterations, true);
+	}
+
 	public double [][] tsne(double[][] X, int no_dims, int initial_dims, double perplexity, int max_iter, boolean use_pca) {
 		System.out.println("X:Shape is = " + X.length + " x " + X[0].length);
 		// Initialize variables

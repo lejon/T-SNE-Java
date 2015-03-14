@@ -143,10 +143,6 @@ public class FastTSne implements TSne {
 			}
 		}
 	}
-
-	public double [][] tsne(double[][] X, int k, int initial_dims, double perplexity) {
-		return tsne(X,k,initial_dims, perplexity, 2000, true);
-	}
 	
 	public static double[][] readBinaryDoubleMatrix(int rows, int columns, String fn) throws FileNotFoundException, IOException {
 		File matrixFile = new File(fn);
@@ -160,6 +156,14 @@ public class FastTSne implements TSne {
 			}
 		}
 		return matrix;
+	}
+
+	public double [][] tsne(double[][] X, int k, int initial_dims, double perplexity) {
+		return tsne(X,k,initial_dims, perplexity, 2000, true);
+	}
+
+	public double [][] tsne(double[][] X, int k, int initial_dims, double perplexity, int maxIterations) {
+		return tsne(X,k,initial_dims, perplexity, maxIterations, true);
 	}
 	
 	public double [][] tsne(double[][] X, int no_dims, int initial_dims, double perplexity, int max_iter, boolean use_pca) {

@@ -10,6 +10,7 @@ package com.jujutsu.tsne;
 public interface TSne {
 
 	double [][] tsne(double[][] X, int k, int initial_dims, double perplexity);
+	double [][] tsne(double[][] X, int k, int initial_dims, double perplexity, int maxIterations);
 
 	double [][] tsne(double[][] X, int no_dims, int initial_dims, double perplexity, int max_iter, boolean use_pca);
 
