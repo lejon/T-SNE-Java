@@ -159,7 +159,7 @@ public class TSneDemo {
     
     public static void fast_tsne_mnist(String filename, String labelfilename) {
     	TSne tsne = new FastTSne();
-    	System.out.println("Running TSne on " + filename);
+    	System.out.println("Running 2000 iterations of TSne on " + filename);
         double [][] X = MatrixUtils.simpleRead2DMatrix(new File(filename));
     	String [] labels = MatrixUtils.simpleReadLines(new File(labelfilename));
     	for (int i = 0; i < labels.length; i++) {
@@ -167,7 +167,7 @@ public class TSneDemo {
 		}
         System.out.println("Shape is: " + X.length + " x " + X[0].length);
         System.out.println("Starting TSNE: " + new Date());
-        double [][] Y = tsne.tsne(X, 2, initial_dims, perplexity, 10);
+        double [][] Y = tsne.tsne(X, 2, initial_dims, perplexity, 2000);
         System.out.println("Finished TSNE: " + new Date());
         //System.out.println("Result is = " + Y.length + " x " + Y[0].length + " => \n" + ArrayString.printDoubleArray(Y));
         System.out.println("Result is = " + Y.length + " x " + Y[0].length);
@@ -236,9 +236,9 @@ public class TSneDemo {
     
     public static void main(String [] args) {
         System.out.println("TSneDemo: Runs t-SNE on various dataset.");
-        if(args.length==0) {
-        	System.out.println("usage: For the data format that the TSneDemo accepts, look at the file 'src/main/resources/datasets/minst2500_X.txt' file and accompaning label file 'src/main/resources/datasets/mnist2500_labels.txt'.");
-        	System.out.println("       The label file mus have as meny rows as the input matrix");
+        if(args.length!=2) {
+        	System.out.println("usage: For the data format TSneDemo accepts, look at the file 'src/main/resources/datasets/minst2500_X.txt' file and accompaning label file 'src/main/resources/datasets/mnist2500_labels.txt'.");
+        	System.out.println("       The label file must have as meny rows as the input matrix");
         	System.out.println("usage: Example using the data and label file in: tsne-demos/src/main/resources/datasets/");
         	System.out.println("usage: java -cp target/tsne-demos-0.0.1-SNAPSHOT.jar com.jujutsu.tsne.demos.TSneDemo minst2500_X.txt mnist2500_labels.txt");
         	System.exit(0);
