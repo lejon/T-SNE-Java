@@ -839,7 +839,6 @@ public class MatrixOps {
 		boolean isLong = ds.length > ds[0].length;
 		int dim = Math.max(ds.length,ds[0].length);
 		double [][] result = new double [dim][dim];
-		System.out.println("Created diag:" + ds.length + "x" + ds.length);
 		for (int i = 0; i < result.length; i++) {
 			for (int j = 0; j < result.length; j++) {
 				if(i==j) {

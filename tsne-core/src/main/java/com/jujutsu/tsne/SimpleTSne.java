@@ -62,13 +62,9 @@ public class SimpleTSne implements TSne {
 			Q = mo.maximum(Q, 1e-12);
 
 			// Compute gradient
-			double [][] PQ = mo.minus(P , Q);
-			for (int i = 0; i < n; i++) {
-				double [][] PQcoli  = mo.copyCols(PQ,i);
-				double [][] numcoli = mo.copyCols(num,i);
-				dY[i] = mo.sum(mo.scalarMultiply(mo.transpose(mo.tile(mo.scalarMultiply(PQcoli, numcoli), no_dims, 1)) , 
-						mo.minus(mo.fillWithRow(Y,i) , Y)), 0)[0];
-			}
+			double[][] L = mo.scalarMultiply(mo.minus(P , Q), num);
+		    dY = mo.scalarMult(mo.times(mo.minus(mo.diag(mo.sum(L, 1)),L) , Y), 4);
+			
 			// Perform the update
 			if (iter < 20)
 				momentum = initial_momentum;
