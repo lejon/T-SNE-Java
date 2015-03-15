@@ -187,8 +187,9 @@ public class FastTSne implements TSne {
 		DenseMatrix64F gains    = new DenseMatrix64F(mo.fillMatrix(n,no_dims,1.0));
 		
 		// Compute P-values
-		DenseMatrix64F P = new DenseMatrix64F(x2p(X, 1e-5, perplexity).P);
-		DenseMatrix64F Ptr = new DenseMatrix64F(P.numRows,P.numCols);
+		DenseMatrix64F P        = new DenseMatrix64F(x2p(X, 1e-5, perplexity).P);
+		DenseMatrix64F Ptr      = new DenseMatrix64F(P.numRows,P.numCols);
+		DenseMatrix64F L        = new DenseMatrix64F(P);
 		
 		transpose(P,Ptr);
 		addEquals(P,Ptr);
@@ -198,10 +199,11 @@ public class FastTSne implements TSne {
 		
 		System.out.println("Y:Shape is = " + Y.getNumRows() + " x " + Y.getNumCols());
 
-		DenseMatrix64F sqed = new DenseMatrix64F(Y.numRows,Y.numCols);
+		DenseMatrix64F sqed  = new DenseMatrix64F(Y.numRows,Y.numCols);
 		DenseMatrix64F sum_Y = new DenseMatrix64F(1,Y.numRows);
-		DenseMatrix64F num = new DenseMatrix64F(Y.numRows, Y.numRows);
-		DenseMatrix64F Q = new DenseMatrix64F(P.numRows,P.numCols);
+		DenseMatrix64F num   = new DenseMatrix64F(Y.numRows, Y.numRows);
+		DenseMatrix64F Q     = new DenseMatrix64F(P.numRows,P.numCols);
+		
 		for (int iter = 0; iter < max_iter; iter++) {
 			// Compute pairwise affinities
 			elementPower(Y, 2, sqed);
@@ -218,24 +220,19 @@ public class FastTSne implements TSne {
 			divide(num , elementSum(num), Q);
 
 			maximize(Q, 1e-12);
-
+			
 			// Compute gradient
-			DenseMatrix64F PQ = new DenseMatrix64F(P);
-			subtractEquals(PQ , Q);
-			for (int i = 0; i < n; i++) {
-				DenseMatrix64F PQcoli  = extract(PQ,0,PQ.numRows,i,i+1);
-				DenseMatrix64F numcoli = extract(num,0,num.numRows,i,i+1);
-				DenseMatrix64F PQnum = new DenseMatrix64F(PQcoli.numRows,PQcoli.numCols);
-				elementMult(PQcoli, numcoli, PQnum);
-				DenseMatrix64F tile = tile(PQnum, 1, no_dims);
-				DenseMatrix64F ithrow = fillWithRow(Y,i);
-				subtractEquals(ithrow , Y);
-				DenseMatrix64F tileIthRow = new DenseMatrix64F(tile.numRows,ithrow.numCols);
-				elementMult(tile, ithrow, tileIthRow);
-				DenseMatrix64F colSum = new DenseMatrix64F(1,tile.numCols);
-				sumCols(tileIthRow, colSum);
-				insert(colSum,dY,i,0);
+			subtract(P, Q, L);
+			elementMult(L, num);
+			DenseMatrix64F rowsum = sumRows(L,null);
+			double [] rsum  = new double[rowsum.numRows];
+			for (int i = 0; i < rsum.length; i++) {
+				rsum[i] = rowsum.get(i,0);
 			}
+			DenseMatrix64F diag = diag(rsum);
+			subtract(diag, L, L);
+			mult(L, Y, dY);
+			scale(4.0, dY);
 			
 			// Perform the update
 			if (iter < 20)
