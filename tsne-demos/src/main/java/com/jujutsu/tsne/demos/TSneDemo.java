@@ -149,11 +149,13 @@ public class TSneDemo {
         plotframe.setVisible(true);
     }
     
-    public static void tsne_mnist(int nistSize) {        
+    public static void tsne_mnist(int nistSize) {
+    	System.out.println("Running SimpleTSne on " + nistSize + " MNIST digits...");
         run_tsne_mnist(nistSize,new SimpleTSne());
     }
     
     public static void fast_tsne_mnist(int nistSize) {
+    	System.out.println("Running FAST on " + nistSize + " MNIST digits...");
         run_tsne_mnist(nistSize,new FastTSne());
     }
     
@@ -186,7 +188,6 @@ public class TSneDemo {
 
     
     public static void run_tsne_mnist(int nistSize, TSne tsne) {
-        System.out.println("Running FAST on " + nistSize + " MNIST digits...");
         double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/resources/datasets/mnist" + nistSize + "_X.txt"));
     	String [] labels = MatrixUtils.simpleReadLines(new File("src/main/resources/datasets/mnist2500_labels.txt"));
     	for (int i = 0; i < labels.length; i++) {
