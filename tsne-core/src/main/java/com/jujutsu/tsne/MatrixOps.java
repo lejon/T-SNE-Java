@@ -12,6 +12,25 @@ public class MatrixOps {
 	private static ForkJoinPool pool = new ForkJoinPool();
 
 	/**
+	 * This function a new matrix which is centered and scaled  
+	 * @param mu
+	 * @param sigma
+	 * @return new matrix which is centered (subtracted mean) and scaled (divided with stddev)
+	 */
+	public static double [][] centerAndScale(double [][] matrix) {
+		double [][] res = new double[matrix.length][matrix[0].length]; 
+		double mean = mean(matrix);
+		double std = stdev(matrix);
+		for (int i = 0; i < res.length; i++) {
+			for (int j = 0; j < res[i].length; j++) {
+				res[i][j] = (matrix[i][j]-mean) / std; 
+			}
+		}
+		
+		return res;
+	}
+	
+	/**
 	 * Generate random draw from Normal with mean mu and std. dev sigma
 	 * @param mu
 	 * @param sigma
@@ -323,8 +342,12 @@ public class MatrixOps {
 		return signs;
 	}
 
+	public static double mean(double [][] matrix) {
+		return mean(matrix,2)[0][0];
+	}
+	
 	// Unit Tested
-	double [][] mean(double [][] matrix, int axis) {
+	public static double [][] mean(double [][] matrix, int axis) {
 		// Axis = 0 => sum columns
 		// Axis = 1 => sum rows
 		// Axis = 2 => global (returns a 1 element array with the result)
@@ -703,8 +726,25 @@ public class MatrixOps {
 			matrix[row][indicies[j]] = values[j];
 		}
 	}
+	
+	public static double stdev(double [][] matrix) {
+		double m = mean(matrix);
 
-	double[] stddev(double[][] v) {
+        double total = 0;
+
+        final int N = matrix.length * matrix[0].length;
+
+        for( int i = 0; i < matrix.length; i++ ) {
+        	for (int j = 0; j < matrix[i].length; j++) {				
+        		double x = matrix[i][j];
+        		total += (x - m)*(x - m);
+			}
+        }
+
+        return Math.sqrt(total / (N-1));	
+	}
+	
+	double[] colStddev(double[][] v) {
 		double[] var = variance(v);
 		for (int i = 0; i < var.length; i++)
 			var[i] = Math.sqrt(var[i]);
