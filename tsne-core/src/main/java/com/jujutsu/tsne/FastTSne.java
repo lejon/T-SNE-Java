@@ -185,11 +185,14 @@ public class FastTSne implements TSne {
 		DenseMatrix64F dY       = new DenseMatrix64F(mo.fillMatrix(n,no_dims,0.0));
 		DenseMatrix64F iY       = new DenseMatrix64F(mo.fillMatrix(n,no_dims,0.0));
 		DenseMatrix64F gains    = new DenseMatrix64F(mo.fillMatrix(n,no_dims,1.0));
+		DenseMatrix64F btNeg    = new DenseMatrix64F(n,no_dims);
+		DenseMatrix64F bt       = new DenseMatrix64F(n,no_dims);
 		
 		// Compute P-values
 		DenseMatrix64F P        = new DenseMatrix64F(x2p(X, 1e-5, perplexity).P);
 		DenseMatrix64F Ptr      = new DenseMatrix64F(P.numRows,P.numCols);
 		DenseMatrix64F L        = new DenseMatrix64F(P);
+		DenseMatrix64F logdivide = new DenseMatrix64F(P.numRows,P.numCols);
 		
 		transpose(P,Ptr);
 		addEquals(P,Ptr);
@@ -242,8 +245,9 @@ public class FastTSne implements TSne {
 			
 			boolean [][] boolMtrx = mo.equal(biggerThan(dY,0.0),biggerThan(iY,0.0));
 			
-			DenseMatrix64F btNeg = new DenseMatrix64F(mo.abs(mo.negate(boolMtrx)));
-			DenseMatrix64F bt    = new DenseMatrix64F(mo.abs(boolMtrx));
+			
+			setData(btNeg, mo.abs(mo.negate(boolMtrx)));
+			setData(bt, mo.abs(boolMtrx));
 			
 			DenseMatrix64F gainsSmall = new DenseMatrix64F(gains);
 			DenseMatrix64F gainsBig   = new DenseMatrix64F(gains);
@@ -270,7 +274,6 @@ public class FastTSne implements TSne {
 			if ((iter % 100 == 0))   {
 				DenseMatrix64F Pdiv = new DenseMatrix64F(P);
 				elementDiv(Pdiv , Q);
-				DenseMatrix64F logdivide = new DenseMatrix64F(P.numRows,P.numCols);
 				elementLog(Pdiv,logdivide);
 				replaceNaN(logdivide,0);
 				elementMult(logdivide,P);
@@ -289,6 +292,37 @@ public class FastTSne implements TSne {
 		// Return solution
 		return extractDoubleArray(Y);
 	}
+	
+	/**
+     * <p>
+     * Sets the data of<code>target</code> to that of the input matrix with the values and shape defined by the 2D array 'data'.
+     * It is assumed that 'data' has a row-major formatting:<br>
+     *  <br>
+     * data[ row ][ column ]
+     * </p>
+     * @param target 2D DenseMatrix. Modified to contain the values in 'data'.
+     * @param data 2D array representation of the matrix. Not modified.
+     */
+    public void setData( DenseMatrix64F target, double data[][]) {
+        int numRows = data.length;
+        int numCols = data[0].length;
+
+        double [] targetData = new double[ numRows*numCols ];
+
+        int pos = 0;
+        for( int i = 0; i < numRows; i++ ) {
+            double []row = data[i];
+
+            if( row.length != numCols ) {
+                throw new IllegalArgumentException("All rows must have the same length");
+            }
+
+            System.arraycopy(row,0,targetData,pos,numCols);
+            pos += numCols;
+        }
+        
+        target.setData(targetData);
+    }
 
 	public R Hbeta (double [][] D, double beta){
 		double [][] P = mo.exp(mo.scalarMult(mo.scalarMult(D,beta),-1));
