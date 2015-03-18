@@ -77,7 +77,7 @@ public class SimpleTSne implements TSne {
 			iY = mo.minus(mo.scalarMult(iY,momentum) , mo.scalarMult(mo.scalarMultiply(gains , dY),eta));
 			Y = mo.plus(Y , iY);
 			//double [][] tile = tile(mean(Y, 0), n, 1);
-			Y = mo.minus(Y , mo.tile(mo.mean(Y, 0), n, 1));
+			Y = mo.minus(Y , mo.tile(MatrixOps.mean(Y, 0), n, 1));
 
 			// Compute current value of cost function
 			if ((iter % 100 == 0))   {
