@@ -189,10 +189,11 @@ public class FastTSne implements TSne {
 		DenseMatrix64F bt       = new DenseMatrix64F(n,no_dims);
 		
 		// Compute P-values
-		DenseMatrix64F P        = new DenseMatrix64F(x2p(X, 1e-5, perplexity).P);
+		DenseMatrix64F P        = new DenseMatrix64F(x2p(X, 1e-5, perplexity).P); // P = n x n
 		DenseMatrix64F Ptr      = new DenseMatrix64F(P.numRows,P.numCols);
-		DenseMatrix64F L        = new DenseMatrix64F(P);
+		DenseMatrix64F L        = new DenseMatrix64F(P); // L = n x n
 		DenseMatrix64F logdivide = new DenseMatrix64F(P.numRows,P.numCols);
+		DenseMatrix64F diag     = new DenseMatrix64F(mo.fillMatrix(L.numRows,L.numCols,0.0));
 		
 		transpose(P,Ptr);
 		addEquals(P,Ptr);
@@ -227,12 +228,12 @@ public class FastTSne implements TSne {
 			// Compute gradient
 			subtract(P, Q, L);
 			elementMult(L, num);
-			DenseMatrix64F rowsum = sumRows(L,null);
+			DenseMatrix64F rowsum = sumRows(L,null); // rowsum = nx1
 			double [] rsum  = new double[rowsum.numRows];
 			for (int i = 0; i < rsum.length; i++) {
 				rsum[i] = rowsum.get(i,0);
 			}
-			DenseMatrix64F diag = diag(rsum);
+			setDiag(diag,rsum);
 			subtract(diag, L, L);
 			mult(L, Y, dY);
 			scale(4.0, dY);
@@ -293,6 +294,22 @@ public class FastTSne implements TSne {
 		return extractDoubleArray(Y);
 	}
 	
+	/**
+	 * Sets the diagonal of 'diag' to the values of 'diagElements' as long 
+	 * as possible (i.e while there are elements left in diag and the dim of 'diag'
+	 * is big enough...
+	 * Note: This method ONLY affect the diagonal elements the others are left as
+	 * when passed in.
+	 * @param diag Modified to contain the elements of 'diagElements' on its diagonal
+	 * @param diagElems
+	 */
+	public void setDiag(DenseMatrix64F diag, double[] diagElems) {
+		int idx = 0; 
+		while(idx<diag.numCols&&idx<diag.numRows&&idx<diagElems.length) {
+			diag.set(idx, idx, diagElems[idx++]);
+		}
+	}
+
 	/**
      * <p>
      * Sets the data of<code>target</code> to that of the input matrix with the values and shape defined by the 2D array 'data'.
