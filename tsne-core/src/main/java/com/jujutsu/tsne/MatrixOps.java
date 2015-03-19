@@ -12,7 +12,9 @@ public class MatrixOps {
 	private static ForkJoinPool pool = new ForkJoinPool();
 
 	/**
-	 * This function a new matrix which is centered and scaled  
+	 * This function returns a new matrix which is centered and scaled, i.e each
+	 * the mean is subtracted from each element in the matrix and divided by the
+	 * matrix standard deviation   
 	 * @param mu
 	 * @param sigma
 	 * @return new matrix which is centered (subtracted mean) and scaled (divided with stddev)
