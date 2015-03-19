@@ -157,7 +157,7 @@ public class FastTSne implements TSne {
 		}
 		return matrix;
 	}
-
+	
 	public double [][] tsne(double[][] X, int k, int initial_dims, double perplexity) {
 		return tsne(X,k,initial_dims, perplexity, 2000, true);
 	}
@@ -198,6 +198,7 @@ public class FastTSne implements TSne {
 		transpose(P,Ptr);
 		addEquals(P,Ptr);
 		divide(P ,elementSum(P));
+		replaceNaN(P,Double.MIN_VALUE);
 		scale(4.0,P);					// early exaggeration
 		maximize(P, 1e-12);
 		
@@ -276,9 +277,9 @@ public class FastTSne implements TSne {
 				DenseMatrix64F Pdiv = new DenseMatrix64F(P);
 				elementDiv(Pdiv , Q);
 				elementLog(Pdiv,logdivide);
-				replaceNaN(logdivide,0);
+				replaceNaN(logdivide,Double.MIN_VALUE);
 				elementMult(logdivide,P);
-				replaceNaN(logdivide,0);
+				replaceNaN(logdivide,Double.MIN_VALUE);
 				double C = elementSum(logdivide);
 				System.out.println("Iteration " + (iter + 1) + ": error is " + C);
 			} else if((iter + 1) % 10 == 0) {
