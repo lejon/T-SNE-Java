@@ -185,15 +185,34 @@ public class MatrixOps {
 
 	// Unit Tested
 	/**
-	 * Destructively sets the values in matrix to its log value
+	 * Returns a new matrix with values that are the log of the input matrix
 	 * @param matrix
 	 * @return  same matrix with values log'ed
 	 */
-	double [][] log(double [][] m1) {
+	public static double [][] log(double [][] m1) {
 		double[][] matrix = new double[m1.length][m1[0].length];
 		for (int i = 0; i < matrix.length; i++) {
 			for (int j = 0; j < matrix[0].length; j++) {
 				matrix[i][j] = Math.log(m1[i][j]);
+			}
+		}
+		return matrix;
+	}
+
+	/**
+	 * Returns a new matrix with values that are the log of the input matrix
+	 * @param matrix
+	 * @param infAsZero treat +- Infinity as zero, i.e replaces Infinity with 0.0
+	 * if set to true
+	 * @return  same matrix with values log'ed
+	 */
+	public static double [][] log(double [][] m1, boolean infAsZero) {
+		double[][] matrix = new double[m1.length][m1[0].length];
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < matrix[0].length; j++) {
+				matrix[i][j] = Math.log(m1[i][j]);
+				if(infAsZero && Double.isInfinite(matrix[i][j]))
+					matrix[i][j] = 0.0;
 			}
 		}
 		return matrix;
@@ -483,7 +502,7 @@ public class MatrixOps {
 	 * @param repl
 	 * @return
 	 */
-	double [][] replaceNaN(double [][] matrix, double repl) {
+	public static double [][] replaceNaN(double [][] matrix, double repl) {
 		double [][] result = new double[matrix.length][matrix[0].length];
 		for (int i = 0; i < matrix.length; i++) {
 			for (int j = 0; j < matrix[0].length; j++) {
@@ -497,6 +516,27 @@ public class MatrixOps {
 		return result;
 	}
 
+	/** 
+	 * Replaces Infinity's with repl
+	 * @param matrix
+	 * @param repl
+	 * @return
+	 */
+	public static double [][] replaceInf(double [][] matrix, double repl) {
+		double [][] result = new double[matrix.length][matrix[0].length];
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < matrix[0].length; j++) {
+				if(Double.isInfinite(matrix[i][j])) {
+					result[i][j] = repl;
+				} else {
+					result[i][j] = matrix[i][j];
+				}
+			}
+		}
+		return result;
+	}
+
+	
 	double [][] scalarPow(double [][] matrix, double power) {
 		double [][] result = new double[matrix.length][matrix[0].length];
 		for (int i = 0; i < matrix.length; i++) {
