@@ -19,7 +19,7 @@ public class TSneTest {
   public static void main(String [] args) {
     int initial_dims = 55;
     double perplexity = 20.0;
-    double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/resources/datasets/iris_X.txt"), ",");
+    double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/resources/datasets/mnist2500_X.txt"), ",");
     System.out.println(MatrixOps.doubleArrayToPrintString(X, ", ", 50,10));
     TSne tsne = new FastTSne();
     double [][] Y = tsne.tsne(X, 2, initial_dims, perplexity);   
@@ -30,8 +30,6 @@ public class TSneTest {
 }
 
 ```
-
-![](example.png)
 
 To see graps generated with this implementation, [Klick here](http://lejon.github.io/TSneJava/)
 
