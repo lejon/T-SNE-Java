@@ -81,8 +81,8 @@ public class SimpleTSne implements TSne {
 
 			// Compute current value of cost function
 			if ((iter % 100 == 0))   {
-				double [][] logdivide = mo.log(mo.scalarDivide(P , Q));
-				logdivide = mo.replaceNaN(logdivide,0);
+				double [][] logdivide = MatrixOps.log(mo.scalarDivide(P , Q));
+				logdivide = MatrixOps.replaceNaN(logdivide,0);
 				double C = mo.sum(mo.scalarMultiply(P , logdivide));
 				System.out.println("Iteration " + (iter + 1) + ": error is " + C);
 			} else if((iter + 1) % 10 == 0) {
