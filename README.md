@@ -18,8 +18,8 @@ import com.jujutsu.tsne.TSne;
 public class TSneTest {
   public static void main(String [] args) {
     int initial_dims = 55;
-	  double perplexity = 20.0;
-	  double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/resources/datasets/iris_X.txt"), ",");
+    double perplexity = 20.0;
+    double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/resources/datasets/iris_X.txt"), ",");
     System.out.println(MatrixOps.doubleArrayToPrintString(X, ", ", 50,10));
     TSne tsne = new FastTSne();
     double [][] Y = tsne.tsne(X, 2, initial_dims, perplexity);   
