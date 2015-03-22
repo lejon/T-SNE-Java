@@ -33,6 +33,8 @@ public class TSneTest {
 
 To see graps generated with this implementation, [Klick here](http://lejon.github.io/TSneJava/)
 
+For some tips working with t-sne [Klick here] (http://lejon.github.io)
+
 Enjoy!
 -Leif
   
