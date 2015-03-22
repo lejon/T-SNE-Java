@@ -23,6 +23,10 @@ public class MatrixOps {
 		return doubleArrayToPrintString(m, colDelimiter, toprowlim, -1, Integer.MAX_VALUE, "\n");
 	}
 
+	public static String doubleArrayToPrintString(double[][] m, int toprowlim, int btmrowlim) {
+		return doubleArrayToPrintString(m, ", ", toprowlim, btmrowlim, Integer.MAX_VALUE, "\n");
+	}
+
 	public static String doubleArrayToPrintString(double[][] m, String colDelimiter, int toprowlim, int btmrowlim) {
 		return doubleArrayToPrintString(m, colDelimiter, toprowlim, btmrowlim, Integer.MAX_VALUE, "\n");
 	}
