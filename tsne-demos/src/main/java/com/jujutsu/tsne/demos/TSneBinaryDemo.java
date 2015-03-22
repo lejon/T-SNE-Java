@@ -5,12 +5,12 @@ import java.io.File;
 import javax.swing.JFrame;
 
 import org.math.io.files.BinaryFile;
-import org.math.io.parser.ArrayString;
 import org.math.plot.FrameView;
 import org.math.plot.Plot2DPanel;
 import org.math.plot.PlotPanel;
 import org.math.plot.plots.ScatterPlot;
 
+import com.jujutsu.tsne.MatrixOps;
 import com.jujutsu.tsne.SimpleTSne;
 import com.jujutsu.tsne.TSne;
 
@@ -25,7 +25,7 @@ public class TSneBinaryDemo {
 		TSne tsne = new SimpleTSne();
 		System.out.println("Shape is: " + matrix.length + " x " + matrix[0].length);
 		double [][] Y = tsne.tsne(matrix, 2, initial_dims, perplexity, 2500, false);
-		System.out.println("Result is = " + Y.length + " x " + Y[0].length + " => \n" + ArrayString.printDoubleArray(Y));
+		System.out.println("Result is = " + Y.length + " x " + Y[0].length + " => \n" + MatrixOps.doubleArrayToPrintString(Y));
 		displayResult(Y);
 	}
 

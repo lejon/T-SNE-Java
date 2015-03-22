@@ -6,15 +6,14 @@ import java.util.List;
 
 import javax.swing.JFrame;
 
-import org.math.io.parser.ArrayString;
 import org.math.io.files.ASCIIFile;
-import org.math.io.parser.ArrayString;
 import org.math.plot.FrameView;
 import org.math.plot.Plot2DPanel;
 import org.math.plot.PlotPanel;
 import org.math.plot.plots.ColoredScatterPlot;
 import org.math.plot.plots.ScatterPlot;
 
+import com.jujutsu.tsne.MatrixOps;
 import com.jujutsu.tsne.SimpleTSne;
 import com.jujutsu.tsne.TSne;
 import com.jujutsu.utils.MatrixUtils;
@@ -69,7 +68,7 @@ public class TSneASCIIDemo {
     	System.out.println("Shape is: " + matrix.length + " x " + matrix[0].length);
     	TSne tsne = new SimpleTSne();
     	double [][] Y = tsne.tsne(matrix, 2, initial_dims, perplexity);
-    	System.out.println("Result is = " + Y.length + " x " + Y[0].length + " => \n" + ArrayString.printDoubleArray(Y));
+    	System.out.println("Result is = " + Y.length + " x " + Y[0].length + " => \n" + MatrixOps.doubleArrayToPrintString(Y));
     	return Y;
     }
 
@@ -96,19 +95,15 @@ public class TSneASCIIDemo {
 
 	
 	public static LoadResult loadData(String [] args) {
-		String usage = "Usage: TSneASCIIDemo [options] datafile \nAvailable options:\n	-labelFile filename <default = 'null'> -colDelim <default = ','> -rowDelim <default = '\\n'>\n";
+		String usage = "Usage: TSneASCIIDemo [options] datafile \nAvailable options:\n	-labelFile filename <default = 'null'> -colDelim <default = ','>\n";
 		if(args.length<1) System.out.println("No arguments given.\n" + usage);
 		File file = null;
 		File labelFile = null;
 		String colDelim = ",";
-		String rowDelim = "\n";
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-colDelim")) {
 				colDelim = args[i+1].trim(); 
 				if(colDelim.equals("space")) colDelim = " "; 
-				i++;
-			} else if (args[i].equals("-rowDelim")) {
-				rowDelim = args[i+1].trim();
 				i++;
 			} else if (args[i].equals("-labelFile")) {
 				labelFile = new File(args[i+1].trim());
