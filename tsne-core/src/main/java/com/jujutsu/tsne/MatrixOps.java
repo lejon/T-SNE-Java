@@ -11,6 +11,83 @@ public class MatrixOps {
 	Random rnd = new Random();
 	private static ForkJoinPool pool = new ForkJoinPool();
 
+	public static String doubleArrayToPrintString(double[][] m) {
+		return doubleArrayToPrintString(m, ", ", Integer.MAX_VALUE, m.length, Integer.MAX_VALUE, "\n");
+	}
+
+	public static String doubleArrayToPrintString(double[][] m, String colDelimiter) {
+		return doubleArrayToPrintString(m, colDelimiter, Integer.MAX_VALUE, -1, Integer.MAX_VALUE, "\n");
+	}
+
+	public static String doubleArrayToPrintString(double[][] m, String colDelimiter, int toprowlim) {
+		return doubleArrayToPrintString(m, colDelimiter, toprowlim, -1, Integer.MAX_VALUE, "\n");
+	}
+
+	public static String doubleArrayToPrintString(double[][] m, String colDelimiter, int toprowlim, int btmrowlim) {
+		return doubleArrayToPrintString(m, colDelimiter, toprowlim, btmrowlim, Integer.MAX_VALUE, "\n");
+	}
+
+	public static String doubleArrayToPrintString(double[][] m, String colDelimiter, int toprowlim, int btmrowlim, int collim) {
+		return doubleArrayToPrintString(m, colDelimiter, toprowlim, btmrowlim, collim, "\n");
+	}
+	
+	public static String doubleArrayToPrintString(double[][] m, String colDelimiter, int toprowlim, int btmrowlim, int collim, String sentenceDelimiter) {
+		StringBuffer str = new StringBuffer(m.length * m[0].length);
+		
+		str.append("Dim:" + m.length + " x " + m[0].length + "\n");
+
+        int i = 0;
+		for (; i < m.length && i < toprowlim; i++) {
+			String rowPref = i < 1000 ? String.format("%03d", i) : String.format("%04d", i);
+			str.append(rowPref+": [");
+			for (int j = 0; j < m[i].length - 1 && j < collim; j++) {
+				str = str.append(String.format("%.4f", m[i][j]));
+				str = str.append(colDelimiter);
+			}
+			str = str.append(String.format("%.4f", m[i][m[i].length - 1]));
+
+			str.append("]");
+			if (i < m.length - 1) {
+				str = str.append(sentenceDelimiter);
+			}
+		}
+		if(btmrowlim<0) return str.toString();
+		while(i<(m.length-btmrowlim)) i++;
+		str.append("\t.\n\t.\n\t.\n");
+		for (; i < m.length; i++) {
+			String rowPref = i < 1000 ? String.format("%03d", i) : String.format("%04d", i);
+			str.append(rowPref+": [");
+			for (int j = 0; j < m[i].length - 1 && j < collim; j++) {
+				str = str.append(String.format("%.4f", m[i][j]));
+				str = str.append(colDelimiter);
+			}
+			str = str.append(String.format("%.4f", m[i][m[i].length - 1]));
+
+			str.append("]");
+			if (i < m.length - 1) {
+				str = str.append(sentenceDelimiter);
+			}
+		}
+		return str.toString();
+	}
+	
+	public static String doubleArrayToString(double[][] m) {
+		return doubleArrayToString(m, ",");
+	}
+	
+	public static String doubleArrayToString(double[][] m, String colDelimiter) {
+		StringBuffer str = new StringBuffer(m.length * m[0].length);
+		for (int i = 0; i < m.length; i++) {
+			for (int j = 0; j < m[i].length - 1; j++) {
+				str = str.append(Double.toString(m[i][j]));
+				str = str.append(colDelimiter);
+			}
+			str = str.append(Double.toString(m[i][m[i].length - 1]));
+			str = str.append("\n");
+		}
+		return str.toString();
+	}
+
 	/**
 	 * This function returns a new matrix which is centered and scaled, i.e each
 	 * the mean is subtracted from each element in the matrix and divided by the
