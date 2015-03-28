@@ -1,5 +1,23 @@
 package com.jujutsu.tsne;
 
+import static org.ejml.ops.CommonOps.add;
+import static org.ejml.ops.CommonOps.addEquals;
+import static org.ejml.ops.CommonOps.divide;
+import static org.ejml.ops.CommonOps.elementDiv;
+import static org.ejml.ops.CommonOps.elementExp;
+import static org.ejml.ops.CommonOps.elementLog;
+import static org.ejml.ops.CommonOps.elementMult;
+import static org.ejml.ops.CommonOps.elementPower;
+import static org.ejml.ops.CommonOps.elementSum;
+import static org.ejml.ops.CommonOps.mult;
+import static org.ejml.ops.CommonOps.multAddTransB;
+import static org.ejml.ops.CommonOps.scale;
+import static org.ejml.ops.CommonOps.subtract;
+import static org.ejml.ops.CommonOps.subtractEquals;
+import static org.ejml.ops.CommonOps.sumCols;
+import static org.ejml.ops.CommonOps.sumRows;
+import static org.ejml.ops.CommonOps.transpose;
+
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.File;
@@ -8,8 +26,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.ejml.data.DenseMatrix64F;
-
-import static org.ejml.ops.CommonOps.*;
 /**
  *
  * Author: Leif Jonsson (leif.jonsson@gmail.com)
@@ -273,7 +289,7 @@ public class FastTSne implements TSne {
 			subtractEquals(Y , meanTile);
 
 			// Compute current value of cost function
-			if ((iter % 100 == 0))   {
+			if (iter % 100 == 0)   {
 				DenseMatrix64F Pdiv = new DenseMatrix64F(P);
 				elementDiv(Pdiv , Q);
 				elementLog(Pdiv,logdivide);
@@ -281,9 +297,9 @@ public class FastTSne implements TSne {
 				elementMult(logdivide,P);
 				replaceNaN(logdivide,Double.MIN_VALUE);
 				double C = elementSum(logdivide);
-				System.out.println("Iteration " + (iter + 1) + ": error is " + C);
-			} else if((iter + 1) % 10 == 0) {
-				System.out.println("Iteration " + (iter + 1));
+				System.out.println("Iteration " + iter + ": error is " + C);
+			} else if(iter % 10 == 0) {
+				System.out.println("Iteration " + iter);
 			}
 
 			// Stop lying about P-values
@@ -342,14 +358,18 @@ public class FastTSne implements TSne {
         target.setData(targetData);
     }
 
-	public R Hbeta (double [][] D, double beta){
-		double [][] P = mo.exp(mo.scalarMult(mo.scalarMult(D,beta),-1));
-		double sumP = mo.sum(P);   // sumP confirmed scalar
-		double H = Math.log(sumP) + beta * mo.sum(mo.scalarMultiply(D,P)) / sumP;
-		P = mo.scalarDivide(P,sumP);
+    public R Hbeta (double [][] D, double beta){
+    	DenseMatrix64F P  = new DenseMatrix64F(D);
+    	scale(-beta,P);
+    	elementExp(P,P);
+		double sumP = elementSum(P);   // sumP confirmed scalar
+		DenseMatrix64F Dd  = new DenseMatrix64F(D);
+		elementMult(Dd, P);
+		double H = Math.log(sumP) + beta * elementSum(Dd) / sumP;
+		scale(1/sumP,P);
 		R r = new R();
 		r.H = H;
-		r.P = P;
+		r.P = extractDoubleArray(P);
 		return r;
 	}
 
