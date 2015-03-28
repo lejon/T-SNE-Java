@@ -4,8 +4,6 @@ T-SNE-Java Demos
 
 Pure Java implementation of Van Der Maaten and Hinton's t-sne clustering algorithm.
 
-This is a simple port of the Python version of T-SNE.
-
 The core packages are in "tsne-core" from the toplevel dir. 
 	
 To run a demo:
