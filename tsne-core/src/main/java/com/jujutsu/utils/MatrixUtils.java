@@ -19,7 +19,7 @@ public class MatrixUtils {
             BufferedReader b = new BufferedReader(fr);
             String line;
             while ((line = b.readLine()) != null && !line.matches("\\s*")) {
-                String[] cols = line.split(columnDelimiter);
+                String[] cols = line.trim().split(columnDelimiter);
                 double [] row = new double[cols.length];
                 for (int j = 0; j < cols.length; j++) {
                 	if(!(cols[j].length()==0)) {
