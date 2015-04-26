@@ -13,7 +13,8 @@ import org.math.plot.plots.ScatterPlot;
 
 public class ColoredScatterPlot extends ScatterPlot {
 
-	Random rand = new Random();
+	// New random with a seed so we get the same order of colors each time
+	Random rand = new Random(4711);
 	String [] classes; 
 	Map<String,Color> colors = new HashMap<String,Color>();
 	int colorCnt = 0;
@@ -30,13 +31,15 @@ public class ColoredScatterPlot extends ScatterPlot {
         for (int i = 0; i < XY.length; i++) {
         	Color c = colors.get(classes[i]);
         	if( c == null ) {
-        		c = newColor();
+        		c = oldNewColor();
+        		//c = newContrastColor();
+        		//c = newColor();
         		colors.put(classes[i],c);
         		colorCnt++;
+        		System.out.println(colorCnt + ": Class: " + classes[i] + " => "+ c);
         	}
         	draw.setColor(c);
-            //draw.drawDot(XY[i]);
-            draw.drawText(classes[i], XY[i]);
+            draw.drawDot(XY[i]);
         }
     }
 	
@@ -58,6 +61,43 @@ public class ColoredScatterPlot extends ScatterPlot {
 		return kellysMaxContrastSet().get(colorCnt++ % kellysMaxContrastSet().size());
 	}
 
+	static List<Color> colorBrewer12s1()
+	{
+		ArrayList<Color> cols = new ArrayList<Color>();
+		cols.add(UIntToColor(0xFFa6cee3));
+		cols.add(UIntToColor(0xFF1f78b4));
+		cols.add(UIntToColor(0xFFb2df8a));
+		cols.add(UIntToColor(0xFF33a02c));
+		cols.add(UIntToColor(0xFFfb9a99));
+		cols.add(UIntToColor(0xFFe31a1c));
+		cols.add(UIntToColor(0xFFfdbf6f));
+		cols.add(UIntToColor(0xFFff7f00));
+		cols.add(UIntToColor(0xFFcab2d6));
+		cols.add(UIntToColor(0xFF6a3d9a));
+		cols.add(UIntToColor(0xFFffff99));
+		cols.add(UIntToColor(0xFFb15928));
+		
+		return cols;
+	}
+	
+	static List<Color> colorBrewer12s2()
+	{
+		ArrayList<Color> cols = new ArrayList<Color>();
+		cols.add(UIntToColor(0xFF8dd3c7));
+		cols.add(UIntToColor(0xFFffffb3));
+		cols.add(UIntToColor(0xFFbebada));
+		cols.add(UIntToColor(0xFFfb8072));
+		cols.add(UIntToColor(0xFF80b1d3));
+		cols.add(UIntToColor(0xFFfdb462));
+		cols.add(UIntToColor(0xFFb3de69));
+		cols.add(UIntToColor(0xFFfccde5));
+		cols.add(UIntToColor(0xFFd9d9d9));
+		cols.add(UIntToColor(0xFFbc80bd));
+		cols.add(UIntToColor(0xFFccebc5));
+		cols.add(UIntToColor(0xFFffed6f));
+		return cols;
+	}
+	
 	static List<Color> kellysMaxContrastSet()
 	{
 		ArrayList<Color> cols = new ArrayList<Color>();
@@ -104,11 +144,11 @@ public class ColoredScatterPlot extends ScatterPlot {
 
 	public static Color UIntToColor(long color)
 	{
-	    int a = (byte)(color >> 24);
-	    int r = (byte)(color >> 16);
-	    int g = (byte)(color >> 8);
-	    int b = (byte)(color >> 0);
-	    return new Color(r, g, b,a);
+	    int a = (int) (0x000000FF & (color >> 24));
+	    int r = (int) (0x000000FF & (color >> 16));
+	    int g = (int) (0x000000FF & (color >> 8));
+	    int b = (int) (0x000000FF & (color >> 0));
+	    return new Color(r, g, b, a);
 	}
 	
 }
