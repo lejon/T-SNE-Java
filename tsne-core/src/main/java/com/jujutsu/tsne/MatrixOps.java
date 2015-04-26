@@ -27,6 +27,10 @@ public class MatrixOps {
 		return doubleArrayToPrintString(m, ", ", toprowlim, btmrowlim, Integer.MAX_VALUE, "\n");
 	}
 
+	public static String doubleArrayToPrintString(double[][] m, int toprowlim, int btmrowlim, int collim) {
+		return doubleArrayToPrintString(m, ", ", toprowlim, btmrowlim, collim, "\n");
+	}
+
 	public static String doubleArrayToPrintString(double[][] m, String colDelimiter, int toprowlim, int btmrowlim) {
 		return doubleArrayToPrintString(m, colDelimiter, toprowlim, btmrowlim, Integer.MAX_VALUE, "\n");
 	}
@@ -50,7 +54,11 @@ public class MatrixOps {
 			}
 			str = str.append(String.format("%.4f", m[i][m[i].length - 1]));
 
-			str.append("]");
+			if( collim == Integer.MAX_VALUE) { 
+				str.append("]");
+			} else {
+				str.append("...]");
+			}
 			if (i < m.length - 1) {
 				str = str.append(sentenceDelimiter);
 			}
@@ -128,7 +136,7 @@ public class MatrixOps {
 	 * @param matrix
 	 * @return
 	 */
-	double[][] naivetranspose(double[][] matrix) {
+	public static double[][] transposeSerial(double[][] matrix) {
 		int cols = matrix[0].length;
 		int rows = matrix.length;
 		double[][] transpose = new double[cols][rows];
