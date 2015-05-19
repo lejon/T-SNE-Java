@@ -1,5 +1,7 @@
 package com.jujutsu.tsne;
 
+import static com.jujutsu.tsne.MatrixOps.*;
+
 /**
  *
  * Author: Leif Jonsson (leif.jonsson@gmail.com)
@@ -40,7 +42,7 @@ public class SimpleTSne implements TSne {
 		// Compute P-values
 		double [][] P = x2p(X, 1e-5, perplexity).P;
 		P = mo.plus(P , mo.transpose(P));
-		P = mo.scalarDivide(P ,mo.sum(P));
+		P = mo.scalarDivide(P,sum(P));
 		P = mo.scalarMult(P , 4);					// early exaggeration
 		P = mo.maximum(P, 1e-12);
 
@@ -56,8 +58,8 @@ public class SimpleTSne implements TSne {
 					sum_Y)),
 					sum_Y),
 					1));
-			mo.assignAtIndex(num, mo.range(n), mo.range(n), 0);
-			double [][] Q = mo.scalarDivide(num , mo.sum(num));
+			mo.assignAtIndex(num, range(n), range(n), 0);
+			double [][] Q = mo.scalarDivide(num , sum(num));
 
 			Q = mo.maximum(Q, 1e-12);
 
@@ -70,20 +72,20 @@ public class SimpleTSne implements TSne {
 				momentum = initial_momentum;
 			else
 				momentum = final_momentum;
-			gains = mo.plus(mo.scalarMultiply(mo.scalarPlus(gains,.2), mo.abs(mo.negate(mo.equal(mo.biggerThan(dY,0.0),mo.biggerThan(iY,0.0))))),
-					mo.scalarMultiply(mo.scalarMult(gains,.8), mo.abs(mo.equal(mo.biggerThan(dY,0.0),mo.biggerThan(iY,0.0)))));
+			gains = mo.plus(mo.scalarMultiply(mo.scalarPlus(gains,.2), abs(negate(equal(mo.biggerThan(dY,0.0),mo.biggerThan(iY,0.0))))),
+					mo.scalarMultiply(mo.scalarMult(gains,.8), abs(equal(mo.biggerThan(dY,0.0),mo.biggerThan(iY,0.0)))));
 
 			mo.assignAllLessThan(gains, min_gain, min_gain);
 			iY = mo.minus(mo.scalarMult(iY,momentum) , mo.scalarMult(mo.scalarMultiply(gains , dY),eta));
 			Y = mo.plus(Y , iY);
 			//double [][] tile = tile(mean(Y, 0), n, 1);
-			Y = mo.minus(Y , mo.tile(MatrixOps.mean(Y, 0), n, 1));
+			Y = mo.minus(Y , mo.tile(mean(Y, 0), n, 1));
 
 			// Compute current value of cost function
 			if ((iter % 100 == 0))   {
-				double [][] logdivide = MatrixOps.log(mo.scalarDivide(P , Q));
-				logdivide = MatrixOps.replaceNaN(logdivide,0);
-				double C = mo.sum(mo.scalarMultiply(P , logdivide));
+				double [][] logdivide = log(mo.scalarDivide(P , Q));
+				logdivide = replaceNaN(logdivide,0);
+				double C = sum(mo.scalarMultiply(P , logdivide));
 				System.out.println("Iteration " + (iter + 1) + ": error is " + C);
 			} else if((iter + 1) % 10 == 0) {
 				System.out.println("Iteration " + (iter + 1));
@@ -100,8 +102,8 @@ public class SimpleTSne implements TSne {
 
 	public R Hbeta (double [][] D, double beta){
 		double [][] P = mo.exp(mo.scalarMult(mo.scalarMult(D,beta),-1));
-		double sumP = mo.sum(P);   // sumP confirmed scalar
-		double H = Math.log(sumP) + beta * mo.sum(mo.scalarMultiply(D,P)) / sumP;
+		double sumP = sum(P);   // sumP confirmed scalar
+		double H = Math.log(sumP) + beta * sum(mo.scalarMultiply(D,P)) / sumP;
 		P = mo.scalarDivide(P,sumP);
 		R r = new R();
 		r.H = H;
@@ -125,7 +127,7 @@ public class SimpleTSne implements TSne {
 				System.out.println("Computing P-values for point " + i + " of " + n + "...");
 			double betamin = Double.NEGATIVE_INFINITY;
 			double betamax = Double.POSITIVE_INFINITY;
-			double [][] Di = mo.getValuesFromRow(D, i,mo.concatenate(mo.range(0,i),mo.range(i+1,n)));
+			double [][] Di = mo.getValuesFromRow(D, i,mo.concatenate(range(0,i),range(i+1,n)));
 
 			R hbeta = Hbeta(Di, beta[i]);
 			double H = hbeta.H;
@@ -155,13 +157,13 @@ public class SimpleTSne implements TSne {
 				Hdiff = H - logU;
 				tries = tries + 1;
 			}
-			mo.assignValuesToRow(P, i,mo.concatenate(mo.range(0,i),mo.range(i+1,n)),thisP[0]);
+			mo.assignValuesToRow(P, i,mo.concatenate(range(0,i),range(i+1,n)),thisP[0]);
 		}
 
 		R r = new R();
 		r.P = P;
 		r.beta = beta;
-		double sigma = mo.mean(mo.sqrt(mo.scalarInverse(beta)));
+		double sigma = mo.mean(sqrt(mo.scalarInverse(beta)));
 
 		System.out.println("Mean value of sigma: " + sigma);
 

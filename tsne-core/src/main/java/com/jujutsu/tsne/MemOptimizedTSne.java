@@ -1,5 +1,6 @@
 package com.jujutsu.tsne;
 
+import static com.jujutsu.tsne.MatrixOps.*;
 import static org.ejml.ops.CommonOps.add;
 import static org.ejml.ops.CommonOps.addEquals;
 import static org.ejml.ops.CommonOps.divide;
@@ -78,7 +79,7 @@ public class MemOptimizedTSne extends FastTSne {
 			
 			add(Ysqlmul, 1.0);
 			divide(1.0,Ysqlmul);
-			assignAtIndex(Ysqlmul, mo.range(n), mo.range(n), 0);
+			assignAtIndex(Ysqlmul, range(n), range(n), 0);
 			divide(Ysqlmul , elementSum(Ysqlmul), Q);
 
 			maximize(Q, 1e-12);
@@ -102,11 +103,11 @@ public class MemOptimizedTSne extends FastTSne {
 			else
 				momentum = final_momentum;
 			
-			boolean [][] boolMtrx = mo.equal(biggerThan(dY,0.0),biggerThan(iY,0.0));
+			boolean [][] boolMtrx = equal(biggerThan(dY,0.0),biggerThan(iY,0.0));
 			
 			
-			setData(btNeg, mo.abs(mo.negate(boolMtrx)));
-			setData(bt, mo.abs(boolMtrx));
+			setData(btNeg, abs(negate(boolMtrx)));
+			setData(bt, abs(boolMtrx));
 			
 			DenseMatrix64F gainsSmall = new DenseMatrix64F(gains);
 			DenseMatrix64F gainsBig   = new DenseMatrix64F(gains);

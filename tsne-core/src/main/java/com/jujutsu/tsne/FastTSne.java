@@ -1,5 +1,7 @@
 package com.jujutsu.tsne;
 
+import static com.jujutsu.tsne.MatrixOps.*;
+
 import static org.ejml.ops.CommonOps.add;
 import static org.ejml.ops.CommonOps.addEquals;
 import static org.ejml.ops.CommonOps.divide;
@@ -237,7 +239,7 @@ public class FastTSne implements TSne {
 			add(Ysqlmul, 1.0);
 			divide(1.0,Ysqlmul);
 			num.set(Ysqlmul);
-			assignAtIndex(num, mo.range(n), mo.range(n), 0);
+			assignAtIndex(num, range(n), range(n), 0);
 			divide(num , elementSum(num), Q);
 
 			maximize(Q, 1e-12);
@@ -261,11 +263,11 @@ public class FastTSne implements TSne {
 			else
 				momentum = final_momentum;
 			
-			boolean [][] boolMtrx = mo.equal(biggerThan(dY,0.0),biggerThan(iY,0.0));
+			boolean [][] boolMtrx = equal(biggerThan(dY,0.0),biggerThan(iY,0.0));
 			
 			
-			setData(btNeg, mo.abs(mo.negate(boolMtrx)));
-			setData(bt, mo.abs(boolMtrx));
+			setData(btNeg, abs(negate(boolMtrx)));
+			setData(bt, abs(boolMtrx));
 			
 			DenseMatrix64F gainsSmall = new DenseMatrix64F(gains);
 			DenseMatrix64F gainsBig   = new DenseMatrix64F(gains);
@@ -389,7 +391,7 @@ public class FastTSne implements TSne {
 				System.out.println("Computing P-values for point " + i + " of " + n + "...");
 			double betamin = Double.NEGATIVE_INFINITY;
 			double betamax = Double.POSITIVE_INFINITY;
-			double [][] Di = mo.getValuesFromRow(D, i,mo.concatenate(mo.range(0,i),mo.range(i+1,n)));
+			double [][] Di = mo.getValuesFromRow(D, i,mo.concatenate(range(0,i),range(i+1,n)));
 
 			R hbeta = Hbeta(Di, beta[i]);
 			double H = hbeta.H;
@@ -419,13 +421,13 @@ public class FastTSne implements TSne {
 				Hdiff = H - logU;
 				tries = tries + 1;
 			}
-			mo.assignValuesToRow(P, i,mo.concatenate(mo.range(0,i),mo.range(i+1,n)),thisP[0]);
+			mo.assignValuesToRow(P, i,mo.concatenate(range(0,i),range(i+1,n)),thisP[0]);
 		}
 
 		R r = new R();
 		r.P = P;
 		r.beta = beta;
-		double sigma = mo.mean(mo.sqrt(mo.scalarInverse(beta)));
+		double sigma = mo.mean(sqrt(mo.scalarInverse(beta)));
 
 		System.out.println("Mean value of sigma: " + sigma);
 
