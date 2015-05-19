@@ -1,4 +1,4 @@
-package com.jujutsu.tsne;
+package com.jujutsu.utils;
 
 import java.text.DecimalFormat;
 import java.util.Random;

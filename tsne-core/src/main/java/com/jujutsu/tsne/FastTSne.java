@@ -1,7 +1,5 @@
 package com.jujutsu.tsne;
 
-import static com.jujutsu.tsne.MatrixOps.*;
-
 import static org.ejml.ops.CommonOps.add;
 import static org.ejml.ops.CommonOps.addEquals;
 import static org.ejml.ops.CommonOps.divide;
@@ -16,7 +14,6 @@ import static org.ejml.ops.CommonOps.multAddTransB;
 import static org.ejml.ops.CommonOps.scale;
 import static org.ejml.ops.CommonOps.subtract;
 import static org.ejml.ops.CommonOps.subtractEquals;
-import static org.ejml.ops.CommonOps.sumCols;
 import static org.ejml.ops.CommonOps.sumRows;
 import static org.ejml.ops.CommonOps.transpose;
 
@@ -28,6 +25,28 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.ejml.data.DenseMatrix64F;
+
+import com.jujutsu.utils.MatrixOps;
+
+import static com.jujutsu.utils.EjmlOps.*;
+import static com.jujutsu.utils.MatrixOps.abs;
+import static com.jujutsu.utils.MatrixOps.addColumnVector;
+import static com.jujutsu.utils.MatrixOps.addRowVector;
+import static com.jujutsu.utils.MatrixOps.assignValuesToRow;
+import static com.jujutsu.utils.MatrixOps.concatenate;
+import static com.jujutsu.utils.MatrixOps.equal;
+import static com.jujutsu.utils.MatrixOps.fillMatrix;
+import static com.jujutsu.utils.MatrixOps.getValuesFromRow;
+import static com.jujutsu.utils.MatrixOps.mean;
+import static com.jujutsu.utils.MatrixOps.negate;
+import static com.jujutsu.utils.MatrixOps.range;
+import static com.jujutsu.utils.MatrixOps.rnorm;
+import static com.jujutsu.utils.MatrixOps.scalarInverse;
+import static com.jujutsu.utils.MatrixOps.scalarMult;
+import static com.jujutsu.utils.MatrixOps.sqrt;
+import static com.jujutsu.utils.MatrixOps.square;
+import static com.jujutsu.utils.MatrixOps.sum;
+import static com.jujutsu.utils.MatrixOps.times;
 /**
  *
  * Author: Leif Jonsson (leif.jonsson@gmail.com)
@@ -38,130 +57,6 @@ import org.ejml.data.DenseMatrix64F;
 public class FastTSne implements TSne {
 	MatrixOps mo = new MatrixOps();
 
-	void maximize(DenseMatrix64F p, double minval) {
-		int rows = p.getNumRows();
-		int cols = p.getNumCols();
-		for (int i = 0; i < rows; i++) {
-			for (int j = 0; j < cols; j++) {
-				double val = p.get(i, j);
-				if(val<minval) p.unsafe_set(j, j, minval);
-			}
-		}
-	}
-	
-	public static double [][] extractDoubleArray(DenseMatrix64F p) {
-		int rows = p.getNumRows();
-		int cols = p.getNumCols();
-		double [][] result = new double[rows][cols];
-		for (int i = 0; i < rows; i++) {
-			for (int j = 0; j < cols; j++) {
-				result[i][j] = p.get(i, j);
-			}
-		}
-		return result;
-	}
-	
-	public static void assignAtIndex(DenseMatrix64F num, int[] range, int[] range1, double value) {
-		for (int j = 0; j < range.length; j++) {
-			num.set(range[j], range1[j], value);
-		}
-	}
-	
-	public static void addRowVector(DenseMatrix64F matrix, DenseMatrix64F rowvector) {
-		for (int i = 0; i < matrix.numRows; i++) {
-			for (int j = 0; j < matrix.numCols; j++) {
-				matrix.set(i,j,matrix.get(i,j) + rowvector.get(0,j));
-			}
-		}
-	}
-
-	public static DenseMatrix64F colMean(DenseMatrix64F y, int i) {
-		DenseMatrix64F colmean = new DenseMatrix64F(1,y.numCols);
-		sumCols(y,colmean);
-		divide(colmean, y.numRows);
-		return colmean;
-	}
-
-	
-	/**
-	 * All values in matrix that is less than <code>lessthan</code> is assigned
-	 * the value <code>assign</code>
-	 * @param matrix
-	 * @param lessthan
-	 * @param assign
-	 * @return
-	 */
-	public static void assignAllLessThan(DenseMatrix64F matrix, double lessthan, double assign) {
-		for (int i = 0; i < matrix.numRows; i++) {
-			for (int j = 0; j < matrix.numCols; j++) {
-				if( matrix.get(i,j) < lessthan) {
-					matrix.set(i,j,assign);
-				}
-			}
-		}
-	}
-
-	
-	public static DenseMatrix64F tile(DenseMatrix64F matrix, int rowtimes, int coltimes) {
-		DenseMatrix64F result = new DenseMatrix64F(matrix.numRows*rowtimes,matrix.numCols*coltimes);
-		for (int i = 0, resultrow = 0; i < rowtimes; i++) {
-			for (int j = 0; j < matrix.numRows; j++) {
-				for (int k = 0, resultcol = 0; k < coltimes; k++) {
-					for (int l = 0; l < matrix.numCols; l++) {
-						result.set(resultrow,resultcol++,matrix.get(j,l));
-					}
-				}
-				resultrow++;
-			}
-		}
-		return result;
-	}
-	
-	public static DenseMatrix64F fillWithRow(DenseMatrix64F matrix, int setrow) {
-		int rows = matrix.numRows;
-		int cols = matrix.numCols;
-		DenseMatrix64F result = new DenseMatrix64F(rows,cols);
-		for (int row = 0; row < rows; row++) {
-			for (int col = 0; col < cols; col++) {
-				result.set(row,col, matrix.get(setrow,col));				
-			}
-		}
-		return result;
-	}
-	
-	/**
-	 * Returns a new matrix of booleans where true is set if the value in the matrix is
-	 * bigger than value
-	 * @param matrix
-	 * @param value
-	 * @return new matrix with booelans with values matrix1[i,j] == matrix2[i,j]
-	 */
-	boolean [][] biggerThan(DenseMatrix64F matrix, double value) {
-		boolean [][] equals = new boolean[matrix.numRows][matrix.numCols];
-		for (int i = 0; i < matrix.numRows; i++) {
-			for (int j = 0; j < matrix.numCols; j++) {
-				equals[i][j] = Double.compare(matrix.get(i,j), value) == 1;
-			}
-		}
-		return equals;
-	}
-
-	/** 
-	 * Replaces NaN's with repl
-	 * @param matrix
-	 * @param repl
-	 * @return
-	 */
-	public static void replaceNaN(DenseMatrix64F matrix, double repl) {
-		for (int i = 0; i < matrix.numRows; i++) {
-			for (int j = 0; j < matrix.numCols; j++) {
-				if(Double.isNaN(matrix.get(i,j))) {
-					matrix.set(i,j,repl);
-				} 
-			}
-		}
-	}
-	
 	public static double[][] readBinaryDoubleMatrix(int rows, int columns, String fn) throws FileNotFoundException, IOException {
 		File matrixFile = new File(fn);
 		double [][] matrix = new double[rows][columns];
@@ -198,11 +93,11 @@ public class FastTSne implements TSne {
 		double final_momentum   = 0.8;
 		int eta                 = 500;
 		double min_gain         = 0.01;
-		DenseMatrix64F Y        = new DenseMatrix64F(mo.rnorm(n,no_dims));
+		DenseMatrix64F Y        = new DenseMatrix64F(rnorm(n,no_dims));
 		DenseMatrix64F Ysqlmul  = new DenseMatrix64F(Y.numRows,Y.numRows);
-		DenseMatrix64F dY       = new DenseMatrix64F(mo.fillMatrix(n,no_dims,0.0));
-		DenseMatrix64F iY       = new DenseMatrix64F(mo.fillMatrix(n,no_dims,0.0));
-		DenseMatrix64F gains    = new DenseMatrix64F(mo.fillMatrix(n,no_dims,1.0));
+		DenseMatrix64F dY       = new DenseMatrix64F(fillMatrix(n,no_dims,0.0));
+		DenseMatrix64F iY       = new DenseMatrix64F(fillMatrix(n,no_dims,0.0));
+		DenseMatrix64F gains    = new DenseMatrix64F(fillMatrix(n,no_dims,1.0));
 		DenseMatrix64F btNeg    = new DenseMatrix64F(n,no_dims);
 		DenseMatrix64F bt       = new DenseMatrix64F(n,no_dims);
 		
@@ -211,7 +106,7 @@ public class FastTSne implements TSne {
 		DenseMatrix64F Ptr      = new DenseMatrix64F(P.numRows,P.numCols);
 		DenseMatrix64F L        = new DenseMatrix64F(P); // L = n x n
 		DenseMatrix64F logdivide = new DenseMatrix64F(P.numRows,P.numCols);
-		DenseMatrix64F diag     = new DenseMatrix64F(mo.fillMatrix(L.numRows,L.numCols,0.0));
+		DenseMatrix64F diag     = new DenseMatrix64F(fillMatrix(L.numRows,L.numCols,0.0));
 		
 		transpose(P,Ptr);
 		addEquals(P,Ptr);
@@ -313,54 +208,7 @@ public class FastTSne implements TSne {
 		return extractDoubleArray(Y);
 	}
 	
-	/**
-	 * Sets the diagonal of 'diag' to the values of 'diagElements' as long 
-	 * as possible (i.e while there are elements left in diag and the dim of 'diag'
-	 * is big enough...
-	 * Note: This method ONLY affect the diagonal elements the others are left as
-	 * when passed in.
-	 * @param diag Modified to contain the elements of 'diagElements' on its diagonal
-	 * @param diagElems
-	 */
-	public void setDiag(DenseMatrix64F diag, double[] diagElems) {
-		int idx = 0; 
-		while(idx<diag.numCols&&idx<diag.numRows&&idx<diagElems.length) {
-			diag.set(idx, idx, diagElems[idx++]);
-		}
-	}
-
-	/**
-     * <p>
-     * Sets the data of<code>target</code> to that of the input matrix with the values and shape defined by the 2D array 'data'.
-     * It is assumed that 'data' has a row-major formatting:<br>
-     *  <br>
-     * data[ row ][ column ]
-     * </p>
-     * @param target 2D DenseMatrix. Modified to contain the values in 'data'.
-     * @param data 2D array representation of the matrix. Not modified.
-     */
-    public void setData( DenseMatrix64F target, double data[][]) {
-        int numRows = data.length;
-        int numCols = data[0].length;
-
-        double [] targetData = new double[ numRows*numCols ];
-
-        int pos = 0;
-        for( int i = 0; i < numRows; i++ ) {
-            double []row = data[i];
-
-            if( row.length != numCols ) {
-                throw new IllegalArgumentException("All rows must have the same length");
-            }
-
-            System.arraycopy(row,0,targetData,pos,numCols);
-            pos += numCols;
-        }
-        
-        target.setData(targetData);
-    }
-
-    public R Hbeta (double [][] D, double beta){
+	public R Hbeta (double [][] D, double beta){
     	DenseMatrix64F P  = new DenseMatrix64F(D);
     	scale(-beta,P);
     	elementExp(P,P);
@@ -377,13 +225,13 @@ public class FastTSne implements TSne {
 
 	public R x2p(double [][] X,double tol, double perplexity){
 		int n               = X.length;
-		double [][] sum_X   = mo.sum(mo.square(X), 1);
-		double [][] times   = mo.scalarMult(mo.times(X, mo.transpose(X)), -2);
-		double [][] prodSum = mo.addColumnVector(mo.transpose(times), sum_X);
-		double [][] D       = mo.addRowVector(prodSum, mo.transpose(sum_X));
+		double [][] sum_X   = sum(square(X), 1);
+		double [][] times   = scalarMult(times(X, mo.transpose(X)), -2);
+		double [][] prodSum = addColumnVector(mo.transpose(times), sum_X);
+		double [][] D       = addRowVector(prodSum, mo.transpose(sum_X));
 		// D seems correct at this point compared to Python version
-		double [][] P       = mo.fillMatrix(n,n,0.0);
-		double [] beta      = mo.fillMatrix(n,n,1.0)[0];
+		double [][] P       = fillMatrix(n,n,0.0);
+		double [] beta      = fillMatrix(n,n,1.0)[0];
 		double logU         = Math.log(perplexity);
 		System.out.println("Starting x2p...");
 		for (int i = 0; i < n; i++) {
@@ -391,7 +239,7 @@ public class FastTSne implements TSne {
 				System.out.println("Computing P-values for point " + i + " of " + n + "...");
 			double betamin = Double.NEGATIVE_INFINITY;
 			double betamax = Double.POSITIVE_INFINITY;
-			double [][] Di = mo.getValuesFromRow(D, i,mo.concatenate(range(0,i),range(i+1,n)));
+			double [][] Di = getValuesFromRow(D, i,concatenate(range(0,i),range(i+1,n)));
 
 			R hbeta = Hbeta(Di, beta[i]);
 			double H = hbeta.H;
@@ -421,13 +269,13 @@ public class FastTSne implements TSne {
 				Hdiff = H - logU;
 				tries = tries + 1;
 			}
-			mo.assignValuesToRow(P, i,mo.concatenate(range(0,i),range(i+1,n)),thisP[0]);
+			assignValuesToRow(P, i,concatenate(range(0,i),range(i+1,n)),thisP[0]);
 		}
 
 		R r = new R();
 		r.P = P;
 		r.beta = beta;
-		double sigma = mo.mean(sqrt(mo.scalarInverse(beta)));
+		double sigma = mean(sqrt(scalarInverse(beta)));
 
 		System.out.println("Mean value of sigma: " + sigma);
 

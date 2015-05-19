@@ -1,6 +1,5 @@
 package com.jujutsu.tsne;
 
-import static com.jujutsu.tsne.MatrixOps.*;
 import static org.ejml.ops.CommonOps.add;
 import static org.ejml.ops.CommonOps.addEquals;
 import static org.ejml.ops.CommonOps.divide;
@@ -18,6 +17,9 @@ import static org.ejml.ops.CommonOps.sumRows;
 import static org.ejml.ops.CommonOps.transpose;
 
 import org.ejml.data.DenseMatrix64F;
+
+import static com.jujutsu.utils.EjmlOps.*;
+import static com.jujutsu.utils.MatrixOps.*;
 /**
  *
  * Author: Leif Jonsson (leif.jonsson@gmail.com)
@@ -42,18 +44,18 @@ public class MemOptimizedTSne extends FastTSne {
 		double final_momentum   = 0.8;
 		int eta                 = 500;
 		double min_gain         = 0.01;
-		DenseMatrix64F Y        = new DenseMatrix64F(mo.rnorm(n,no_dims));
+		DenseMatrix64F Y        = new DenseMatrix64F(rnorm(n,no_dims));
 		DenseMatrix64F Ysqlmul  = new DenseMatrix64F(Y.numRows,Y.numRows); // Ysqlmul = n x n
-		DenseMatrix64F dY       = new DenseMatrix64F(mo.fillMatrix(n,no_dims,0.0));
-		DenseMatrix64F iY       = new DenseMatrix64F(mo.fillMatrix(n,no_dims,0.0));
-		DenseMatrix64F gains    = new DenseMatrix64F(mo.fillMatrix(n,no_dims,1.0));
+		DenseMatrix64F dY       = new DenseMatrix64F(fillMatrix(n,no_dims,0.0));
+		DenseMatrix64F iY       = new DenseMatrix64F(fillMatrix(n,no_dims,0.0));
+		DenseMatrix64F gains    = new DenseMatrix64F(fillMatrix(n,no_dims,1.0));
 		DenseMatrix64F btNeg    = new DenseMatrix64F(n,no_dims);
 		DenseMatrix64F bt       = new DenseMatrix64F(n,no_dims);
 		
 		// Compute P-values
 		DenseMatrix64F P        = new DenseMatrix64F(x2p(X, 1e-5, perplexity).P); // P = n x n
 		DenseMatrix64F Psized   = new DenseMatrix64F(P.numRows,P.numCols);        // L = n x n
-		DenseMatrix64F diag     = new DenseMatrix64F(mo.fillMatrix(Psized.numRows,Psized.numCols,0.0));
+		DenseMatrix64F diag     = new DenseMatrix64F(fillMatrix(Psized.numRows,Psized.numCols,0.0));
 		
 		transpose(P,Psized);
 		addEquals(P,Psized);
