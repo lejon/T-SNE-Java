@@ -42,7 +42,7 @@ public class MatrixOpTest {
 		long time = 0;
 		for (int laps = 0; laps < noLaps; laps++) {
 			time = System.currentTimeMillis();
-			double [][] tr1 = mo.transposeSerial(matrix);
+			double [][] tr1 = MatrixOps.transposeSerial(matrix);
 			trtime += (System.currentTimeMillis()-time);
 			assertEquals(tr1.length,cols);
 			assertEquals(tr1[0].length,rows);
@@ -83,7 +83,7 @@ public class MatrixOpTest {
 		for (int laps = 0; laps < noLaps; laps++) {
 			if((laps%100)==0) System.out.println("Iter " + laps + "...");
 			time = System.currentTimeMillis();
-			double [][] tr1 = mo.transposeSerial(matrix);
+			double [][] tr1 = MatrixOps.transposeSerial(matrix);
 			trtime += (System.currentTimeMillis()-time);
 			assertEquals(tr1.length,cols);
 			assertEquals(tr1[0].length,rows);
