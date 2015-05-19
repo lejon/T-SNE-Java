@@ -13,9 +13,9 @@ import org.math.plot.PlotPanel;
 import org.math.plot.plots.ColoredScatterPlot;
 import org.math.plot.plots.ScatterPlot;
 
-import com.jujutsu.tsne.MatrixOps;
 import com.jujutsu.tsne.SimpleTSne;
 import com.jujutsu.tsne.TSne;
+import com.jujutsu.utils.MatrixOps;
 import com.jujutsu.utils.MatrixUtils;
 
 public class TSneASCIIDemo {

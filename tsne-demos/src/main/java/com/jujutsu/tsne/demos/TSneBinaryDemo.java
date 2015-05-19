@@ -10,9 +10,9 @@ import org.math.plot.Plot2DPanel;
 import org.math.plot.PlotPanel;
 import org.math.plot.plots.ScatterPlot;
 
-import com.jujutsu.tsne.MatrixOps;
 import com.jujutsu.tsne.SimpleTSne;
 import com.jujutsu.tsne.TSne;
+import com.jujutsu.utils.MatrixOps;
 
 public class TSneBinaryDemo {
 

@@ -6,6 +6,7 @@ import java.io.File;
 
 import org.junit.Test;
 
+import com.jujutsu.utils.MatrixOps;
 import com.jujutsu.utils.MatrixUtils;
 
 public class MatrixOpVsPython {

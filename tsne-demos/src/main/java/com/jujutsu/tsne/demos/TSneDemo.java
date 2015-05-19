@@ -17,10 +17,10 @@ import org.math.plot.plots.IconScatterPlot;
 import org.math.plot.plots.ScatterPlot;
 
 import com.jujutsu.tsne.FastTSne;
-import com.jujutsu.tsne.MatrixOps;
 import com.jujutsu.tsne.PrincipalComponentAnalysis;
 import com.jujutsu.tsne.SimpleTSne;
 import com.jujutsu.tsne.TSne;
+import com.jujutsu.utils.MatrixOps;
 import com.jujutsu.utils.MatrixUtils;
 
 public class TSneDemo {

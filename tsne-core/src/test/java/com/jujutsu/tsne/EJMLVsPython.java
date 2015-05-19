@@ -20,6 +20,8 @@ import java.io.File;
 import org.ejml.data.DenseMatrix64F;
 import org.junit.Test;
 
+import com.jujutsu.utils.EjmlOps;
+import com.jujutsu.utils.MatrixOps;
 import com.jujutsu.utils.MatrixUtils;
 
 public class EJMLVsPython {
@@ -62,7 +64,7 @@ public class EJMLVsPython {
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
 		DenseMatrix64F X = new DenseMatrix64F(Xin);
 		DenseMatrix64F sumC = new DenseMatrix64F(1,X.numCols);
-		double [][] sum0 = FastTSne.extractDoubleArray(sumCols(X,sumC));
+		double [][] sum0 = EjmlOps.extractDoubleArray(sumCols(X,sumC));
 		for (int i = 0; i < sum0.length; i++) {
 			for (int j = 0; j < sum0[i].length; j++) {
 				assertEquals(pysum0[j], sum0[i][j],epsilon);
@@ -70,7 +72,7 @@ public class EJMLVsPython {
 		}
 		double [] pysum1 = {15.,  35.,  19.,  26.,  30.,  18.,  29.};
 		DenseMatrix64F sumR = new DenseMatrix64F(X.numRows,1);
-		double [][] sum1 = FastTSne.extractDoubleArray(sumRows(X,sumR));
+		double [][] sum1 = EjmlOps.extractDoubleArray(sumRows(X,sumR));
 		for (int i = 0; i < sum1.length; i++) {
 			for (int j = 0; j < sum1[i].length; j++) {
 				assertEquals(pysum1[i], sum1[i][j],epsilon);
@@ -89,7 +91,7 @@ public class EJMLVsPython {
 				{ 4.,  9.,  7.,  7.,  8.,  3.,  4.},
 				{ 5.,  5.,  3.,  3.,  9.,  5.,  2.},};
 		transpose(X);
-		double [][] transpose = FastTSne.extractDoubleArray(X);
+		double [][] transpose = EjmlOps.extractDoubleArray(X);
 		assertEqualDoubleArrays(pytranspose, transpose, epsilon);
 	}
 
@@ -108,7 +110,7 @@ public class EJMLVsPython {
 				};
 		DenseMatrix64F sq = new DenseMatrix64F(X.numRows,X.numCols);
 		elementPower(X,2,sq);
-		double [][] square = FastTSne.extractDoubleArray(sq);
+		double [][] square = EjmlOps.extractDoubleArray(sq);
 		assertEqualDoubleArrays(pysquare, square, epsilon);
 	}
 	
@@ -129,7 +131,7 @@ public class EJMLVsPython {
 		DenseMatrix64F mult = new DenseMatrix64F(X.numRows,tr.numCols);
 		transpose(X,tr);
 		mult(X,tr,mult);
-		double [][] times = FastTSne.extractDoubleArray(mult); 
+		double [][] times = EjmlOps.extractDoubleArray(mult); 
 		assertEqualDoubleArrays(pydot, times, epsilon);
 	}
 
@@ -147,7 +149,7 @@ public class EJMLVsPython {
 				 {-16., -12., -18.,  -8.,  -4.},
 				 };
 		scale(-2.0,X);
-		double [][] scale = FastTSne.extractDoubleArray(X); 
+		double [][] scale = EjmlOps.extractDoubleArray(X); 
 		assertEqualDoubleArrays(pyscle, scale, epsilon);
 	}
 
@@ -165,7 +167,7 @@ public class EJMLVsPython {
 				 { 10.,   8.,  11.,   6.,   4.},
 				 };
 		add(X,2);
-		double [][] plus = FastTSne.extractDoubleArray(X);
+		double [][] plus = EjmlOps.extractDoubleArray(X);
 		assertEqualDoubleArrays(pyplus, plus, epsilon);
 	}
 	
@@ -183,7 +185,7 @@ public class EJMLVsPython {
 				 { 0.125,       0.16666667,  0.11111111,  0.25,        0.5       }
 				 };
 		divide(1.0, X);
-		double [][] inv = FastTSne.extractDoubleArray(X);
+		double [][] inv = EjmlOps.extractDoubleArray(X);
 		assertEqualDoubleArrays(pyinv, inv, epsilon);
 	}
 	
@@ -194,7 +196,7 @@ public class EJMLVsPython {
 		double [] pyinv = { 0.14285714,  0.33333333,  0.16666667,  0.14285714,  0.33333333 };
 		DenseMatrix64F row = extract(X,3,4,0,5);
 		divide(1.0, row);
-		double [] inv = FastTSne.extractDoubleArray(row)[0];
+		double [] inv = EjmlOps.extractDoubleArray(row)[0];
 		assertEqualDoubleVectors(pyinv, inv, epsilon);
 	}
 
@@ -203,7 +205,7 @@ public class EJMLVsPython {
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
 		DenseMatrix64F X = new DenseMatrix64F(Xin);
 		divide(X, 2.0);
-		double [][] div = FastTSne.extractDoubleArray(X); 
+		double [][] div = EjmlOps.extractDoubleArray(X); 
 		double [][] pydiv = 
 				{{ 0.5,  1.,   1.5,  2.,   2.5},
 				 { 3.,   3.5,  4.,   4.5,  2.5},
@@ -230,7 +232,7 @@ public class EJMLVsPython {
 				 { 64.,  36.,  81.,  16.,   4.},
 				 };
 		elementMult(X,X);
-		double [][] sm = FastTSne.extractDoubleArray(X);
+		double [][] sm = EjmlOps.extractDoubleArray(X);
 		assertEqualDoubleArrays(pysm, sm, epsilon);
 	}
 
@@ -238,7 +240,7 @@ public class EJMLVsPython {
 	public void testRangeAssign() {
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
 		DenseMatrix64F X = new DenseMatrix64F(Xin);
-		FastTSne.assignAtIndex(X, tsne.range(4), tsne.range(4), 0);
+		EjmlOps.assignAtIndex(X, tsne.range(4), tsne.range(4), 0);
 		double [][] pyasgn = 
 				{{ 0.,  2.,  3.,  4.,  5.},
 				 { 6.,  0.,  8.,  9.,  5.},
@@ -248,7 +250,7 @@ public class EJMLVsPython {
 				 { 3.,  4.,  3.,  3.,  5.},
 				 { 8.,  6.,  9.,  4.,  2.},
 				 };
-		assertEqualDoubleArrays(pyasgn, FastTSne.extractDoubleArray(X), epsilon);
+		assertEqualDoubleArrays(pyasgn, EjmlOps.extractDoubleArray(X), epsilon);
 	}
 
 	@Test
@@ -266,7 +268,7 @@ public class EJMLVsPython {
 				 { 0.,  0.,  0.,  0.,  0.},
 				 };
 		subtract(X, X, mins);
-		double [][] min = FastTSne.extractDoubleArray(mins);
+		double [][] min = EjmlOps.extractDoubleArray(mins);
 		assertEqualDoubleArrays(pymin, min, epsilon);
 	}
 
@@ -275,20 +277,20 @@ public class EJMLVsPython {
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
 		double [][] PQrowi  = tsne.copyCols(Xin,4);
 		DenseMatrix64F tile = new DenseMatrix64F(PQrowi);
-		DenseMatrix64F X = FastTSne.tile(tile, 3, 1);
+		DenseMatrix64F X = EjmlOps.tile(tile, 3, 1);
 		double [][] pytile1 = 
 				{{ 5.,  5.,  3.,  3.,  9.,  5.,  2.,},
 				 { 5.,  5.,  3.,  3.,  9.,  5.,  2.,},
 				 { 5.,  5.,  3.,  3.,  9.,  5.,  2.,},
 				};
-		assertEqualDoubleArrays(pytile1, FastTSne.extractDoubleArray(X), epsilon);
-		X = FastTSne.tile(tile, 3, 2);
+		assertEqualDoubleArrays(pytile1, EjmlOps.extractDoubleArray(X), epsilon);
+		X = EjmlOps.tile(tile, 3, 2);
 		double [][] pytile2 =
 				{{ 5.,  5.,  3.,  3.,  9.,  5.,  2.,  5.,  5.,  3.,  3.,  9.,  5.,  2.},
 				 { 5.,  5.,  3.,  3.,  9.,  5.,  2.,  5.,  5.,  3.,  3.,  9.,  5.,  2.},
 				 { 5.,  5.,  3.,  3.,  9.,  5.,  2.,  5.,  5.,  3.,  3.,  9.,  5.,  2.},
 				 };
-		assertEqualDoubleArrays(pytile2, FastTSne.extractDoubleArray(X), epsilon);
+		assertEqualDoubleArrays(pytile2, EjmlOps.extractDoubleArray(X), epsilon);
 	}
 	
 	@Test
@@ -307,14 +309,14 @@ public class EJMLVsPython {
 				 {  8.,   6.,   9.,   4.,   2.},
 				 };
 		insert(sumR,X,3,0);
-		assertEqualDoubleArrays(pyasgn, FastTSne.extractDoubleArray(X), epsilon);
+		assertEqualDoubleArrays(pyasgn, EjmlOps.extractDoubleArray(X), epsilon);
 	}
 
 	@Test
 	public void testAssignAllLessThan() {
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
 		DenseMatrix64F X = new DenseMatrix64F(Xin);
-		FastTSne.assignAllLessThan(X,3,-1);
+		EjmlOps.assignAllLessThan(X,3,-1);
 		double [][] pylt =
 				{{-1., -1.,  3.,  4.,  5.},
 				 { 6.,  7.,  8.,  9.,  5.},
@@ -324,7 +326,7 @@ public class EJMLVsPython {
 				 { 3.,  4.,  3.,  3.,  5.},
 				 { 8.,  6.,  9.,  4., -1.},
 				 };
-		assertEqualDoubleArrays(pylt, FastTSne.extractDoubleArray(X), epsilon);
+		assertEqualDoubleArrays(pylt, EjmlOps.extractDoubleArray(X), epsilon);
 	}
 	
 	@Test
