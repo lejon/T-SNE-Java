@@ -85,10 +85,10 @@ public class MatrixOps {
 			}
 			str = str.append(formatDouble(m[i][m[i].length - 1]));
 
-			if( collim == Integer.MAX_VALUE) { 
+			if( collim > m[i].length ) { 
 				str.append("]");
 			} else {
-				str.append("...]");
+				str.append(", ...]");
 			}
 			if (i < m.length - 1) {
 				str = str.append(sentenceDelimiter);
@@ -106,7 +106,11 @@ public class MatrixOps {
 			}
 			str = str.append(formatDouble(m[i][m[i].length - 1]));
 
-			str.append("]");
+			if( collim > m[i].length ) { 
+				str.append("]");
+			} else {
+				str.append(", ...]");
+			}
 			if (i < m.length - 1) {
 				str = str.append(sentenceDelimiter);
 			}
@@ -115,6 +119,7 @@ public class MatrixOps {
 	}
 
 	public static String formatDouble(double d) {
+		if ( d == 0.0 ) return "<0.0>";
 		if ( d<0.0001 && d>0 || d > -0.0001 && d < 0) {
 			return mydecimalFormat.format(d);
 		} else {
@@ -172,13 +177,12 @@ public class MatrixOps {
 
 	/**
 	 * This function returns a new matrix which is centered and scaled, i.e each
-	 * the mean is subtracted from each element in the matrix and divided by the
-	 * matrix standard deviation   
-	 * @param mu
-	 * @param sigma
+	 * the global mean is subtracted from each element in the matrix and divided 
+	 * by the global matrix standard deviation   
+	 *
 	 * @return new matrix which is centered (subtracted mean) and scaled (divided with stddev)
 	 */
-	public static double [][] centerAndScale(double [][] matrix) {
+	public static double [][] centerAndScaleGlobal(double [][] matrix) {
 		double [][] res = new double[matrix.length][matrix[0].length]; 
 		double mean = mean(matrix);
 		double std = stdev(matrix);
@@ -188,6 +192,44 @@ public class MatrixOps {
 			}
 		}
 		
+		return res;
+	}
+	
+	/**
+	 * This function returns a new matrix which is centered and scaled, i.e each
+	 * the column mean is subtracted from each column element in the matrix and 
+	 * divided by the respective column matrix standard deviation 
+	 *   
+	 * @return new matrix which is centered (subtracted mean) and scaled (divided with stddev)
+	 */
+	public static double [][] centerAndScale(double [][] matrix) {
+		double [][] res = new double[matrix.length][matrix[0].length]; 
+		double [] means = colMeans(matrix);
+		double [] std = colStddev(matrix);
+		for (int i = 0; i < res.length; i++) {
+			for (int j = 0; j < res[i].length; j++) {
+				res[i][j] = (matrix[i][j]-means[j]) / (std[j] == 0 ? 1 : std[j]); 
+			}
+		}
+
+		return res;
+	}
+	
+	/**
+	 * This function returns adds a small amount of noise to each column  
+	 * 
+	 * @return new matrix with added noise
+	 */
+	public static double [][] addNoise(double [][] matrix) {
+		double [][] res = new double[matrix.length][matrix[0].length]; 
+		double [] std = colStddev(matrix);
+		for (int i = 0; i < res.length; i++) {
+			for (int j = 0; j < res[i].length; j++) {
+				double noise = rnorm(0, std[j] == 0.0 ? 0.00001 : std[j]/5);
+				res[i][j] = matrix[i][j] + noise; 
+			}
+		}
+
 		return res;
 	}
 	
@@ -459,7 +501,7 @@ public class MatrixOps {
 		return res; 
 	}
 
-	public static double rnorm(int n, double mu, double sigma) {
+	public static double rnorm(double mu, double sigma) {
 		return mu + (ThreadLocalRandom.current().nextGaussian() * sigma);
 	}
 
