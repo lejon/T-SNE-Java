@@ -142,6 +142,9 @@ public class MemOptimizedTSne extends FastTSne {
 				replaceNaN(Psized,Double.MIN_VALUE);
 				double C = elementSum(Psized);
 				System.out.println("Iteration " + iter + ": error is " + C);
+				if(C < 0) {
+					System.err.println("Warning: Error is negaitive, this is usually a very bad sign!");
+				}
 			} else if(iter % 10 == 0) {
 				System.out.println("Iteration " + iter);
 			}
