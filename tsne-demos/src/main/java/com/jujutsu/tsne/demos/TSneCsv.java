@@ -55,7 +55,7 @@ public class TSneCsv {
 		options.addOption( "perp", "perplexity",    true, 
 				"set the perplexity of the t-SNE algorithm (default " + perplexity +")" );
 		options.addOption( "idims", "initial_dims", true, 
-				"scale the dataset to initial dims with PCA before running t-SNE (default " + initial_dims + ")" );
+				"scale the dataset to initial dims with PCA before running t-SNE (default " + initial_dims + "). Negative number indicates no scaling"  );
 		options.addOption( "nolbls", "no_labels",   false, 
 				"The dataset does not contain any labels (if not set labels are assumed to be in the first column)" );
 		options.addOption( "lblf", "label_file",    true, 
