@@ -48,12 +48,14 @@ import static com.jujutsu.utils.MatrixOps.square;
 import static com.jujutsu.utils.MatrixOps.sum;
 import static com.jujutsu.utils.MatrixOps.times;
 /**
- *
- * Author: Leif Jonsson (leif.jonsson@gmail.com)
- * 
- * This is a port of van der Maaten and Hintons Python implementation of t-sne
- *
- */
+*
+* Author: Leif Jonsson (leif.jonsson@gmail.com)
+* 
+* This is a Java implementation of van der Maaten and Hintons t-sne 
+* dimensionality reduction technique that is particularly well suited 
+* for the visualization of high-dimensional datasets
+*
+*/
 public class FastTSne implements TSne {
 	MatrixOps mo = new MatrixOps();
 
