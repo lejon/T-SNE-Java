@@ -42,9 +42,11 @@ public class BlasTSne implements TSne {
 	}
 
 	public double [][] tsne(double[][] X, int no_dims, int initial_dims, double perplexity, int max_iter, boolean use_pca) {
+		String IMPLEMENTATION_NAME = this.getClass().getSimpleName();
 		System.out.println("X:Shape is = " + X.length + " x " + X[0].length);
+		System.out.println("Running " + IMPLEMENTATION_NAME + ".");
 		// Initialize variables
-		if(use_pca && X[0].length > initial_dims) {
+		if(use_pca && X[0].length > initial_dims && initial_dims > 0) {
 			PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
 			X = pca.pca(X, initial_dims);
 			System.out.println("X:Shape after PCA is = " + X.length + " x " + X[0].length);
