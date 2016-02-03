@@ -41,9 +41,19 @@
 			<systemPath>${basedir}/extralibs/jmathplot-1.0.0.jar</systemPath>
 		</dependency>
 		<dependency>
+			<groupId>org.jfree</groupId>
+			<artifactId>jfreechart</artifactId>
+			<version>1.0.19</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jfree</groupId>
+			<artifactId>jcommon</artifactId>
+			<version>1.0.23</version>
+		</dependency>
+		<dependency>
 			<groupId>joinery</groupId>
 			<artifactId>joinery-dataframe</artifactId>
-			<version>1.6</version>
+			<version>1.7</version>
 		</dependency>
 		    <dependency>
       		<groupId>commons-cli</groupId>
@@ -105,7 +115,7 @@
 									implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>com.jujutsu.tsne.TSneDemo</mainClass>
+									<mainClass>com.jujutsu.tsne.demos.TSneDemo</mainClass>
 								</transformer>
 							</transformers>
 						</configuration>

@@ -1,5 +1,21 @@
 package com.jujutsu.tsne;
 
+import static com.jujutsu.utils.EjmlOps.addRowVector;
+import static com.jujutsu.utils.EjmlOps.assignAllLessThan;
+import static com.jujutsu.utils.EjmlOps.assignAtIndex;
+import static com.jujutsu.utils.EjmlOps.biggerThan;
+import static com.jujutsu.utils.EjmlOps.colMean;
+import static com.jujutsu.utils.EjmlOps.maximize;
+import static com.jujutsu.utils.EjmlOps.replaceNaN;
+import static com.jujutsu.utils.EjmlOps.setData;
+import static com.jujutsu.utils.EjmlOps.setDiag;
+import static com.jujutsu.utils.EjmlOps.tile;
+import static com.jujutsu.utils.MatrixOps.abs;
+import static com.jujutsu.utils.MatrixOps.equal;
+import static com.jujutsu.utils.MatrixOps.fillMatrix;
+import static com.jujutsu.utils.MatrixOps.negate;
+import static com.jujutsu.utils.MatrixOps.range;
+import static com.jujutsu.utils.MatrixOps.rnorm;
 import static org.ejml.ops.CommonOps.add;
 import static org.ejml.ops.CommonOps.addEquals;
 import static org.ejml.ops.CommonOps.divide;
@@ -18,8 +34,7 @@ import static org.ejml.ops.CommonOps.transpose;
 
 import org.ejml.data.DenseMatrix64F;
 
-import static com.jujutsu.utils.EjmlOps.*;
-import static com.jujutsu.utils.MatrixOps.*;
+import com.jujutsu.utils.MatrixOps;
 /**
  *
  * Author: Leif Jonsson (leif.jonsson@gmail.com)
@@ -158,6 +173,6 @@ public class MemOptimizedTSne extends FastTSne {
 		}
 
 		// Return solution
-		return extractDoubleArray(Y);
+		return MatrixOps.extractDoubleArray(Y);
 	}
 }

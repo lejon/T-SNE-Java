@@ -1,18 +1,22 @@
 package com.jujutsu.utils;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.ThreadLocalRandom;
 
 import Jama.Matrix;
+import org.ejml.data.DenseMatrix64F;
 
 public class MatrixOps {
 	Random rnd = new Random();
 	static DecimalFormat mydecimalFormat = new DecimalFormat("00.###E0");
 	private static ForkJoinPool pool = new ForkJoinPool();
 	private static String DEFAULT_TITLE  = "Vector";
+	public static int noDigits = 4;
 
 	public static String arrToStr(int [] arr, String title) {
 		String res = "";
@@ -25,13 +29,21 @@ public class MatrixOps {
 	}
 
 	public static String arrToStr(double [] arr) {
-		return arrToStr(arr, DEFAULT_TITLE);
+		return arrToStr(arr, DEFAULT_TITLE, Integer.MAX_VALUE);
 	}
 
+	public static String arrToStr(double [] arr, int maxLen) {
+		return arrToStr(arr, DEFAULT_TITLE, maxLen);
+	}
+	
 	public static String arrToStr(double [] arr, String title) {
+		return arrToStr(arr, title, Integer.MAX_VALUE);
+	}
+
+	public static String arrToStr(double [] arr, String title, int maxLen) {
 		String res = "";
 		res += title + "[" +  arr.length + "]:";
-		for (int j = 0; j < arr.length; j++) {
+		for (int j = 0; j < arr.length && j < maxLen; j++) {
 			res += formatDouble(arr[j]) + ", ";
 		}
 		return res;
@@ -71,10 +83,10 @@ public class MatrixOps {
 	
 	public static String doubleArrayToPrintString(double[][] m, String colDelimiter, int toprowlim, int btmrowlim, int collim, String sentenceDelimiter) {
 		StringBuffer str = new StringBuffer(m.length * m[0].length);
-		
+
 		str.append("Dim:" + m.length + " x " + m[0].length + "\n");
 
-        int i = 0;
+		int i = 0;
 		for (; i < m.length && i < toprowlim; i++) {
 			String rowPref = i < 1000 ? String.format("%03d", i) : String.format("%04d", i);
 			str.append(rowPref+": [");
@@ -85,10 +97,10 @@ public class MatrixOps {
 			}
 			str = str.append(formatDouble(m[i][m[i].length - 1]));
 
-			if( collim > m[i].length ) { 
+			if( collim == Integer.MAX_VALUE) { 
 				str.append("]");
 			} else {
-				str.append(", ...]");
+				str.append("...]");
 			}
 			if (i < m.length - 1) {
 				str = str.append(sentenceDelimiter);
@@ -123,14 +135,15 @@ public class MatrixOps {
 		if ( d<0.0001 && d>0 || d > -0.0001 && d < 0) {
 			return mydecimalFormat.format(d);
 		} else {
-			return String.format("%.4f", d);
+			String formatString = "%." + noDigits + "f";
+			return String.format(formatString, d);
 		}
 	}
 
 	public static String doubleArrayToString(double[][] m) {
 		return doubleArrayToString(m, ",");
 	}
-	
+
 	public static String doubleArrayToString(double[][] m, String colDelimiter) {
 		StringBuffer str = new StringBuffer(m.length * m[0].length);
 		for (int i = 0; i < m.length; i++) {
@@ -205,6 +218,25 @@ public class MatrixOps {
 	public static double [][] centerAndScale(double [][] matrix) {
 		double [][] res = new double[matrix.length][matrix[0].length]; 
 		double [] means = colMeans(matrix);
+		for (int i = 0; i < res.length; i++) {
+			for (int j = 0; j < res[i].length; j++) {
+				res[i][j] = (matrix[i][j]-means[j]); 
+			}
+		}
+		
+		double [] std = colStddev(res);
+		for (int i = 0; i < res.length; i++) {
+			for (int j = 0; j < res[i].length; j++) {
+				res[i][j] = res[i][j] / (std[j] == 0 ? 1 : std[j]); 
+			}
+		}
+
+		return res;
+	}
+	
+	public static double [][] centerAndScaleSametime(double [][] matrix) {
+		double [][] res = new double[matrix.length][matrix[0].length]; 
+		double [] means = colMeans(matrix);
 		double [] std = colStddev(matrix);
 		for (int i = 0; i < res.length; i++) {
 			for (int j = 0; j < res[i].length; j++) {
@@ -231,16 +263,6 @@ public class MatrixOps {
 		}
 
 		return res;
-	}
-	
-	/**
-	 * Generate random draw from Normal with mean mu and std. dev sigma
-	 * @param mu
-	 * @param sigma
-	 * @return random sample
-	 */
-	public static double rnrom(double mu, double sigma) {
-		return mu + (ThreadLocalRandom.current().nextGaussian() * sigma);
 	}
 
 	/**
@@ -299,7 +321,7 @@ public class MatrixOps {
 			this.startRow = startRow;
 			this.endRow = endRow;
 		}
-		
+
 		public MatrixTransposer(double [][] orig, double [][] transpose, int startRow, int endRow) {
 			this.orig = orig;
 			this.transpose = transpose;
@@ -479,12 +501,12 @@ public class MatrixOps {
 		double[][] array = new double[m][n];
 		for (int i = 0; i < m; i++) {
 			for (int j = 0; j < array[i].length; j++) {				
-				array[i][j] = rnrom(0.0,1.0);
+				array[i][j] = rnorm(0.0,1.0);
 			}
 		}
 		return array;
 	}
-
+	
 	public static double [] rnorm(int n, double [] mus, double [] sigmas) {
 		double [] res = new double[n];
 		for (int i = 0; i < res.length; i++) {
@@ -501,6 +523,16 @@ public class MatrixOps {
 		return res; 
 	}
 
+	public static double rnorm() {
+		return ThreadLocalRandom.current().nextGaussian();
+	}
+
+	/**
+	 * Generate random draw from Normal with mean mu and std. dev sigma
+	 * @param mu
+	 * @param sigma
+	 * @return random sample
+	 */
 	public static double rnorm(double mu, double sigma) {
 		return mu + (ThreadLocalRandom.current().nextGaussian() * sigma);
 	}
@@ -528,7 +560,7 @@ public class MatrixOps {
 		}
 		return equals;
 	}
-	
+
 	/**
 	 * Returns a new matrix of booleans where true is set if the values to the two matrices are
 	 * the same at that index
@@ -551,7 +583,7 @@ public class MatrixOps {
 		}
 		return equals;
 	}
-	
+
 	/**
 	 * Returns a new matrix of booleans where true is set if the value in the matrix is
 	 * bigger than value
@@ -703,6 +735,82 @@ public class MatrixOps {
 			throw  new IllegalArgumentException("Axes other than 0,1 is unsupported");
 		}
 		return result;
+	}
+
+	// Unit Tested
+	/**
+	 * Returns a new matrix which is the transpose of input matrix
+	 * @param matrix
+	 * @return
+	 */
+	public double sumPar(double[][] matrix) {
+		int ll = 100;
+		int cols = matrix[0].length;
+		int rows = matrix.length;
+		double [] sums = new double[rows];
+		if(rows < ll ) {
+			for (int row = 0; row < rows; row++)
+				for (int col = 0; col < cols; col++)
+					sums[row] += matrix[row][col];
+		} else {
+			MatrixSummer process = new MatrixSummer(matrix, sums, 0, rows, ll);                
+			pool.invoke(process);
+		}
+		double sum = 0.0;
+		for (int i = 0; i < sums.length; i++) {
+			sum += sums[i];
+		}
+		return sum;
+	}
+
+	class MatrixSummer extends RecursiveAction {
+		private static final long serialVersionUID = 1L;
+		double [][] orig;
+		double [] sums;
+		int startRow = -1;
+		int endRow = -1;
+		int limit = 1000;
+
+		public MatrixSummer(double [][] orig, double [] sums, int startRow, int endRow, int ll) {
+			this.limit = ll;
+			this.orig = orig;
+			this.sums = sums;
+			this.startRow = startRow;
+			this.endRow = endRow;
+		}
+
+		public MatrixSummer(double [][] orig, double [] transpose, int startRow, int endRow) {
+			this.orig = orig;
+			this.sums = transpose;
+			this.startRow = startRow;
+			this.endRow = endRow;
+		}
+
+		@Override
+		protected void compute() {
+			try {
+				if ( (endRow-startRow) <= limit ) {
+					int cols = orig[0].length;
+					for (int row = startRow; row < endRow; row++) {
+						for (int i = 0; i < cols; i++) {
+							sums[row] += orig[row][i];
+						}
+					}
+				}
+				else {
+					int range = (endRow-startRow);
+					int startRow1 = startRow;
+					int endRow1 = startRow + (range / 2);
+					int startRow2 = endRow1;
+					int endRow2 = endRow;
+					invokeAll(new MatrixSummer(orig, sums, startRow1, endRow1, limit),
+							new MatrixSummer(orig, sums, startRow2, endRow2, limit));
+				}
+			}
+			catch ( Exception e ) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 
@@ -909,7 +1017,7 @@ public class MatrixOps {
 		}
 		return result;
 	}
-	
+
 	// Unit Tested
 	public static int [] concatenate(int [] v1,int [] v2) {
 		int [] result = new int[v1.length+v2.length];
@@ -920,6 +1028,51 @@ public class MatrixOps {
 		for (int i = 0; i < v2.length; i++, index++) {
 			result[index] = v2[i];
 		}
+		return result;
+	}
+	
+	// Unit Tested
+		public static double [] concatenate(double [] v1,double [] v2) {
+			double [] result = new double[v1.length+v2.length];
+			int index = 0;
+			for (int i = 0; i < v1.length; i++, index++) {
+				result[index] = v1[index];
+			}
+			for (int i = 0; i < v2.length; i++, index++) {
+				result[index] = v2[i];
+			}
+			return result;
+		}
+
+	// Unit Tested
+	public static double [][] concatenate(double [][] m1,double[][] m2) {
+		if(m1.length!=m2.length) throw new IllegalArgumentException("m1 and m2 must have the same number of rows:" + m1.length + " != " + m2.length);
+		double [][] result = new double[m1.length][m1[0].length+m2[0].length];
+		int resCol = 0;
+		for (int i = 0; i < m1.length; i++) {
+			resCol = 0;
+			for (int j = 0; j < m1[i].length; j++) {
+				result[i][resCol++] = m1[i][j];
+			}
+			for (int j = 0; j < m2[i].length; j++) {
+				result[i][resCol++] = m2[i][j];
+			}
+		}	
+		return result;
+	}
+
+	// Unit Tested
+	public static double [][] concatenate(double [][] m1,double[] v2) {
+		if(m1.length!=v2.length) throw new IllegalArgumentException("m1 and v2 must have the same number of rows:" + m1.length + " != " + v2.length);
+		double [][] result = new double[m1.length][m1[0].length+1];
+		int resCol = 0;
+		for (int i = 0; i < m1.length; i++) {
+			resCol = 0;
+			for (int j = 0; j < m1[i].length; j++) {
+				result[i][resCol++] = m1[i][j];
+			}
+			result[i][resCol++] = v2[i];
+		}	
 		return result;
 	}
 
@@ -944,7 +1097,7 @@ public class MatrixOps {
 	public double[][] parScalarMultiply(double [][] m1,double [][] m2) {
 		int ll = 600;
 		double [][] result = new double[m1.length][m1[0].length];
-		
+
 		MatrixOperator process = new MatrixOperator(m1,m2,result, multiplyop, 0, m1.length,ll);                
 		pool.invoke(process);
 		return result;
@@ -962,7 +1115,7 @@ public class MatrixOps {
 	public interface MatrixOp {
 		double compute(double op1, double op2);
 	}
-	
+
 	MatrixOp multiplyop = new MatrixOp() {
 		public double compute(double f1, double f2) {
 			return f1 * f2;
@@ -1046,7 +1199,7 @@ public class MatrixOps {
 			matrix[row][indicies[j]] = values[j];
 		}
 	}
-	
+
 	public static double stdev(double [][] matrix) {
 		double m = mean(matrix);
 
@@ -1159,7 +1312,7 @@ public class MatrixOps {
 	public double[][] minus(double[][] m1, double[][] m2) {
 		return parScalarMinus(m1, m2);
 	}
-	
+
 	// Unit Tested
 	public static double[][] sMinus(double[][] m1, double[][] m2) {
 		double[][] matrix = new double[m1.length][m1[0].length];
@@ -1227,6 +1380,20 @@ public class MatrixOps {
 		return A.times(B).getArray();
 	}
 
+	public static double [] scalarMultiply(double[] m1, double mul) {
+		double[] matrix = new double[m1.length];
+		for (int i = 0; i < m1.length; i++)
+			matrix[i] = m1[i] * mul;
+		return matrix;
+	}
+
+	public static double [] scalarMultiply(double[] m1, double [] m2) {
+		double[] matrix = new double[m1.length];
+		for (int i = 0; i < m1.length; i++)
+			matrix[i] = m1[i] * m2[i];
+		return matrix;
+	}
+
 	public static double[][] diag(double[][] ds) {
 		boolean isLong = ds.length > ds[0].length;
 		int dim = Math.max(ds.length,ds[0].length);
@@ -1242,6 +1409,162 @@ public class MatrixOps {
 			}
 		}
 
+		return result;
+	}
+
+	public static double [][] dot(double [][] a, double [][] b) {
+		if(a[0].length!=b.length) throw new IllegalArgumentException("Dims does not match: " + a[0].length  + "!=" + b.length);
+		double [][] res = new double[a.length][b[0].length];
+		for (int row = 0; row < a.length; row++) {
+			for (int col = 0; col < b[row].length; col++) {
+				for (int i = 0; i < a[0].length; i++) {
+					res[row][col] = a[row][i] * b[i][col];
+				}
+			}
+		}
+		return res;
+	}
+
+	public static double dot(double [] a, double [] b) {
+		if(a.length!=b.length) {
+			throw new IllegalArgumentException("Vectors are not of equal length");
+		}
+		double res = 0.0;
+		for (int i = 0; i < b.length; i++) {
+			res += a[i] * b[i];
+		}
+		return res;
+	}
+	
+	public static double dot2P1(double [] a1, double [] a2, double [] b) {
+		if((a1.length+a2.length)!=b.length) {
+			throw new IllegalArgumentException("Vectors are not of equal length");
+		}
+		double res = 0.0;
+		int bidx = 0;
+		for (int i = 0; i < a1.length; i++, bidx++) {
+			res += a1[i] * b[bidx];
+		}
+		for (int i = 0; i < a2.length; i++, bidx++) {
+			res += a2[i] * b[bidx];
+		}
+		return res;
+	}
+
+	public static int maxIdx(double[] probs) {
+		int maxIdx = 0;
+		double max = probs[maxIdx];
+		for (int i = 0; i < probs.length; i++) {
+			if(probs[i]>max) {
+				max = probs[i];
+				maxIdx = i;
+			}
+		}
+		return maxIdx;
+	}
+
+	public static double[][] extractCol(int col, double[][] matrix) {
+		double [][] res = new double[matrix.length][1];
+		for (int row = 0; row < matrix.length; row++) {
+			res[row][0] = matrix[row][col];
+		}
+		return res;
+	}
+
+	public static double[] extractColVector(int col, double[][] matrix) {
+		double [] res = new double[matrix.length];
+		for (int row = 0; row < matrix.length; row++) {
+			res[row] = matrix[row][col];
+		}
+		return res;
+	}
+
+	public static double [][] extractDoubleArray(DenseMatrix64F p) {
+		int rows = p.getNumRows();
+		int cols = p.getNumCols();
+		double [][] result = new double[rows][cols];
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				result[i][j] = p.get(i, j);
+			}
+		}
+		return result;
+	}
+	
+	public static double [] extractDoubleVector(DenseMatrix64F p) {
+		int rows = p.getNumRows();
+		int cols = p.getNumCols();
+		
+		if(rows != 1 && cols != 1) {
+			throw new IllegalArgumentException("Cannot convert a " + rows + "x" + cols + " matrix to a vector");
+		}
+		
+		double [] result;
+		if(cols == 1) {
+			result = new double[rows];
+			for (int j = 0; j < rows; j++) {
+				result[j] = p.get(j,0);
+			}
+		} else {
+			result = new double[cols];
+			for (int j = 0; j < cols; j++) {
+				result[j] = p.get(0,j);
+			}			
+		}
+		return result;
+	}
+
+	public static double[][] extractRowCols(int col, double[][] zs2, int[] cJIdxs) {
+		double [][] res = new double[cJIdxs.length][1];
+		for (int row = 0; row < cJIdxs.length; row++) {
+			res[row][0] = zs2[cJIdxs[row]][col];
+		}
+		return res;
+	}
+
+	public static Integer [] indicesOf(int classIdx, int [] ys) {
+		List<Integer> indices = new ArrayList<>();
+		for (int row = 0; row < ys.length; row++) {
+			if(ys[row]==classIdx) {
+				indices.add(row);
+			}
+		}
+		return indices.toArray(new Integer[0]);
+	}
+
+	public static double[][] makeDesignMatrix(double[][] xstmp) {
+		double [][] xs = new double[xstmp.length][xstmp[0].length+1];
+		for (int row = 0; row < xs.length; row++) {
+			for (int col = 0; col < xs[0].length; col++) {
+				if(col==0) {
+					xs[row][col] = 1.0;	
+				} else {
+					xs[row][col] = xstmp[row][col-1];
+				}
+			}
+		}
+		return xs;
+	}
+
+	public static double[][] addIntercept(double[][] xs) {
+		double [][] result = new double [xs.length][xs[0].length+1];
+		for (int i = 0; i < result.length; i++) {
+			for (int j = 0; j < result[0].length; j++) {
+				if(j==0) {
+					result[i][j] = 1.0;
+				} else {
+					result[i][j] = xs[i][j-1];
+				}
+			}
+		}
+		return result;
+	}
+
+	public static double[] toPrimitive(Double[] ds) {
+		double [] result = new double[ds.length];
+		for (int i = 0; i < ds.length; i++) {
+			result[i] = ds[i];
+		}
 		return result;
 	}
 
