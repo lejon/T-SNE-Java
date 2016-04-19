@@ -55,6 +55,7 @@ public class MemOptimizedTSne extends FastTSne {
 			PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
 			X = pca.pca(X, initial_dims);
 			System.out.println("X:Shape after PCA is = " + X.length + " x " + X[0].length);
+			System.out.println(MatrixOps.doubleArrayToPrintString(X,10,10));
 		}
 		int n = X.length;
 		double momentum = .5;
@@ -82,6 +83,7 @@ public class MemOptimizedTSne extends FastTSne {
 		scale(4.0,P);					// early exaggeration
 		maximize(P, 1e-12);
 		
+		System.out.println("Using perplexity: " + perplexity);
 		System.out.println("Y:Shape is = " + Y.getNumRows() + " x " + Y.getNumCols());
 
 		DenseMatrix64F sqed  = new DenseMatrix64F(Y.numRows,Y.numCols);  // sqed = n x n
@@ -161,7 +163,7 @@ public class MemOptimizedTSne extends FastTSne {
 				double C = elementSum(Psized);
 				System.out.println("Iteration " + iter + ": error is " + C);
 				if(C < 0) {
-					System.err.println("Warning: Error is negaitive, this is usually a very bad sign!");
+					System.err.println("Warning: Error is negative, this is usually a very bad sign!");
 				}
 			} else if(iter % 10 == 0) {
 				System.out.println("Iteration " + iter);
