@@ -7,11 +7,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import javax.swing.JFrame;
 
 import joinery.DataFrame;
 import joinery.DataFrame.NumberDefault;
+import joinery.DataFrame.Predicate;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -37,6 +39,7 @@ public class TSneCsv {
 	static boolean scale_log       = false;
 	static boolean normalize       = false;
 	static boolean addNoise        = false;
+	static boolean subSample       = false;
 	static boolean hasHeader       = true;
 	static boolean doPlot          = true;
 	static boolean doSave          = false;
@@ -94,6 +97,8 @@ public class TSneCsv {
 				"Save the result to the given filename" );
 		options.addOption( "no", "noise",    false, 
 				"add a small amount of noise to each column. This can be useful with highly structured datasets which can otherwise cause problems" );
+		options.addOption( "ss", "subsample",    false, 
+				"the current implementation does not handle very large datasets due to memory and time constraints. Adding this flag will uniformly subsample the dataset" );
 
 
 		CommandLine parsedCommandLine = null;
@@ -198,6 +203,11 @@ public class TSneCsv {
 			addNoise = true;
 		}
 
+		if (parsedCommandLine.hasOption( "subsample" )) {
+			System.out.println("Subsampling dataset...");
+			subSample = true;
+		}
+
 		// Now process any drop column arguments, it makes sense to
 		// drop the integer indexed first since named ones are 
 		// independent of index and thus we can do those after
@@ -229,6 +239,17 @@ public class TSneCsv {
 		if (parsedCommandLine.hasOption( "output_file" )) {
 			output_fn = parsedCommandLine.getOptionValue("output_file");
 			doSave = true;
+		}
+		
+		final double noRows = df.length();
+		if(subSample) {
+			df = df.select(new Predicate<Object>() {
+				double prob = Math.min(1.0, 2500.0 / noRows);
+				Random rnd = new Random();
+				@Override
+				public Boolean apply(List<Object> values) {
+					return rnd.nextDouble() < prob;
+				}});
 		}
 
 		if (parsedCommandLine.hasOption( "show" )) {
@@ -292,15 +313,17 @@ public class TSneCsv {
 			throw new IllegalArgumentException("The number of labels (" + labels.length + ") is not the same (or more) as the number of rows in the dataset (" + data_len + ").");
 		}
 
-		DataFrame<Double> ddf = df.cast(Double.class);
+		final DataFrame<Double> ddf = df.cast(Double.class);
+		
 		//double[][] matrix = ddf.fillna(0.0).toArray(double[][].class);
-		double[][] matrix = ddf.fillna(0.0).toModelMatrix(0.0);
+		double[][] matrix = ddf.toModelMatrix(0.0);
 		if(scale_log) matrix = MatrixOps.log(matrix, true);
 		if(normalize) matrix = MatrixOps.centerAndScale(matrix);
 		if(addNoise)  matrix = MatrixOps.addNoise(matrix);
 		System.out.println(MatrixOps.doubleArrayToPrintString(matrix,5,5,20));
 
 		TSne tsne = new MemOptimizedTSne();
+		//TSne tsne = new BlasTSne();
 		long t1 = System.currentTimeMillis();
 		double [][] Y = tsne.tsne(matrix, 2, initial_dims, perplexity, iterations);
 		if(transpose_after) Y = MatrixOps.transposeSerial(matrix);
