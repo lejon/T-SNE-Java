@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.jujutsu.tsne</groupId>
 	<artifactId>tsne-demos</artifactId>
-	<version>1.0</version>
+	<version>1.0.0</version>
 	<name>Java T-SNE Demos</name>
 
 	<properties>
@@ -31,7 +31,7 @@
 		<dependency>
 			<groupId>com.jujutsu.tsne</groupId>
 			<artifactId>tsne</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
 		<!-- http://mvnrepository.com/artifact/com.github.yannrichet/JMathPlot -->
 		<dependency>
