@@ -6,7 +6,7 @@ Pure Java implementation of Van Der Maaten and Hinton's t-sne clustering algorit
 
 This project has been refacored into two separate Maven projects, one for the core tsne and one for the demos.
 
-T-SNE-Java is now in version 1.0. It has been in development version long enough.
+T-SNE-Java is now in version 1.0 (tsne-core is 1.0.1)  It has been in development version long enough.
 
 Basic command line usage
 ------------------------
@@ -63,7 +63,8 @@ public class TSneTest {
 
 Version
 -------
-1.0
+Demo: 1.0
+Core: 1.0.1
 
 Enjoy!
 -Leif
