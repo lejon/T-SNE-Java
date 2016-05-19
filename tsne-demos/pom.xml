@@ -31,7 +31,7 @@
 		<dependency>
 			<groupId>com.jujutsu.tsne</groupId>
 			<artifactId>tsne</artifactId>
-			<version>0.0.2</version>
+			<version>1.0.0</version>
 		</dependency>
 		<!-- http://mvnrepository.com/artifact/com.github.yannrichet/JMathPlot -->
 		<dependency>
