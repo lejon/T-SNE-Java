@@ -40,15 +40,15 @@ Examples (On Mac):
 
 Run TSne on file without headers and no labels.
 ```shell
-java -jar tsne-demos-0.1.jar -nohdr -nolbls src/main/resources/datasets/iris_X.txt 
+java -jar target/tsne-demos-0.1.jar -nohdr -nolbls src/main/resources/datasets/iris_X.txt 
 ```
 Run TSne on CSV file with headers and label column nr. 5.
 ```shell
-java -jar tsne-demos-0.1.jar --lblcolno 5 ../src/main/resources/datasets/iris.csv
+java -jar target/tsne-demos-0.1.jar --lblcolno 5 src/main/resources/datasets/iris.csv
 ```
 Run TSne on file without headers and no labels but supply a separate label file (with the same ordering as the data file).
 ```shell
-java -jar tsne-demos-0.1.jar --nohdr --nolbls --label_file=../src/main/resources/datasets/iris_X_labels.txt ../src/main/resources/datasets/iris_X.txt
+java -jar target/tsne-demos-0.1.jar --nohdr --nolbls --label_file=src/main/resources/datasets/iris_X_labels.txt src/main/resources/datasets/iris_X.txt
 ```
 
 To see graps generated with this implementation, [Klick here](http://lejon.github.io/TSneJava/)
