@@ -18,7 +18,7 @@ Then use the tsne-demos JAR just build.
 
 You can also download the pre-build binary JAR from the release page.
 
-Examples (On Mac):
+Examples:
 
 Run TSne on file without headers and no labels.
 ```shell
