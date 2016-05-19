@@ -1,7 +1,5 @@
 package com.jujutsu.tsne.demos;
 
-import java.awt.Dimension;
-import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,7 +24,6 @@ import org.math.plot.PlotPanel;
 import org.math.plot.plots.ColoredScatterPlot;
 import org.math.plot.plots.ScatterPlot;
 
-import com.jujutsu.plotting.JFreeChartColorScatterPlot;
 import com.jujutsu.tsne.MemOptimizedTSne;
 import com.jujutsu.tsne.TSne;
 import com.jujutsu.utils.MatrixOps;
@@ -374,7 +371,7 @@ public class TSneCsv {
 		plotframe.setVisible(true);
 	}
 	
-	static void plot2DJChart(String[] labels, double[][] Y) {
+	/*static void plot2DJChart(String[] labels, double[][] Y) {
 		JFreeChartColorScatterPlot plt = new JFreeChartColorScatterPlot("TSne REsult", Y, labels);
 		plt.pack();
 		Rectangle s = plt.getGraphicsConfiguration().getBounds();
@@ -385,7 +382,7 @@ public class TSneCsv {
 		int y = (int) (0.5 * h) + s.y;
 		plt.setBounds(x, y, f.width, f.height);
 		plt.setVisible(true);
-	}
+	}*/
 
 	public static void printMtx(double [][]mtx) {
 		for (int i = 0; i < mtx.length; i++) {
