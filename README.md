@@ -8,8 +8,38 @@ This project has been refacored into two separate Maven projects, one for the co
 
 T-SNE-Java is now in version 1.0. It has been in development version long enough.
 
-Basic usage: 
-  
+Basic command line usage
+------------------------
+
+If you just want to use TSne as a command line tool, you should use TSneCsv which is by far the most flexible alternative.
+
+You must then first build and install 'tsne' and  'tsne-demos' (mvn install).
+Then use the tsne-demos JAR just build. 
+
+You can also download the pre-build binary JAR from the release page.
+
+Examples (On Mac):
+
+Run TSne on file without headers and no labels.
+```shell
+java -jar target/tsne-demos-1.0.jar -nohdr -nolbls src/main/resources/datasets/iris_X.txt 
+```
+Run TSne on CSV file with headers and label column nr. 5.
+```shell
+java -jar target/tsne-demos-1.0.jar --lblcolno 5 src/main/resources/datasets/iris.csv
+```
+Run TSne on file without headers and no labels but supply a separate label file (with the same ordering as the data file).
+```shell
+java -jar target/tsne-demos-1.0.jar --nohdr --nolbls --label_file=src/main/resources/datasets/iris_X_labels.txt src/main/resources/datasets/iris_X.txt
+```
+
+To see graphs generated with this implementation, [Klick here](http://lejon.github.io/TSneJava/)
+
+For some tips working with t-sne [Klick here] (http://lejon.github.io)
+
+Basic code usage: 
+-----------------
+
 ```java
 import com.jujutsu.tsne.FastTSne;
 import com.jujutsu.tsne.MatrixOps;
@@ -31,29 +61,9 @@ public class TSneTest {
 
 ```
 
-If you just want to use TSne as a command line tool, you should use TSneCsv which is by far the most flexible alternative.
-
-You must then first build and install 'tsne' and  'tsne-demos' (mvn install).
-Then use the tsne-demos JAR just build. 
-
-Examples (On Mac):
-
-Run TSne on file without headers and no labels.
-```shell
-java -jar target/tsne-demos-1.0.jar -nohdr -nolbls src/main/resources/datasets/iris_X.txt 
-```
-Run TSne on CSV file with headers and label column nr. 5.
-```shell
-java -jar target/tsne-demos-1.0.jar --lblcolno 5 src/main/resources/datasets/iris.csv
-```
-Run TSne on file without headers and no labels but supply a separate label file (with the same ordering as the data file).
-```shell
-java -jar target/tsne-demos-1.0.jar --nohdr --nolbls --label_file=src/main/resources/datasets/iris_X_labels.txt src/main/resources/datasets/iris_X.txt
-```
-
-To see graps generated with this implementation, [Klick here](http://lejon.github.io/TSneJava/)
-
-For some tips working with t-sne [Klick here] (http://lejon.github.io)
+Version
+-------
+1.0
 
 Enjoy!
 -Leif
