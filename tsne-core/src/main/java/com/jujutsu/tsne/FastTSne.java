@@ -1,5 +1,33 @@
 package com.jujutsu.tsne;
 
+import static com.jujutsu.utils.EjmlOps.addRowVector;
+import static com.jujutsu.utils.EjmlOps.assignAllLessThan;
+import static com.jujutsu.utils.EjmlOps.assignAtIndex;
+import static com.jujutsu.utils.EjmlOps.biggerThan;
+import static com.jujutsu.utils.EjmlOps.colMean;
+import static com.jujutsu.utils.EjmlOps.extractDoubleArray;
+import static com.jujutsu.utils.EjmlOps.maximize;
+import static com.jujutsu.utils.EjmlOps.replaceNaN;
+import static com.jujutsu.utils.EjmlOps.setData;
+import static com.jujutsu.utils.EjmlOps.setDiag;
+import static com.jujutsu.utils.EjmlOps.tile;
+import static com.jujutsu.utils.MatrixOps.abs;
+import static com.jujutsu.utils.MatrixOps.addColumnVector;
+import static com.jujutsu.utils.MatrixOps.assignValuesToRow;
+import static com.jujutsu.utils.MatrixOps.concatenate;
+import static com.jujutsu.utils.MatrixOps.equal;
+import static com.jujutsu.utils.MatrixOps.fillMatrix;
+import static com.jujutsu.utils.MatrixOps.getValuesFromRow;
+import static com.jujutsu.utils.MatrixOps.mean;
+import static com.jujutsu.utils.MatrixOps.negate;
+import static com.jujutsu.utils.MatrixOps.range;
+import static com.jujutsu.utils.MatrixOps.rnorm;
+import static com.jujutsu.utils.MatrixOps.scalarInverse;
+import static com.jujutsu.utils.MatrixOps.scalarMult;
+import static com.jujutsu.utils.MatrixOps.sqrt;
+import static com.jujutsu.utils.MatrixOps.square;
+import static com.jujutsu.utils.MatrixOps.sum;
+import static com.jujutsu.utils.MatrixOps.times;
 import static org.ejml.ops.CommonOps.add;
 import static org.ejml.ops.CommonOps.addEquals;
 import static org.ejml.ops.CommonOps.divide;
@@ -27,26 +55,6 @@ import java.io.IOException;
 import org.ejml.data.DenseMatrix64F;
 
 import com.jujutsu.utils.MatrixOps;
-
-import static com.jujutsu.utils.EjmlOps.*;
-import static com.jujutsu.utils.MatrixOps.abs;
-import static com.jujutsu.utils.MatrixOps.addColumnVector;
-import static com.jujutsu.utils.MatrixOps.addRowVector;
-import static com.jujutsu.utils.MatrixOps.assignValuesToRow;
-import static com.jujutsu.utils.MatrixOps.concatenate;
-import static com.jujutsu.utils.MatrixOps.equal;
-import static com.jujutsu.utils.MatrixOps.fillMatrix;
-import static com.jujutsu.utils.MatrixOps.getValuesFromRow;
-import static com.jujutsu.utils.MatrixOps.mean;
-import static com.jujutsu.utils.MatrixOps.negate;
-import static com.jujutsu.utils.MatrixOps.range;
-import static com.jujutsu.utils.MatrixOps.rnorm;
-import static com.jujutsu.utils.MatrixOps.scalarInverse;
-import static com.jujutsu.utils.MatrixOps.scalarMult;
-import static com.jujutsu.utils.MatrixOps.sqrt;
-import static com.jujutsu.utils.MatrixOps.square;
-import static com.jujutsu.utils.MatrixOps.sum;
-import static com.jujutsu.utils.MatrixOps.times;
 /**
 *
 * Author: Leif Jonsson (leif.jonsson@gmail.com)
@@ -232,7 +240,7 @@ public class FastTSne implements TSne {
 		double [][] sum_X   = sum(square(X), 1);
 		double [][] times   = scalarMult(times(X, mo.transpose(X)), -2);
 		double [][] prodSum = addColumnVector(mo.transpose(times), sum_X);
-		double [][] D       = addRowVector(prodSum, mo.transpose(sum_X));
+		double [][] D       = com.jujutsu.utils.MatrixOps.addRowVector(prodSum, mo.transpose(sum_X));
 		// D seems correct at this point compared to Python version
 		double [][] P       = fillMatrix(n,n,0.0);
 		double [] beta      = fillMatrix(n,n,1.0)[0];
