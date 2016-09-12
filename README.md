@@ -44,7 +44,8 @@ Basic code usage:
 
 ```java
 import com.jujutsu.tsne.FastTSne;
-import com.jujutsu.tsne.MatrixOps;
+import com.jujutsu.utils.MatrixOps;
+import com.jujutsu.utils.MatrixUtils;
 import com.jujutsu.tsne.TSne;
 
 public class TSneTest {
