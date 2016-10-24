@@ -82,31 +82,25 @@ public class TSneDemo {
     }
 
 	static void plotIris(double[][] Y) {
-		double [][]        setosa = new double[initial_dims][2];
+		double [][]        setosa = new double[initial_dims][];
         String []     setosaNames = new String[initial_dims];
-        double [][]    versicolor = new double[initial_dims][2];
+        double [][]    versicolor = new double[initial_dims][];
         String [] versicolorNames = new String[initial_dims];
-        double [][]     virginica = new double[initial_dims][2];
+        double [][]     virginica = new double[initial_dims][];
         String []  virginicaNames = new String[initial_dims];
         
         int cnt = 0;
         for (int i = 0; i < initial_dims; i++, cnt++) {
-        	for (int j = 0; j < 2; j++) {
-            	setosa[i][j] = Y[cnt][j];
+        	setosa[i] = Y[cnt];
             	setosaNames[i] = "setosa";
-			}
         }
         for (int i = 0; i < initial_dims; i++, cnt++) {
-        	for (int j = 0; j < 2; j++) {
-        		versicolor[i][j] = Y[cnt][j];
-        		versicolorNames[i] = "versicolor";
-			}
+        	versicolor[i] = Y[cnt];
+        	versicolorNames[i] = "versicolor";
         }
         for (int i = 0; i < initial_dims; i++, cnt++) {
-        	for (int j = 0; j < 2; j++) {
-        		virginica[i][j] = Y[cnt][j];
-        		virginicaNames[i] = "virginica";
-			}
+        	virginica[i] = Y[cnt];
+        	virginicaNames[i] = "virginica";
         }
         
         Plot2DPanel plot = new Plot2DPanel();
