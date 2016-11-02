@@ -158,13 +158,14 @@ public class BarnesHutTSne implements TSne {
 			// Compute asymmetric pairwise input similarities
 			computeGaussianPerplexity(X, N, D, row_P, col_P, val_P, perplexity, K);
 			
-			System.out.println("val_P:");
-			for (int i = 0; i < 20; i++) {				
-				System.out.print(val_P[i] + ", ");
-			}
-			System.out.println();
+			// Verified that val_P,col_P,row_P is the same at this point
+			
 			// Symmetrize input similarities
-			symmetrizeMatrix(row_P, col_P, val_P, N);
+			SymResult res = symmetrizeMatrix(row_P, col_P, val_P, N);
+			row_P = res.sym_row_P;
+			col_P = res.sym_col_P;
+			val_P = res.sym_val_P;
+			
 			double sum_P = .0;
 			for(int i = 0; i < row_P[N]; i++) sum_P += val_P[i];
 			for(int i = 0; i < row_P[N]; i++) val_P[i] /= sum_P;
@@ -187,11 +188,6 @@ public class BarnesHutTSne implements TSne {
 			if(exact) computeExactGradient(P, Y, N, no_dims, dY);
 			else computeGradient(P, row_P, col_P, val_P, Y, N, no_dims, dY, theta);
 			
-//			System.out.printf("Y is: ");
-//	        for(int i = 0; i < 20; i++) {
-//	        	System.out.printf("%f, ",Y[i]);
-//	        }
-//		    System.out.println();
 			// Update gains
 			for(int i = 0; i < N * no_dims; i++) gains[i] = (sign_tsne(dY[i]) != sign_tsne(uY[i])) ? (gains[i] + .2) : (gains[i] * .8);
 			for(int i = 0; i < N * no_dims; i++) if(gains[i] < .01) gains[i] = .01;
@@ -425,7 +421,7 @@ public class BarnesHutTSne implements TSne {
 		}
 	}
 
-	// Compute input similarities with a fixed perplexity using ball trees (this function allocates memory another function should free)
+	// Compute input similarities with a fixed perplexity using ball trees
 	void computeGaussianPerplexity(double [] X, int N, int D, int [] _row_P, int [] _col_P, double [] _val_P, double perplexity, int K) {
 		if(perplexity > K) System.out.println("Perplexity should be lower than K!");
 
@@ -444,12 +440,23 @@ public class BarnesHutTSne implements TSne {
 
 		// Build ball tree on data set
 		VpTree<DataPoint, EuclideanDistance> tree = new VpTree<DataPoint, EuclideanDistance>();
-		List<DataPoint> obj_X = new ArrayList<DataPoint>(N);
+		final DataPoint [] obj_X = new DataPoint [N];
 		for(int n = 0; n < N; n++) {
 			double [] row = MatrixOps.extractRowFromFlatMatrix(X,n,D);
-			obj_X.add(n,new DataPoint(D, n, row));
+			obj_X[n] = new DataPoint(D, n, row);
 		}
 		tree.create(obj_X);
+		
+		// VERIFIED THAT TREES LOOK THE SAME
+		//System.out.println("Created Tree is: ");
+//		AdditionalInfoProvider pp = new AdditionalInfoProvider() {			
+//			@Override
+//			public String provideInfo(Node node) {
+//				return "" + obj_X[node.index].index();
+//			}
+//		};
+//		TreePrinter printer = new TreePrinter(pp);
+//		printer.printTreeHorizontal(tree.getRoot());
 
 		// Loop over all points to find nearest neighbors
 		System.out.println("Building tree...");
@@ -463,14 +470,8 @@ public class BarnesHutTSne implements TSne {
 			indices.clear();
 			distances.clear();
 			//System.out.println("Looking at: " + obj_X.get(n).index());
-			tree.search(obj_X.get(n), K + 1, indices, distances);
+			tree.search(obj_X[n], K + 1, indices, distances);
 			
-//			System.out.printf("Indices: ");
-//	        for (int i = 0; i < 20; ++i) {
-//	        	System.out.printf("%d(%f), ", indices.get(i).index(), distances.get(i));
-//			}
-//	        System.out.printf("\n");
-
 			// Initialize some variables for binary search
 			boolean found = false;
 			double beta = 1.0;
@@ -686,9 +687,21 @@ public class BarnesHutTSne implements TSne {
 		}
 
 	}
+	
+	class SymResult {
+		int []    sym_row_P;
+		int []    sym_col_P;
+		double [] sym_val_P;
+		
+		public SymResult(int[] sym_row_P, int[] sym_col_P, double[] sym_val_P) {
+			super();
+			this.sym_row_P = sym_row_P;
+			this.sym_col_P = sym_col_P;
+			this.sym_val_P = sym_val_P;
+		}
+	}
 
-
-	void symmetrizeMatrix(int [] _row_P, int [] _col_P, double [] _val_P, int N) {
+	SymResult symmetrizeMatrix(int [] _row_P, int [] _col_P, double [] _val_P, int N) {
 
 		// Get sparse matrix
 		int [] row_P = _row_P;
@@ -761,6 +774,8 @@ public class BarnesHutTSne implements TSne {
 
 		// Divide the result by two
 		for(int i = 0; i < no_elem; i++) sym_val_P[i] /= 2.0;
+		
+		return new SymResult(sym_row_P, sym_col_P, sym_val_P);
 	}
 
 	// Compute squared Euclidean distance matrix (using BLAS)
