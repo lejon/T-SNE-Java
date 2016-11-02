@@ -1,11 +1,13 @@
 package com.jujutsu.tsne;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 
 import org.junit.Test;
 
+import com.jujutsu.tsne.barneshut.SPTree;
 import com.jujutsu.utils.MatrixOps;
 import com.jujutsu.utils.MatrixUtils;
 
@@ -132,5 +134,37 @@ public class MatrixOpTest {
 		System.out.println("    Tr time: " + trtime);
 		System.out.println("Par Tr time: " + partrtime);
 	}
+	
+	@Test
+	public void testExtractRowFromFlatFirst() {
+		double [] flatMatrix = {1,2,3,4,5,6,7,8,9,0};
+		int dimension = 2;
+		int rowIdx = 0;
+		double [] row = MatrixOps.extractRowFromFlatMatrix(flatMatrix, rowIdx, dimension);
+		double [] expected = {1, 2};
+		assertArrayEquals(expected, row, 0.000000001);
+	}
+
+	
+	@Test
+	public void testExtractRowFromFlatMidRange() {
+		double [] flatMatrix = {1,2,3,4,5,6,7,8,9,0};
+		int dimension = 2;
+		int rowIdx = 2;
+		double [] row = MatrixOps.extractRowFromFlatMatrix(flatMatrix, rowIdx, dimension);
+		double [] expected = {5, 6};
+		assertArrayEquals(expected, row, 0.000000001);
+	}
+	
+	@Test
+	public void testExtractRowFromFlatLast() {
+		double [] flatMatrix = {1,2,3,4,5,6,7,8,9,0};
+		int dimension = 2;
+		int rowIdx = 4;
+		double [] row = MatrixOps.extractRowFromFlatMatrix(flatMatrix, rowIdx, dimension);
+		double [] expected = {9, 0};
+		assertArrayEquals(expected, row, 0.000000001);
+	}
+
 
 }

@@ -1567,5 +1567,15 @@ public class MatrixOps {
 		}
 		return result;
 	}
+	
+	public static double [] extractRowFromFlatMatrix(double[] flatMatrix, int rowIdx, int dimension) {
+		double [] point = new double[dimension];
+		int offset = rowIdx * dimension;
+		for (int j = 0; j < dimension; j++) {
+			point[j] = flatMatrix[offset+j];
+		}
+		return point;
+	}
+
 
 }
