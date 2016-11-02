@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -25,8 +26,13 @@ public class BHUtilsTest {
 		_items[2] = new DataPoint(3,2,p3);
 		
 		//System.out.println("Items=" + Arrays.toString(_items));
-		
-		PriorityQueue<HeapItem> heap = new PriorityQueue<HeapItem>(); 
+		int k = 10;
+		PriorityQueue<HeapItem> heap = new PriorityQueue<HeapItem>(k,new Comparator<HeapItem>() {
+			@Override
+			public int compare(HeapItem o1, HeapItem o2) {
+				return -1 * o1.compareTo(o2);
+			}
+		}); 
 		heap.add(new HeapItem(0, 7.2));
 		heap.add(new HeapItem(1, 4.1));
 		heap.add(new HeapItem(2, 5.1));
@@ -47,7 +53,7 @@ public class BHUtilsTest {
         
         
         Collections.reverse(results);
-        DataPoint [] expectedRes = { _items[0], _items[2], _items[1] };
+        DataPoint [] expectedRes = { _items[1], _items[2], _items[0] };
         DataPoint [] actualRes = new DataPoint[expectedRes.length];
         for (int i = 0; i < actualRes.length; i++) {
         	actualRes[i] = results.get(i);
@@ -56,7 +62,7 @@ public class BHUtilsTest {
         assertArrayEquals(expectedRes, actualRes);
         
         Collections.reverse(distances);
-        double [] expected = {7.2,5.1,4.1};
+        double [] expected = {4.1,5.1,7.2};
         double [] actual = new double[expected.length];
         for (int i = 0; i < actual.length; i++) {
 			actual[i] = distances.get(i);
@@ -173,16 +179,22 @@ public class BHUtilsTest {
 
 	@Test
 	public void testPrioHeap() {
-		PriorityQueue<Integer> heap = new PriorityQueue<Integer>();
+		int k = 10;
+		PriorityQueue<Integer> heap = new PriorityQueue<Integer>(k,Collections.reverseOrder());
 		int [] array = {5, 6, 4, 3, 2, 6, 7, 9, 3};
 		
 		for (int i = 0; i < array.length; i++) {
 			heap.add(array[i]);			
 		}
-		System.out.println(heap);
+//		System.out.println(heap);
+		int cnt = 0;		
+		int [] result = new int[array.length]; 
 		while(!heap.isEmpty()) {
-			System.out.print(heap.remove() + ", ");
+			result[cnt++] = heap.remove();
+//			System.out.print(heap.remove() + ", ");
 		}
+		int [] expected = {9, 7, 6, 6, 5, 4, 3, 3, 2};
+		assertArrayEquals(expected, result);
 	}
 	
 }

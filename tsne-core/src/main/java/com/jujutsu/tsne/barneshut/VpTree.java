@@ -1,6 +1,8 @@
 package com.jujutsu.tsne.barneshut;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.concurrent.ThreadLocalRandom;
@@ -11,18 +13,20 @@ public class VpTree<StorageType, DistanceType> {
 	DataPoint [] _items;
 	Node _root;
 
-	public void create(List<DataPoint> items) {
-		_items = new DataPoint[items.size()];
-		for (int i = 0; i < _items.length; i++) {
-			_items[i] = items.get(i);
-		}
-		_root = buildFromPoints(0,items.size());
-		System.out.println("Root index is: " + _root.index);
+	public void create(DataPoint [] items) {
+		_items = items.clone();
+		_root = buildFromPoints(0,items.length);
 	}
 
 	public void search(DataPoint target, int k, List<DataPoint> results, List<Double> distances) {
 		// Use a priority queue to store intermediate results on
-		PriorityQueue<HeapItem> heap = new PriorityQueue<HeapItem>(); 
+		// Javas prio heap is by default in ascending order, we want descending... 
+		PriorityQueue<HeapItem> heap = new PriorityQueue<HeapItem>(k,new Comparator<HeapItem>() {
+			@Override
+			public int compare(HeapItem o1, HeapItem o2) {
+				return -1 * o1.compareTo(o2);
+			}
+		}); 
         
         // Variable that tracks the distance to the farthest point in our results
         _tau = Double.MAX_VALUE;
@@ -39,9 +43,9 @@ public class VpTree<StorageType, DistanceType> {
             heap.remove();
         }
         
-        // Results are not in reverse order in Java since the heap is ascending and not descending as in C++ 
-        //Collections.reverse(results);
-        //Collections.reverse(distances);
+        // Results are in reverse order 
+        Collections.reverse(results);
+        Collections.reverse(distances);
 	}
 
 	// Function that (recursively) fills the tree
@@ -141,6 +145,19 @@ public class VpTree<StorageType, DistanceType> {
 		double threshold;
 		private Node left;
 		private Node right;
+		
+		@Override
+		public String toString() {
+			return "Node(id=" + index + ")";
+		}
+		
+		public Node getLeft() {
+			return left;
+		}
+
+		public Node getRight() {
+			return right;
+		}
 
 		// Helper function that searches the tree    
 		void search(Node node, DataPoint target, int k, PriorityQueue<HeapItem> heap)
@@ -184,5 +201,4 @@ public class VpTree<StorageType, DistanceType> {
 			}
 		}
 	}
-
 }
