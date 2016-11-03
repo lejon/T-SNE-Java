@@ -92,12 +92,15 @@ public class BHTSne implements BarnesHutTSne {
 
 	// Perform t-SNE
 	double [] run(double [] X, int N, int D, int no_dims, double perplexity, int max_iter, double theta) {
+		boolean exact = (theta == .0) ? true : false;
+		if(exact) throw new IllegalArgumentException("The Barnes Hut implementation does not support exact inference yet (theta==0.0), if you want exact t-SNE please use one of the standard t-SNE implementations (FastTSne for instance)");
+		
+		
 		double [] Y = new double[N*no_dims];
 		System.out.println("X:Shape is = " + N + " x " + D);
 		// Determine whether we are using an exact algorithm
 		if(N - 1 < 3 * perplexity) { throw new IllegalArgumentException("Perplexity too large for the number of data points!\n"); }
 		System.out.printf("Using no_dims = %d, perplexity = %f, and theta = %f\n", no_dims, perplexity, theta);
-		boolean exact = (theta == .0) ? true : false;
 
 		// Set learning parameters
 		double total_time = 0;
