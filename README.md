@@ -53,7 +53,7 @@ java -jar target/tsne-demos-2.1.0.jar --parallel --nohdr --nolbls --label_file=s
 ```
 Example graph of the MNIST data set (60000 samples) generated with Barnes Hut implementation of t-SNE:
 
-![image of MNIST clusters](https://github.com/lejon/T-SNE-Java/tree/master/images/mnist-full.png "MNIST (60000 samples)")
+![image of MNIST clusters](https://github.com/lejon/T-SNE-Java/tree/master/tsne-demos/images/mnist-full.png "MNIST (60000 samples)")
 
 For some tips working with t-sne [Klick here] (http://lejon.github.io)
 
