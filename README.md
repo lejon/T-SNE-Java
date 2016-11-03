@@ -86,8 +86,9 @@ To use the Barnes Hut version:
 ```java
 import java.io.File;
 
-import com.jujutsu.tsne.TSne;
+import com.jujutsu.tsne.barneshut.BHTSne;
 import com.jujutsu.tsne.barneshut.BarnesHutTSne;
+import com.jujutsu.tsne.barneshut.ParallelBHTsne;
 import com.jujutsu.utils.MatrixOps;
 import com.jujutsu.utils.MatrixUtils;
 
@@ -97,7 +98,13 @@ public class TSneTest {
     double perplexity = 20.0;
     double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/resources/datasets/mnist2500_X.txt"), "   ");
     System.out.println(MatrixOps.doubleArrayToPrintString(X, ", ", 50,10));
-    TSne tsne = new BarnesHutTSne();
+    BarnesHutTSne tsne;
+    boolean parallel = false;
+	if(parallel) {			
+		tsne = new ParallelBHTsne();
+	} else {
+		tsne = new BHTSne();
+	}
     double [][] Y = tsne.tsne(X, 2, initial_dims, perplexity);   
     
     // Plot Y or save Y to file and plot with some other tool such as for instance R
