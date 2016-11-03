@@ -3,6 +3,14 @@
 T-SNE-Java
 ==========
 
+NEWS 2016-11-02!
+================
+*T-SNE-Java now have support for **Barnes Hut** which makes it possible to run the amazing t-SNE on much larger datasets (or much faster on small datasets:) )!*
+There are still many improvements possible and no optimization has been done yet. But it is already much much faster than the standard t-SNE.
+Great research by Dr. Maaten!!
+
+About
+=====
 
 Pure Java implementation of Van Der Maaten and Hinton's t-sne clustering algorithm.
 
@@ -64,10 +72,33 @@ public class TSneTest {
 
 ```
 
+To use the Barnes Hut version:
+
+```java
+import com.jujutsu.tsne.FastTSne;
+import com.jujutsu.utils.MatrixOps;
+import com.jujutsu.utils.MatrixUtils;
+import com.jujutsu.tsne.TSne;
+
+public class TSneTest {
+  public static void main(String [] args) {
+    int initial_dims = 55;
+    double perplexity = 20.0;
+    double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/resources/datasets/mnist2500_X.txt"), ",");
+    System.out.println(MatrixOps.doubleArrayToPrintString(X, ", ", 50,10));
+    TSne tsne = new BarnesHutTSne();
+    double [][] Y = tsne.tsne(X, 2, initial_dims, perplexity);   
+    
+    // Plot Y or save Y to file and plot with some other tool such as for instance R
+  }
+}
+
+```
+
 Version
 -------
-Demo: 1.0
-Core: 1.0.1
+Demo: 2.0.0
+Core: 2.0.0
 
 Enjoy!
 -Leif
