@@ -17,9 +17,9 @@ About
 
 Pure Java implementation of Van Der Maaten and Hinton's t-sne clustering algorithm.
 
-This project has been refacored into two separate Maven projects, one for the core tsne and one for the demos.
+This project is divided into two separate Maven projects, one for the core t-SNE and one for the demos (stand-alone executables that can be run from command line).
 
-T-SNE-Java is now in version 1.0 (tsne-core is 1.0.1)  It has been in development version long enough.
+With (parallel) Barnes Hut, T-SNE-Java is now in version 2.0.0 both codre and demos.
 
 Basic command line usage
 ------------------------
@@ -35,17 +35,21 @@ Examples:
 
 Run TSne on file without headers and no labels.
 ```shell
-java -jar target/tsne-demos-1.0.jar -nohdr -nolbls src/main/resources/datasets/iris_X.txt 
+java -jar target/tsne-demos-2.0.0.jar -nohdr -nolbls src/main/resources/datasets/iris_X.txt 
 ```
 Run TSne on CSV file with headers and label column nr. 5.
 ```shell
-java -jar target/tsne-demos-1.0.jar --lblcolno 5 src/main/resources/datasets/iris.csv
+java -jar target/tsne-demos-2.0.0.jar --lblcolno 5 src/main/resources/datasets/iris.csv
 ```
 Run TSne on file without headers and no labels but supply a separate label file (with the same ordering as the data file).
 ```shell
-java -jar target/tsne-demos-1.0.jar --nohdr --nolbls --label_file=src/main/resources/datasets/iris_X_labels.txt src/main/resources/datasets/iris_X.txt
+java -jar target/tsne-demos-2.0.0.jar --nohdr --nolbls --label_file=src/main/resources/datasets/iris_X_labels.txt src/main/resources/datasets/iris_X.txt
 ```
 
+Same as above but using parallelization.
+```shell
+java -jar target/tsne-demos-2.0.0.jar --parallel --nohdr --nolbls --label_file=src/main/resources/datasets/iris_X_labels.txt src/main/resources/datasets/iris_X.txt
+```
 To see graphs generated with this implementation, [Klick here](http://lejon.github.io/TSneJava/)
 
 For some tips working with t-sne [Klick here] (http://lejon.github.io)
