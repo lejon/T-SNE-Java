@@ -15,19 +15,20 @@ Great research by Dr. Maaten!!
 About
 =====
 
-Pure Java implementation of Van Der Maaten and Hinton's t-sne clustering algorithm.
+Pure Java implementation of Van Der Maaten and Hinton's t-SNE clustering algorithm.
 
 This project is divided into two separate Maven projects, one for the core t-SNE and one for the demos (stand-alone executables that can be run from command line).
 
-With (parallel) Barnes Hut, T-SNE-Java is now in version 2.0.0 both codre and demos.
+With (parallel) Barnes Hut, T-SNE-Java is now in version v2.0.0, both core and demos.
 
 Basic command line usage
 ------------------------
 
-If you just want to use TSne as a command line tool, you should use TSneCsv which is by far the most flexible alternative.
+If you just want to use TSne as a command line tool, you should use BarnesHutTSneCsv for the 
+Barnes Hut version or TSneCsv for the classic version. 
 
 You must then first build and install 'tsne' and  'tsne-demos' (mvn install).
-Then use the tsne-demos JAR just build. 
+Then use the tsne-demos JAR you just build according to the examples below. 
 
 You can also download the pre-build binary JAR from the release page.
 
