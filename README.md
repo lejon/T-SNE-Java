@@ -5,7 +5,8 @@ T-SNE-Java
 
 NEWS 2016-11-02!
 ================
-*T-SNE-Java now have support for **Barnes Hut** which makes it possible to run the amazing t-SNE on much larger datasets (or much faster on small datasets:) )!*
+*T-SNE-Java now have support for __Barnes Hut__ which makes it possible to run the amazing t-SNE on much larger datasets (or much faster on small datasets:) )!*
+
 There are still many improvements possible and no optimization has been done yet. But it is already much much faster than the standard t-SNE.
 Great research by Dr. Maaten!!
 
