@@ -4,7 +4,8 @@
 	<groupId>com.jujutsu.tsne</groupId>
 	<artifactId>tsne</artifactId>
 	<!-- Major refactoring into two maven modules -->
-	<version>1.0.1</version>
+	<!-- v2.0.0: Barnes Hut Implementation -->
+	<version>2.0.0</version>
 	<name>Java T-SNE</name>
 	
 	<properties>

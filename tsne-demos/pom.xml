@@ -3,7 +3,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.jujutsu.tsne</groupId>
 	<artifactId>tsne-demos</artifactId>
-	<version>1.0.0</version>
+	<!-- 2.0.0: Barnes Hut implementation (now default if running as JAR) -->
+	<version>2.0.0</version>
 	<name>Java T-SNE Demos</name>
 
 	<properties>
@@ -31,7 +32,7 @@
 		<dependency>
 			<groupId>com.jujutsu.tsne</groupId>
 			<artifactId>tsne</artifactId>
-			<version>1.0.1</version>
+			<version>2.0.0</version>
 		</dependency>
 		<!-- http://mvnrepository.com/artifact/com.github.yannrichet/JMathPlot -->
 		<dependency>
@@ -133,7 +134,7 @@
 									implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>com.jujutsu.tsne.demos.TSneCsv</mainClass>
+									<mainClass>com.jujutsu.tsne.demos.BarnesHutTSneCsv</mainClass>
 								</transformer>
 							</transformers>
 						</configuration>
