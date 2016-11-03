@@ -2,10 +2,7 @@ package com.jujutsu.tsne.barneshut;
 
 import static java.lang.Math.sqrt;
 
-import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.atomic.AtomicLong;
-
-import com.jujutsu.tsne.barneshut.ParalellBHTsne.RecursiveGradientCalculator;
 
 public class ParalellSPTree extends SPTree {
 
@@ -28,48 +25,9 @@ public class ParalellSPTree extends SPTree {
 	public ParalellSPTree(SPTree inp_parent, int D, double[] inp_data, int N, double[] inp_corner, double[] inp_width) {
 		super(inp_parent, D, inp_data, N, inp_corner, inp_width);
 	}
-	
-	class RecursiveForceCalculator extends RecursiveAction {
-		final static long serialVersionUID = 1L;
-		int startRow = -1;
-		int endRow = -1;
-		int limit = 100;
-		SPTree tree;
-		double[][] neg_f;
-		double theta;
-		AtomicLong sum_Q;
-
-		public RecursiveForceCalculator(SPTree tree, double [][] neg_f , double theta, 
-				AtomicLong sum_Q, int startRow, int endRow, int ll) {
-			this.limit = ll;
-			this.startRow = startRow;
-			this.endRow = endRow;
-			this.tree = tree;
-			this.neg_f = neg_f; 
-			this.theta = theta; 
-			this.sum_Q = sum_Q;
-		}
-
-		@Override
-		protected void compute() {
-			if ( (endRow-startRow) <= limit ) {
-				for (int row = startRow; row < endRow; row++) {
-					tree.computeNonEdgeForces(row, theta, neg_f[row], sum_Q);
-				}
-			}
-			else {
-				int range = (endRow-startRow);
-				int startDoc1 = startRow;
-				int endDoc1 = startRow + (range / 2);
-				int startDoc2 = endDoc1;
-				int endDoc2 = endRow;
-				invokeAll(new RecursiveForceCalculator(tree,neg_f, theta, sum_Q, startDoc1, endDoc1, limit),
-						new RecursiveForceCalculator(tree,neg_f, theta, sum_Q, startDoc2, endDoc2, limit));
-			}
-		}
-	}
 
 	// Compute non-edge forces using Barnes-Hut algorithm
+	@Override
 	void computeNonEdgeForces(int point_index, double theta, double [] neg_f, Object accumulator)
 	{
 		AtomicLong sum_Q = (AtomicLong) accumulator;

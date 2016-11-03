@@ -46,7 +46,8 @@ public class ParalellBHTsne extends BarnesHutTSne {
 	}
 
 	// Compute gradient of the t-SNE cost function (using Barnes-Hut algorithm)
-	void computeGradientParallell(double [] P, int [] inp_row_P, int [] inp_col_P, double [] inp_val_P, 
+	@Override
+	void computeGradient(double [] P, int [] inp_row_P, int [] inp_col_P, double [] inp_val_P, 
 			double [] Y, int N, int D, double [] dC, double theta)
 	{
 		// Construct space-partitioning tree on current map
