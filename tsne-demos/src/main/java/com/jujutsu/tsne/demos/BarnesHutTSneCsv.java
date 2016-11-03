@@ -26,6 +26,7 @@ import org.math.plot.plots.ScatterPlot;
 
 import com.jujutsu.tsne.TSne;
 import com.jujutsu.tsne.barneshut.BarnesHutTSne;
+import com.jujutsu.tsne.barneshut.ParallelBHTsne;
 import com.jujutsu.utils.MatrixOps;
 import com.jujutsu.utils.MatrixUtils;
 
@@ -47,6 +48,7 @@ public class BarnesHutTSneCsv {
 	static int     iterations      = 2000;
 	static int     label_col_no    = 0;
 	static String  label_col_name  = null;
+	static boolean parallel        = false;
 
 	public static DataFrame<Object> processCommandline(String [] args) throws IOException {
 		CommandLineParser parser = new PosixParser();
@@ -96,6 +98,8 @@ public class BarnesHutTSneCsv {
 				"add a small amount of noise to each column. This can be useful with highly structured datasets which can otherwise cause problems" );
 		options.addOption( "ss", "subsample",    false, 
 				"the current implementation does not handle very large datasets due to memory and time constraints. Adding this flag will uniformly subsample the dataset" );
+		options.addOption( "pa", "parallel",     false, 
+				"Run parts of algorithm in parallel. Using this option will hog your CPUs!" );
 
 
 		CommandLine parsedCommandLine = null;
@@ -204,6 +208,12 @@ public class BarnesHutTSneCsv {
 			System.out.println("Subsampling dataset...");
 			subSample = true;
 		}
+		
+		if (parsedCommandLine.hasOption( "parallel" )) {
+			System.out.println("Using parallel Barnes Hut t-SNE...");
+			parallel = true;
+		}
+
 
 		// Now process any drop column arguments, it makes sense to
 		// drop the integer indexed first since named ones are 
@@ -319,8 +329,12 @@ public class BarnesHutTSneCsv {
 		if(addNoise)  matrix = MatrixOps.addNoise(matrix);
 		System.out.println(MatrixOps.doubleArrayToPrintString(matrix,5,5,20));
 
-		TSne tsne = new BarnesHutTSne();
-		//TSne tsne = new BlasTSne();
+		TSne tsne;
+		if(parallel) {			
+			tsne = new ParallelBHTsne();
+		} else {
+			tsne = new BarnesHutTSne();
+		}
 		long t1 = System.currentTimeMillis();
 		double [][] Y = tsne.tsne(matrix, 2, initial_dims, perplexity, iterations);
 		if(transpose_after) Y = MatrixOps.transposeSerial(matrix);

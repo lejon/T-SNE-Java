@@ -1,9 +1,11 @@
 package com.jujutsu.tsne.barneshut;
 
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
-import java.util.concurrent.atomic.AtomicLong;
 
-public class ParalellBHTsne extends BarnesHutTSne {
+public class ParallelBHTsne extends BarnesHutTSne {
+	
+	private ForkJoinPool gradientPool;
 	
 	class RecursiveGradientCalculator extends RecursiveAction {
 		final static long serialVersionUID = 1L;
@@ -13,10 +15,10 @@ public class ParalellBHTsne extends BarnesHutTSne {
 		SPTree tree;
 		double[][] neg_f;
 		double theta;
-		AtomicLong sum_Q;
+		AtomicDouble sum_Q;
 
 		public RecursiveGradientCalculator(SPTree tree, double [][] neg_f , double theta, 
-				AtomicLong sum_Q, int startRow, int endRow, int ll) {
+				AtomicDouble sum_Q, int startRow, int endRow, int ll) {
 			this.limit = ll;
 			this.startRow = startRow;
 			this.endRow = endRow;
@@ -44,6 +46,14 @@ public class ParalellBHTsne extends BarnesHutTSne {
 			}
 		}
 	}
+		
+	@Override
+	double[] run(double[] X, int N, int D, int no_dims, double perplexity, int max_iter, double theta) {
+		gradientPool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
+		double [] Y = super.run(X, N, D, no_dims, perplexity, max_iter, theta);
+		gradientPool.shutdown();
+		return Y;
+	}
 
 	// Compute gradient of the t-SNE cost function (using Barnes-Hut algorithm)
 	@Override
@@ -51,20 +61,24 @@ public class ParalellBHTsne extends BarnesHutTSne {
 			double [] Y, int N, int D, double [] dC, double theta)
 	{
 		// Construct space-partitioning tree on current map
-		ParalellSPTree tree = new ParalellSPTree(D, Y, N);
+		ParallelSPTree tree = new ParallelSPTree(D, Y, N);
 
 		// Compute all terms required for t-SNE gradient
-		AtomicLong sum_Q = new AtomicLong();
+		AtomicDouble sum_Q = new AtomicDouble();
 		double [] pos_f = new double[N * D];
 		double [][] neg_f = new double[N][D];
 
 		tree.computeEdgeForces(inp_row_P, inp_col_P, inp_val_P, N, pos_f);
-		for(int n = 0; n < N; n++) tree.computeNonEdgeForces(n, theta, neg_f[n], sum_Q);
+		
+		RecursiveGradientCalculator dslr = new RecursiveGradientCalculator(tree, neg_f, theta, sum_Q, 0, N, 20);                
+		gradientPool.invoke(dslr);
+
+		//for(int n = 0; n < N; n++) tree.computeNonEdgeForces(n, theta, neg_f[n], sum_Q);
 
 		// Compute final t-SNE gradient
 		for(int i = 0; i < N; i++) {
 			for(int j = 0; j < D; j++) {
-				dC[i*D+j] = pos_f[i*D+j] - (neg_f[i][j] / Double.longBitsToDouble(sum_Q.get()));
+				dC[i*D+j] = pos_f[i*D+j] - (neg_f[i][j] / sum_Q.get());
 			}
 		}
 	}

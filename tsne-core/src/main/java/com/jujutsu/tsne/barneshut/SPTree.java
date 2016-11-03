@@ -74,7 +74,7 @@ public class SPTree {
 		for(int d = 0; d < D; d++) boundary.setCorner(d, inp_corner[d]);
 		for(int d = 0; d < D; d++) boundary.setWidth( d, inp_width[d]);
 
-		children = new SPTree[no_children];
+		children = getTreeArray(no_children);
 		for(int i = 0; i < no_children; i++) children[i] = null;
 
 		center_of_mass = new double[D];
@@ -82,7 +82,7 @@ public class SPTree {
 
 		buff = new double[D];
 	}
-
+	
 	// Constructor for SPTree with particular size and parent -- build the tree, too!
 	SPTree(int D, double [] inp_data, int N, double [] inp_corner, double [] inp_width)
 	{
@@ -124,6 +124,9 @@ public class SPTree {
 		return parent;
 	}
 
+	SPTree[] getTreeArray(int no_children) {
+		return new SPTree[no_children];
+	}
 
 	// Insert a point into the SPTree
 	boolean insert(int new_index)
@@ -186,7 +189,7 @@ public class SPTree {
 				else                   new_corner[d] = boundary.getCorner(d) + .5 * boundary.getWidth(d);
 				div *= 2;
 			}
-			children[i] = new SPTree(this, dimension, data, new_corner, new_width);
+			children[i] = getNewTree(this, new_corner, new_width);
 		}
 
 		// Move existing points to correct children
@@ -203,6 +206,9 @@ public class SPTree {
 		is_leaf = false;
 	}
 
+	SPTree getNewTree(SPTree root, double[] new_corner, double[] new_width) {
+		return new SPTree(root, dimension, data, new_corner, new_width);
+	}
 
 	// Build SPTree on dataset
 	void fill(int N)
