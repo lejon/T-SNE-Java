@@ -51,7 +51,9 @@ Same as above but using parallelization.
 ```shell
 java -jar target/tsne-demos-2.1.0.jar --parallel --nohdr --nolbls --label_file=src/main/resources/datasets/iris_X_labels.txt src/main/resources/datasets/iris_X.txt
 ```
-To see graphs generated with this implementation, [Klick here](http://lejon.github.io/TSneJava/)
+Example graph of the MNIST data set (60000 samples) generated with Barnes Hut implementation of t-SNE:
+
+![image of MNIST clusters](https://github.com/lejon/T-SNE-Java/tree/master/images/mnist-full.png "MNIST (60000 samples)")
 
 For some tips working with t-sne [Klick here] (http://lejon.github.io)
 
