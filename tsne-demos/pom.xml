@@ -4,7 +4,8 @@
 	<groupId>com.jujutsu.tsne</groupId>
 	<artifactId>tsne-demos</artifactId>
 	<!-- 2.0.0: Barnes Hut implementation (now default if running as JAR) -->
-	<version>2.0.0</version>
+	<!-- 2.1.0: Added support for configurable theta -->
+	<version>2.1.0</version>
 	<name>Java T-SNE Demos</name>
 
 	<properties>

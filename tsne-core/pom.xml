@@ -5,7 +5,8 @@
 	<artifactId>tsne</artifactId>
 	<!-- Major refactoring into two maven modules -->
 	<!-- v2.0.0: Barnes Hut Implementation -->
-	<version>2.0.0</version>
+	<!-- 2.1.0: Added support for configurable theta -->
+	<version>2.1.0</version>
 	<name>Java T-SNE</name>
 	
 	<properties>
