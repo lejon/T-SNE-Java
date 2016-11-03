@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.jujutsu.tsne.barneshut.VpTree.Node;
 
+@SuppressWarnings("rawtypes")
 public class TreePrinter {
 	
 	public interface AdditionalInfoProvider {
