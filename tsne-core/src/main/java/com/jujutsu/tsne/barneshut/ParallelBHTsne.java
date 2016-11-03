@@ -3,7 +3,7 @@ package com.jujutsu.tsne.barneshut;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 
-public class ParallelBHTsne extends BarnesHutTSne {
+public class ParallelBHTsne extends BHTSne {
 	
 	private ForkJoinPool gradientPool;
 	

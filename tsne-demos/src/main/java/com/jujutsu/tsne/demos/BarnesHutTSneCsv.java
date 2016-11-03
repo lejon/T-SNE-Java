@@ -24,7 +24,7 @@ import org.math.plot.PlotPanel;
 import org.math.plot.plots.ColoredScatterPlot;
 import org.math.plot.plots.ScatterPlot;
 
-import com.jujutsu.tsne.TSne;
+import com.jujutsu.tsne.barneshut.BHTSne;
 import com.jujutsu.tsne.barneshut.BarnesHutTSne;
 import com.jujutsu.tsne.barneshut.ParallelBHTsne;
 import com.jujutsu.utils.MatrixOps;
@@ -33,6 +33,7 @@ import com.jujutsu.utils.MatrixUtils;
 public class BarnesHutTSneCsv {
 	static int     initial_dims    = 50;
 	static double  perplexity      = 20.0;
+	static double  theta           = 0.5;
 	static boolean hasLabels       = true;
 	static boolean scale_log       = false;
 	static boolean normalize       = false;
@@ -56,6 +57,8 @@ public class BarnesHutTSneCsv {
 		Options options = new Options();
 		options.addOption( "perp", "perplexity",    true, 
 				"set the perplexity of the t-SNE algorithm (default " + perplexity +")" );
+		options.addOption( "th", "theta",           true, 
+				"sets the theta value of the Barnes Hut algorithm (default " + theta +")" );
 		options.addOption( "idims", "initial_dims", true, 
 				"scale the dataset to initial dims with PCA before running t-SNE (default " + initial_dims + "). Negative number indicates no scaling"  );
 		options.addOption( "nolbls", "no_labels",   false, 
@@ -179,6 +182,9 @@ public class BarnesHutTSneCsv {
 		}
 		if (parsedCommandLine.hasOption( "perplexity" )) {
 			perplexity = Double.parseDouble(parsedCommandLine.getOptionValue("perplexity").trim());
+		}
+		if (parsedCommandLine.hasOption( "theta" )) {
+			theta = Double.parseDouble(parsedCommandLine.getOptionValue("theta").trim());
 		}
 		if (parsedCommandLine.hasOption( "initial_dims" )) {
 			initial_dims = Integer.parseInt(parsedCommandLine.getOptionValue("initial_dims").trim());
@@ -329,14 +335,14 @@ public class BarnesHutTSneCsv {
 		if(addNoise)  matrix = MatrixOps.addNoise(matrix);
 		System.out.println(MatrixOps.doubleArrayToPrintString(matrix,5,5,20));
 
-		TSne tsne;
+		BarnesHutTSne tsne;
+		long t1 = System.currentTimeMillis();
 		if(parallel) {			
 			tsne = new ParallelBHTsne();
 		} else {
-			tsne = new BarnesHutTSne();
+			tsne = new BHTSne();
 		}
-		long t1 = System.currentTimeMillis();
-		double [][] Y = tsne.tsne(matrix, 2, initial_dims, perplexity, iterations);
+		double [][] Y = tsne.tsne(matrix, 2, initial_dims, perplexity, iterations, true, theta);
 		if(transpose_after) Y = MatrixOps.transposeSerial(matrix);
 		long t2 = System.currentTimeMillis();
 		System.out.println("TSne took: " + ((double) (t2-t1) / 1000.0) + " seconds");
