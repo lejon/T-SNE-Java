@@ -7,10 +7,10 @@ NEWS 2016-11-02!
 ================
 *T-SNE-Java now have support for __Barnes Hut__ which makes it possible to run the amazing t-SNE on much larger data sets (or much faster on small data sets:) )!*
 
-The Barnes Hut version can also be run in parallel, we have seen from 40 % performance improvements on moderate datasets (ca 10 000 samples) to 400 % improvements on larger datasets (MNIST 60000 saples). 
-. 
+The Barnes Hut version can also be run in parallel! We have seen from 40 % performance improvements on moderate datasets (ca 10 000 samples) to 400 % improvements on larger datasets (MNIST 60000 samples) compared to standard Barnes Hut.
 
-There are still many improvements possible and no optimization has been done yet. But it is already much much faster than the standard t-SNE.
+Both standard and parallel Barnes Hut is of course magnitudes faster than vanilla t-SNE. 
+
 Great research by Dr. Maaten!!
 
 About
