@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+import com.jujutsu.tsne.PrincipalComponentAnalysis;
 import com.jujutsu.utils.MatrixOps;
 
 public class BHTSne implements BarnesHutTSne {
@@ -62,9 +63,7 @@ public class BHTSne implements BarnesHutTSne {
 	public double[][] tsne(double[][] X, int no_dims, int initial_dims, double perplexity, int max_iter, boolean use_pca, double theta) {
 		int N = X.length;
 		int D = X[0].length;
-		double [] Xflat = flatten(X);		
-		double [] YFlat = run(Xflat, N, D, no_dims, perplexity, max_iter, theta);
-		return expand(YFlat,N,no_dims);
+		return run(X, N, D, no_dims, initial_dims, perplexity, max_iter, use_pca, theta);
 	}
 
 	private double[] flatten(double[][] x) {
@@ -91,10 +90,18 @@ public class BHTSne implements BarnesHutTSne {
 	static double sign_tsne(double x) { return (x == .0 ? .0 : (x < .0 ? -1.0 : 1.0)); }
 
 	// Perform t-SNE
-	double [] run(double [] X, int N, int D, int no_dims, double perplexity, int max_iter, double theta) {
+	double [][] run(double [][] Xin, int N, int D, int no_dims, int initial_dims, double perplexity, 
+			int max_iter, boolean use_pca, double theta) {
 		boolean exact = (theta == .0) ? true : false;
 		if(exact) throw new IllegalArgumentException("The Barnes Hut implementation does not support exact inference yet (theta==0.0), if you want exact t-SNE please use one of the standard t-SNE implementations (FastTSne for instance)");
 		
+		if(use_pca && D > initial_dims && initial_dims > 0) {
+			PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
+			Xin = pca.pca(Xin, initial_dims);
+			D = initial_dims;
+			System.out.println("X:Shape after PCA is = " + Xin.length + " x " + Xin[0].length);
+		}
+		double [] X = flatten(Xin);	
 		
 		double [] Y = new double[N*no_dims];
 		System.out.println("X:Shape is = " + N + " x " + D);
@@ -229,7 +236,7 @@ public class BHTSne implements BarnesHutTSne {
 		end = System.currentTimeMillis(); total_time += (end - start) / 1000.0;
 
 		System.out.printf("Fitting performed in %4.2f seconds.\n", total_time);
-		return Y;
+		return expand(Y,N,no_dims);
 	}
 
 

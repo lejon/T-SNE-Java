@@ -77,10 +77,13 @@ public class ParallelBHTsne extends BHTSne {
 	}
 		
 	@Override
-	double[] run(double[] X, int N, int D, int no_dims, double perplexity, int max_iter, double theta) {
-		gradientPool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
-		double [] Y = super.run(X, N, D, no_dims, perplexity, max_iter, theta);
-		gradientPool.shutdown();
+	double[][] run(double [][] X, int N, int D, int no_dims, int initial_dims, double perplexity, 
+			int max_iter, boolean use_pca, double theta) {
+		//gradientPool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
+		gradientCalculationPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+ 		double [][] Y = super.run(X, N, D, no_dims, initial_dims, perplexity, max_iter, use_pca, theta);
+		//gradientPool.shutdown();
+		gradientCalculationPool.shutdown();
 		return Y;
 	}
 
