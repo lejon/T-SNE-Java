@@ -199,14 +199,8 @@ public class BHTSne implements BarnesHutTSne {
 			// Compute (approximate) gradient
 			if(exact) computeExactGradient(P, Y, N, no_dims, dY);
 			else computeGradient(P, row_P, col_P, val_P, Y, N, no_dims, dY, theta);
-
-			// Update gains
-			for(int i = 0; i < N * no_dims; i++) gains[i] = (sign_tsne(dY[i]) != sign_tsne(uY[i])) ? (gains[i] + .2) : (gains[i] * .8);
-			for(int i = 0; i < N * no_dims; i++) if(gains[i] < .01) gains[i] = .01;
-
-			// Perform gradient update (with momentum and gains)
-			for(int i = 0; i < N * no_dims; i++) uY[i] = momentum * uY[i] - eta * gains[i] * dY[i];
-			for(int i = 0; i < N * no_dims; i++)  Y[i] = Y[i] + uY[i];
+			
+			updateGradient(N, no_dims, Y, momentum, eta, dY, uY, gains);
 
 			// Make solution zero-mean
 			zeroMean(Y, N, no_dims);
@@ -237,6 +231,19 @@ public class BHTSne implements BarnesHutTSne {
 
 		System.out.printf("Fitting performed in %4.2f seconds.\n", total_time);
 		return expand(Y,N,no_dims);
+	}
+
+	void updateGradient(int N, int no_dims, double[] Y, double momentum, double eta, double[] dY, double[] uY,
+			double[] gains) {
+		for(int i = 0; i < N * no_dims; i++)  {
+			// Update gains
+			gains[i] = (sign_tsne(dY[i]) != sign_tsne(uY[i])) ? (gains[i] + .2) : (gains[i] * .8);
+			if(gains[i] < .01) gains[i] = .01;
+
+			// Perform gradient update (with momentum and gains)
+			Y[i] = Y[i] + uY[i];
+			uY[i] = momentum * uY[i] - eta * gains[i] * dY[i];
+		}
 	}
 
 

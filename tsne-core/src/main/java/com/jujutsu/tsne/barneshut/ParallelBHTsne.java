@@ -79,12 +79,73 @@ public class ParallelBHTsne extends BHTSne {
 	@Override
 	double[][] run(double [][] X, int N, int D, int no_dims, int initial_dims, double perplexity, 
 			int max_iter, boolean use_pca, double theta) {
-		//gradientPool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
+		gradientPool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
 		gradientCalculationPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
  		double [][] Y = super.run(X, N, D, no_dims, initial_dims, perplexity, max_iter, use_pca, theta);
-		//gradientPool.shutdown();
+		gradientPool.shutdown();
 		gradientCalculationPool.shutdown();
 		return Y;
+	}
+
+	class RecursiveGradientUpdater extends RecursiveAction {
+		final static long serialVersionUID = 1L;
+		int startIdx = -1;
+		int endIdx = -1;
+		int limit = 100;
+		int N;
+		int no_dims;
+		double[] Y;
+		double momentum;
+		double eta; 
+		double[] dY; 
+		double[] uY;
+		double[] gains;
+	
+		public RecursiveGradientUpdater(int n, int no_dims, double[] Y, double momentum, double eta, double[] dY, double[] uY,
+				double[] gains, int startIdx, int endIdx, int limit) {
+			super();
+			this.startIdx = startIdx;
+			this.endIdx = endIdx;
+			this.limit = limit;
+			N = n;
+			this.no_dims = no_dims;
+			this.Y = Y;
+			this.momentum = momentum;
+			this.eta = eta;
+			this.dY = dY;
+			this.uY = uY;
+			this.gains = gains;
+		}
+
+		@Override
+		protected void compute() {
+			if ( (endIdx-startIdx) <= limit ) {
+				for (int n = startIdx; n < endIdx; n++) {
+					// Update gains
+					gains[n] = (sign_tsne(dY[n]) != sign_tsne(uY[n])) ? (gains[n] + .2) : (gains[n] * .8);
+					if(gains[n] < .01) gains[n] = .01;
+
+					// Perform gradient update (with momentum and gains)
+					Y[n] = Y[n] + uY[n];
+					uY[n] = momentum * uY[n] - eta * gains[n] * dY[n];
+				}
+			}
+			else {
+				int range = (endIdx-startIdx);
+				int startIdx1 = startIdx;
+				int endIdx1 = startIdx + (range / 2);
+				int endIdx2 = endIdx;
+				invokeAll(new RecursiveGradientUpdater(N, no_dims, Y, momentum, eta, dY, uY, gains, startIdx1, endIdx1, limit),
+						  new RecursiveGradientUpdater(N, no_dims, Y, momentum, eta, dY, uY, gains, endIdx1, endIdx2, limit));
+			}
+		}
+	}
+	
+	@Override
+	void updateGradient(int N, int no_dims, double[] Y, double momentum, double eta, double[] dY, double[] uY,
+			double[] gains) {
+		RecursiveGradientUpdater dslr = new RecursiveGradientUpdater(N, no_dims, Y, momentum, eta, dY, uY, gains,0,N * no_dims,200);                
+		gradientPool.invoke(dslr);
 	}
 
 	// Compute gradient of the t-SNE cost function (using Barnes-Hut algorithm)
@@ -115,7 +176,6 @@ public class ParallelBHTsne extends BHTSne {
 			results = gradientCalculationPool.invokeAll(calculators);
 			for (Future<Double> result : results) {
 				double tmp = result.get();
-				//System.out.println("Got Q: " + tmp);
 				sum_Q += tmp;
 			}
 		} catch (InterruptedException e) {
@@ -127,7 +187,6 @@ public class ParallelBHTsne extends BHTSne {
 		}
 
 		//for(int n = 0; n < N; n++) tree.computeNonEdgeForces(n, theta, neg_f[n], sum_Q);
-		//System.out.println("Final Q: " + sum_Q);
 		// Compute final t-SNE gradient
 		for(int i = 0; i < N; i++) {
 			for(int j = 0; j < D; j++) {
