@@ -36,11 +36,14 @@ public class ParallelSPTree extends SPTree {
 
 	// Compute non-edge forces using Barnes-Hut algorithm
 	@Override
-	void computeNonEdgeForces(int point_index, double theta, double [] neg_f, Object accumulator)
+	double computeNonEdgeForces(int point_index, double theta, double [] neg_f, Object accumulator)
 	{
-		AtomicDouble sum_Q = (AtomicDouble) accumulator;
+		Double sum_Q = (Double) accumulator;
+		double input_sum_Q = sum_Q;
+		double [] buff = new double[dimension];
+		//AtomicDouble sum_Q = (AtomicDouble) accumulator;
 		// Make sure that we spend no time on empty nodes or self-interactions
-		if(cum_size == 0 || (is_leaf && size == 1 && index[0] == point_index)) return;
+		if(cum_size == 0 || (is_leaf && size == 1 && index[0] == point_index)) return 0.0;
 
 		// Compute distance between point and center-of-mass
 		double D = .0;
@@ -59,14 +62,18 @@ public class ParallelSPTree extends SPTree {
 			// Compute and add t-SNE force between point and current node
 			D = 1.0 / (1.0 + D);
 			double mult = cum_size * D;
-			sum_Q.addAndGet(mult);
+			sum_Q += mult;
+			//sum_Q.addAndGet(mult);
 			mult *= D;
 			for(int d = 0; d < dimension; d++) neg_f[d] += mult * buff[d];
 		}
 		else {
 			// Recursively apply Barnes-Hut to children
-			for(int i = 0; i < no_children; i++) children[i].computeNonEdgeForces(point_index, theta, neg_f, sum_Q);
+			for(int i = 0; i < no_children; i++) sum_Q += children[i].computeNonEdgeForces(point_index, theta, neg_f, input_sum_Q);
 		}
+		//return sum_Q.get();
+		//System.out.println("Returning Q: " + sum_Q);
+		return sum_Q;
 	}
 
 }

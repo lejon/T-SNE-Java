@@ -9,10 +9,7 @@ public class SPTree {
 
 	  // Fixed constants
     final static int QT_NODE_CAPACITY = 1;
-    
-    // A buffer we use when doing force computations
-    double [] buff;
-    
+        
 	protected SPTree parent;
 	protected int dimension;
 	protected boolean is_leaf;
@@ -79,8 +76,6 @@ public class SPTree {
 
 		center_of_mass = new double[D];
 		for(int d = 0; d < D; d++) center_of_mass[d] = .0;
-
-		buff = new double[D];
 	}
 	
 	// Constructor for SPTree with particular size and parent -- build the tree, too!
@@ -266,11 +261,12 @@ public class SPTree {
 
 
 	// Compute non-edge forces using Barnes-Hut algorithm
-	void computeNonEdgeForces(int point_index, double theta, double [] neg_f, Object accumulator)
+	double computeNonEdgeForces(int point_index, double theta, double [] neg_f, Object accumulator)
 	{
 		double [] sum_Q = (double []) accumulator;
+		double [] buff = new double[dimension];
 		// Make sure that we spend no time on empty nodes or self-interactions
-		if(cum_size == 0 || (is_leaf && size == 1 && index[0] == point_index)) return;
+		if(cum_size == 0 || (is_leaf && size == 1 && index[0] == point_index)) return 0.0;
 
 		// Compute distance between point and center-of-mass
 		double D = .0;
@@ -298,14 +294,15 @@ public class SPTree {
 			// Recursively apply Barnes-Hut to children
 			for(int i = 0; i < no_children; i++) children[i].computeNonEdgeForces(point_index, theta, neg_f, sum_Q);
 		}
+		return sum_Q[0];
 	}
 
 
 	// Computes edge forces
 	void computeEdgeForces(int [] row_P, int [] col_P, double [] val_P, int N, double [] pos_f)
 	{
-
 		// Loop over all edges in the graph
+		double [] buff = new double[dimension];
 		int ind1 = 0;
 		int ind2 = 0;
 		double D;
