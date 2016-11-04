@@ -7,8 +7,8 @@ NEWS 2016-11-02!
 ================
 *T-SNE-Java now have support for __Barnes Hut__ which makes it possible to run the amazing t-SNE on much larger data sets (or much faster on small data sets:) )!*
 
-The Barnes Hut version can also be run in parallel, but at least for moderate data sets parallelization does not seem have any beneficial effect.
-Further investigations is needed to see if the lock contention outweighs the benefits of parallelization even for bigger data sets. 
+The Barnes Hut version can also be run in parallel, we have seen from 40 % performance improvements on moderate datasets (ca 10 000 samples) to 400 % improvements on larger datasets (MNIST 60000 saples). 
+. 
 
 There are still many improvements possible and no optimization has been done yet. But it is already much much faster than the standard t-SNE.
 Great research by Dr. Maaten!!
@@ -20,7 +20,7 @@ Pure Java implementation of Van Der Maaten and Hinton's t-SNE clustering algorit
 
 This project is divided into two separate Maven projects, one for the core t-SNE and one for the demos (stand-alone executables that can be run from command line).
 
-With Barnes Hut, T-SNE-Java is now in version v2.1.0, both core and demos.
+With Barnes Hut, T-SNE-Java is now in version v2.2.0, both core and demos.
 
 Basic command line usage
 ------------------------
@@ -37,20 +37,20 @@ Examples:
 
 Run TSne on file without headers and no labels.
 ```shell
-java -jar target/tsne-demos-2.1.0.jar -nohdr -nolbls src/main/resources/datasets/iris_X.txt 
+java -jar target/tsne-demos-2.2.0.jar -nohdr -nolbls src/main/resources/datasets/iris_X.txt 
 ```
 Run TSne on CSV file with headers and label column nr. 5.
 ```shell
-java -jar target/tsne-demos-2.1.0.jar --lblcolno 5 src/main/resources/datasets/iris.csv
+java -jar target/tsne-demos-2.2.0.jar --lblcolno 5 src/main/resources/datasets/iris.csv
 ```
 Run TSne on file without headers and no labels but supply a separate label file (with the same ordering as the data file).
 ```shell
-java -jar target/tsne-demos-2.1.0.jar --nohdr --nolbls --label_file=src/main/resources/datasets/iris_X_labels.txt src/main/resources/datasets/iris_X.txt
+java -jar target/tsne-demos-2.2.0.jar --nohdr --nolbls --label_file=src/main/resources/datasets/iris_X_labels.txt src/main/resources/datasets/iris_X.txt
 ```
 
 Same as above but using parallelization.
 ```shell
-java -jar target/tsne-demos-2.1.0.jar --parallel --nohdr --nolbls --label_file=src/main/resources/datasets/iris_X_labels.txt src/main/resources/datasets/iris_X.txt
+java -jar target/tsne-demos-2.2.0.jar --parallel --nohdr --nolbls --label_file=src/main/resources/datasets/iris_X_labels.txt src/main/resources/datasets/iris_X.txt
 ```
 Example graph of the MNIST data set (60000 samples) generated with Barnes Hut implementation of t-SNE:
 
@@ -118,9 +118,9 @@ public class TSneTest {
 
 Version
 -------
-Demo: 2.1.0
+Demo: 2.2.0
 
-Core: 2.1.0
+Core: 2.2.0
 
 Enjoy!
 -Leif

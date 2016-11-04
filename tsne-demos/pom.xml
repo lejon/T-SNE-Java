@@ -5,7 +5,8 @@
 	<artifactId>tsne-demos</artifactId>
 	<!-- 2.0.0: Barnes Hut implementation (now default if running as JAR) -->
 	<!-- 2.1.0: Added support for configurable theta -->
-	<version>2.1.0</version>
+	<!-- 2.2.0: Use latest core with better parallelization performance -->
+	<version>2.2.0</version>
 	<name>Java T-SNE Demos</name>
 
 	<properties>
@@ -33,7 +34,7 @@
 		<dependency>
 			<groupId>com.jujutsu.tsne</groupId>
 			<artifactId>tsne</artifactId>
-			<version>2.1.0</version>
+			<version>2.2.0</version>
 		</dependency>
 		<!-- http://mvnrepository.com/artifact/com.github.yannrichet/JMathPlot -->
 		<dependency>
