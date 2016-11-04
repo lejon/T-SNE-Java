@@ -196,8 +196,9 @@ public class BHTSne implements BarnesHutTSne {
 		else System.out.printf("Done in %4.2f seconds (sparsity = %f)!\nLearning embedding...\n", (end - start) / 1000.0, (double) row_P[N] / ((double) N * (double) N));
 		start = System.currentTimeMillis();
 		for(int iter = 0; iter < max_iter; iter++) {
-			// Compute (approximate) gradient
+			
 			if(exact) computeExactGradient(P, Y, N, no_dims, dY);
+			// Compute (approximate) gradient
 			else computeGradient(P, row_P, col_P, val_P, Y, N, no_dims, dY, theta);
 			
 			updateGradient(N, no_dims, Y, momentum, eta, dY, uY, gains);
@@ -245,7 +246,6 @@ public class BHTSne implements BarnesHutTSne {
 			uY[i] = momentum * uY[i] - eta * gains[i] * dY[i];
 		}
 	}
-
 
 	// Compute gradient of the t-SNE cost function (using Barnes-Hut algorithm)
 	void computeGradient(double [] P, int [] inp_row_P, int [] inp_col_P, double [] inp_val_P, double [] Y, int N, int D, double [] dC, double theta)
@@ -312,7 +312,6 @@ public class BHTSne implements BarnesHutTSne {
 		}
 	}
 
-
 	// Evaluate t-SNE cost function (exactly)
 	double evaluateError(double [] P, double [] Y, int N, int D) {
 
@@ -372,7 +371,6 @@ public class BHTSne implements BarnesHutTSne {
 
 		return C;
 	}
-
 
 	// Compute input similarities with a fixed perplexity
 	void computeGaussianPerplexity(double [] X, int N, int D, double [] P, double perplexity) {
@@ -546,7 +544,6 @@ public class BHTSne implements BarnesHutTSne {
 				val_P[row_P[n] + m] = cur_P[m];
 			}
 		}
-
 	}
 
 	void computeGaussianPerplexity(double [] X, int N, int D, int [] _row_P, int [] _col_P, double [] _val_P, double perplexity, double threshold) {
@@ -813,7 +810,7 @@ public class BHTSne implements BarnesHutTSne {
 		//double a1 = -2.0;
 		//double a2 = 1.0;
 		//dgemm(String arg0, String arg1, int arg2, int arg3, int arg4, double arg5, double[] arg6, int arg7, int arg8, double[] arg9, int arg10, int arg11, double arg12, double[] arg13, int arg14, int arg15);
-		//  org.netlib.blas.Dgemm.dgemm("T",         "N",         N,        N,        D,        a1,          X,             D,        X,        D,             a2,        DD,        N);
+		//  org.netlib.blas.Dgemm.dgemm("T", "N", N, N, D, a1, X, D, X, D, a2, DD, N);
 
 		/* DGEMM - perform one of the matrix-matrix operations    */
 		/* C := alpha*op( A )*op( B ) + beta*C */
