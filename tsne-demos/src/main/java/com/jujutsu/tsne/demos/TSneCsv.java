@@ -30,7 +30,7 @@ import com.jujutsu.utils.MatrixOps;
 import com.jujutsu.utils.MatrixUtils;
 
 public class TSneCsv {
-	static int     initial_dims    = 50;
+	static int     initial_dims    = -1;
 	static double  perplexity      = 20.0;
 	static boolean hasLabels       = true;
 	static boolean scale_log       = false;
