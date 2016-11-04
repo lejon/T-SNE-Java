@@ -67,15 +67,16 @@ public class SPTree {
 		size = 0;
 		cum_size = 0;
 
+		center_of_mass = new double[D];
 		boundary = new Cell(dimension);
-		for(int d = 0; d < D; d++) boundary.setCorner(d, inp_corner[d]);
-		for(int d = 0; d < D; d++) boundary.setWidth( d, inp_width[d]);
+		for(int d = 0; d < D; d++) {
+			boundary.setCorner(d, inp_corner[d]);
+			boundary.setWidth( d, inp_width[d]);
+			center_of_mass[d] = .0;
+		}
 
 		children = getTreeArray(no_children);
 		for(int i = 0; i < no_children; i++) children[i] = null;
-
-		center_of_mass = new double[D];
-		for(int d = 0; d < D; d++) center_of_mass[d] = .0;
 	}
 	
 	// Constructor for SPTree with particular size and parent -- build the tree, too!
@@ -136,8 +137,10 @@ public class SPTree {
 		cum_size++;
 		double mult1 = (double) (cum_size - 1) / (double) cum_size;
 		double mult2 = 1.0 / (double) cum_size;
-		for(int d = 0; d < dimension; d++) center_of_mass[d] *= mult1;
-		for(int d = 0; d < dimension; d++) center_of_mass[d] += mult2 * point[d];
+		for(int d = 0; d < dimension; d++) {
+			center_of_mass[d] *= mult1;
+			center_of_mass[d] += mult2 * point[d];
+		}
 
 		// If there is space in this quad tree and it is a leaf, add the object here
 		if(is_leaf && size < QT_NODE_CAPACITY) {
@@ -271,16 +274,16 @@ public class SPTree {
 		// Compute distance between point and center-of-mass
 		double D = .0;
 		int ind = point_index * dimension;
-		for(int d = 0; d < dimension; d++) buff[d] = data[ind + d] - center_of_mass[d];
-		for(int d = 0; d < dimension; d++) D += buff[d] * buff[d];
-
 		// Check whether we can use this node as a "summary"
 		double max_width = 0.0;
 		double cur_width;
 		for(int d = 0; d < dimension; d++) {
+			buff[d] = data[ind + d] - center_of_mass[d];
+			D += buff[d] * buff[d];
 			cur_width = boundary.getWidth(d);
 			max_width = (max_width > cur_width) ? max_width : cur_width;
-		}
+		} 
+
 		if(is_leaf || max_width / sqrt(D) < theta) {
 			// Compute and add t-SNE force between point and current node
 			D = 1.0 / (1.0 + D);
@@ -312,8 +315,10 @@ public class SPTree {
 				// Compute pairwise distance and Q-value
 				D = 1.0;
 				ind2 = col_P[i] * dimension;
-				for(int d = 0; d < dimension; d++) buff[d] = data[ind1 + d] - data[ind2 + d];
-				for(int d = 0; d < dimension; d++) D += buff[d] * buff[d];
+				for(int d = 0; d < dimension; d++) { 
+					buff[d] = data[ind1 + d] - data[ind2 + d];
+					D += buff[d] * buff[d];
+				} 
 				D = val_P[i] / D;
 
 				// Sum positive force
