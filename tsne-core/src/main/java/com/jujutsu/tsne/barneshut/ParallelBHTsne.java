@@ -144,7 +144,7 @@ public class ParallelBHTsne extends BHTSne {
 	@Override
 	void updateGradient(int N, int no_dims, double[] Y, double momentum, double eta, double[] dY, double[] uY,
 			double[] gains) {
-		RecursiveGradientUpdater dslr = new RecursiveGradientUpdater(N, no_dims, Y, momentum, eta, dY, uY, gains,0,N * no_dims,200);                
+		RecursiveGradientUpdater dslr = new RecursiveGradientUpdater(N, no_dims, Y, momentum, eta, dY, uY, gains,0,N * no_dims,N/(Runtime.getRuntime().availableProcessors()*10));                
 		gradientPool.invoke(dslr);
 	}
 
