@@ -32,6 +32,7 @@ import com.jujutsu.utils.MatrixUtils;
 
 public class BarnesHutTSneCsv {
 	static int     initial_dims    = -1;
+	static int     output_dims     = 2;
 	static double  perplexity      = 20.0;
 	static double  theta           = 0.5;
 	static boolean hasLabels       = true;
@@ -103,6 +104,8 @@ public class BarnesHutTSneCsv {
 				"the current implementation does not handle very large datasets due to memory and time constraints. Adding this flag will uniformly subsample the dataset" );
 		options.addOption( "pa", "parallel",     false, 
 				"Run parts of algorithm in parallel. Using this option will hog your CPUs!" );
+		options.addOption( "odim", "output_dims",    true, 
+				"Alternatives are '2D' or '3D' default is (" + output_dims + "D " );
 
 
 		CommandLine parsedCommandLine = null;
@@ -219,7 +222,17 @@ public class BarnesHutTSneCsv {
 			System.out.println("Using parallel Barnes Hut t-SNE...");
 			parallel = true;
 		}
-
+		
+		if (parsedCommandLine.hasOption( "output_dims" )) {
+			String dimSpec = parsedCommandLine.getOptionValue("output_dims").trim();
+			if(dimSpec.equalsIgnoreCase("2d")) {
+				output_dims = 2;
+			} else if(dimSpec.equalsIgnoreCase("3d")) {
+				output_dims = 3;
+			} else {
+				throw new IllegalArgumentException("Only legal output_dims options are '2D' or '3D'.");
+			}
+		}
 
 		// Now process any drop column arguments, it makes sense to
 		// drop the integer indexed first since named ones are 
@@ -342,7 +355,7 @@ public class BarnesHutTSneCsv {
 		} else {
 			tsne = new BHTSne();
 		}
-		double [][] Y = tsne.tsne(matrix, 2, initial_dims, perplexity, iterations, true, theta);
+		double [][] Y = tsne.tsne(matrix, output_dims, initial_dims, perplexity, iterations, true, theta);
 		if(transpose_after) Y = MatrixOps.transposeSerial(matrix);
 		long t2 = System.currentTimeMillis();
 		System.out.println("TSne took: " + ((double) (t2-t1) / 1000.0) + " seconds");
@@ -350,19 +363,38 @@ public class BarnesHutTSneCsv {
 		if(doSave) {
 			DataFrame<Object> outdf;
 			if(labels!=null) {
-				String [] colnames = {"label", "X", "Y"};
+				String [] colnames = new String[output_dims+1];
+					colnames[0] = "label";
+					colnames[1] = "X";
+					colnames[2] = "Y";
+				if(output_dims==3) {
+					colnames[3] = "Z";
+				}
 				outdf = new DataFrame<Object>(colnames);
 				int rowIdx = 0;
 				for(double [] row : Y) {
-					outdf.append(Arrays.asList(labels[rowIdx++], row[0],row[1]));
+					if(output_dims==2) {
+						outdf.append(Arrays.asList(labels[rowIdx++], row[0],row[1]));
+					} else {
+						outdf.append(Arrays.asList(labels[rowIdx++], row[0],row[1],row[2]));
+					}
 				}
 				System.out.println(outdf);
 				outdf.writeCsv(output_fn);				
 			} else {
-				String [] colnames = {"X", "Y"};
+				String [] colnames = new String[output_dims];
+				colnames[0] = "X";
+				colnames[1] = "Y";
+				if(output_dims==3) {
+					colnames[2] = "Z";
+				}
 				outdf = new DataFrame<Object>(colnames);
 				for(double [] row : Y) {
-					outdf.append(Arrays.asList(row[0],row[1]));
+					if(output_dims==2) {
+						outdf.append(Arrays.asList(row[0],row[1]));
+					} else {
+						outdf.append(Arrays.asList(row[0],row[1],row[2]));
+					}
 				}
 				System.out.println(outdf);
 				outdf.writeCsv(output_fn);

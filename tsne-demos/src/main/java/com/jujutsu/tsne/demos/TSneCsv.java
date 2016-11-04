@@ -31,6 +31,7 @@ import com.jujutsu.utils.MatrixUtils;
 
 public class TSneCsv {
 	static int     initial_dims    = -1;
+	static int     output_dims     = 2;
 	static double  perplexity      = 20.0;
 	static boolean hasLabels       = true;
 	static boolean scale_log       = false;
@@ -96,6 +97,9 @@ public class TSneCsv {
 				"add a small amount of noise to each column. This can be useful with highly structured datasets which can otherwise cause problems" );
 		options.addOption( "ss", "subsample",    false, 
 				"the current implementation does not handle very large datasets due to memory and time constraints. Adding this flag will uniformly subsample the dataset" );
+		options.addOption( "odim", "output_dims",    true, 
+				"Alternatives are '2D' or '3D' default is (" + output_dims + "D " );
+
 
 
 		CommandLine parsedCommandLine = null;
@@ -204,6 +208,18 @@ public class TSneCsv {
 			System.out.println("Subsampling dataset...");
 			subSample = true;
 		}
+		
+		if (parsedCommandLine.hasOption( "output_dims" )) {
+			String dimSpec = parsedCommandLine.getOptionValue("output_dims").trim();
+			if(dimSpec.equalsIgnoreCase("2d")) {
+				output_dims = 2;
+			} else if(dimSpec.equalsIgnoreCase("3d")) {
+				output_dims = 3;
+			} else {
+				throw new IllegalArgumentException("Only legal output_dims options are '2D' or '3D'.");
+			}
+		}
+
 
 		// Now process any drop column arguments, it makes sense to
 		// drop the integer indexed first since named ones are 
@@ -322,7 +338,7 @@ public class TSneCsv {
 		TSne tsne = new MemOptimizedTSne();
 		//TSne tsne = new BlasTSne();
 		long t1 = System.currentTimeMillis();
-		double [][] Y = tsne.tsne(matrix, 2, initial_dims, perplexity, iterations);
+		double [][] Y = tsne.tsne(matrix, output_dims, initial_dims, perplexity, iterations);
 		if(transpose_after) Y = MatrixOps.transposeSerial(matrix);
 		long t2 = System.currentTimeMillis();
 		System.out.println("TSne took: " + ((double) (t2-t1) / 1000.0) + " seconds");
