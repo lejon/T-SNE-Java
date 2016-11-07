@@ -4,7 +4,7 @@ T-SNE-Java
 ==========
 
 NEWS 2016-11-02!
-================
+----------------
 *T-SNE-Java now have support for __Barnes Hut__ which makes it possible to run the amazing t-SNE on much larger data sets (or much faster on small data sets:) )!*
 
 The Barnes Hut version can also be run in parallel! We have seen from 40 % performance improvements on moderate datasets (ca 10 000 samples) to 400 % improvements on larger datasets (MNIST 60000 samples) compared to standard Barnes Hut.
@@ -20,7 +20,6 @@ Pure Java implementation of Van Der Maaten and Hinton's t-SNE clustering algorit
 
 This project is divided into two separate Maven projects, one for the core t-SNE and one for the demos (stand-alone executables that can be run from command line).
 
-With Barnes Hut, T-SNE-Java is now in version v2.3.0, both core and demos.
 
 Basic command line usage
 ------------------------
