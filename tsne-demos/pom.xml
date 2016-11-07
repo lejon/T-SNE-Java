@@ -6,7 +6,8 @@
 	<!-- 2.0.0: Barnes Hut implementation (now default if running as JAR) -->
 	<!-- 2.1.0: Added support for configurable theta -->
 	<!-- 2.2.0: Use latest core with better parallelization performance -->
-	<version>2.2.0</version>
+	<!-- 2.3.0: Added option to output 3 dims (2D (default) or 3D) -->
+	<version>2.3.0</version>
 	<name>Java T-SNE Demos</name>
 
 	<properties>
