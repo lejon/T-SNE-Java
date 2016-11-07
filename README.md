@@ -49,7 +49,7 @@ java -jar target/tsne-demos-2.3.0.jar --nohdr --nolbls --label_file=src/main/res
 
 Same as above but using parallelization.
 ```shell
-java -jar target/tsne-demos-2.2.0.jar --parallel --nohdr --nolbls --label_file=src/main/resources/datasets/iris_X_labels.txt src/main/resources/datasets/iris_X.txt
+java -jar target/tsne-demos-2.3.0.jar --parallel --nohdr --nolbls --label_file=src/main/resources/datasets/iris_X_labels.txt src/main/resources/datasets/iris_X.txt
 ```
 Example graph of the MNIST data set (60000 samples) generated with Barnes Hut implementation of t-SNE:
 
