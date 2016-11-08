@@ -5,11 +5,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class VpTree<StorageType, DistanceType> {
 
-	double _tau;
 	DataPoint [] _items;
 	Node _root;
 
@@ -29,10 +29,10 @@ public class VpTree<StorageType, DistanceType> {
 		}); 
         
         // Variable that tracks the distance to the farthest point in our results
-        _tau = Double.MAX_VALUE;
+        double tau = Double.MAX_VALUE;
         
         // Perform the search
-       _root.search(_root, target, k, heap);
+       _root.search(_root, target, k, heap, tau);
         
         // Gather final results
         results.clear(); 
@@ -56,7 +56,7 @@ public class VpTree<StorageType, DistanceType> {
 		}
 
 		// Lower index is center of current node
-		Node node = new Node();
+		Node node = createNode();
 		node.index = lower;
 
 		if (upper - lower > 1) {      // if we did not arrive at leaf yet
@@ -82,6 +82,10 @@ public class VpTree<StorageType, DistanceType> {
 		return node;
 	}
 	
+	protected VpTree<StorageType, DistanceType>.Node createNode() {
+		return new Node();
+	}
+
 	public Node getRoot() {
 		return _root;
 	}
@@ -110,7 +114,7 @@ public class VpTree<StorageType, DistanceType> {
 		}
 	}
 
-	private double distance(DataPoint dataPoint, DataPoint dataPoint2) {
+	public double distance(DataPoint dataPoint, DataPoint dataPoint2) {
 		return dataPoint.euclidean_distance(dataPoint2);
 	}
 
@@ -143,8 +147,8 @@ public class VpTree<StorageType, DistanceType> {
 	class Node {
 		int index;
 		double threshold;
-		private Node left;
-		private Node right;
+		protected Node left;
+		protected Node right;
 		
 		@Override
 		public String toString() {
@@ -160,9 +164,9 @@ public class VpTree<StorageType, DistanceType> {
 		}
 
 		// Helper function that searches the tree    
-		void search(Node node, DataPoint target, int k, PriorityQueue<HeapItem> heap)
+		double search(Node node, DataPoint target, int k, Queue<HeapItem> heap, double _tau)
 		{
-			if(node == null) return;     // indicates that we're done here
+			if(node == null) return _tau;     // indicates that we're done here
 
 			// Compute distance between target and current node
 			double dist = distance(_items[node.index], target);
@@ -176,29 +180,30 @@ public class VpTree<StorageType, DistanceType> {
 
 			// Return if we arrived at a leaf
 			if(node.left == null && node.right == null) {
-				return;
+				return _tau;
 			}
 
 			// If the target lies within the radius of ball
 			if(dist < node.threshold) {
 				if(dist - _tau <= node.threshold) {         // if there can still be neighbors inside the ball, recursively search left child first
-					search(node.left, target, k, heap);
+					_tau = search(node.left, target, k, heap, _tau);
 				}
 
 				if(dist + _tau >= node.threshold) {         // if there can still be neighbors outside the ball, recursively search right child
-					search(node.right, target, k, heap);
+					_tau = search(node.right, target, k, heap, _tau);
 				}
 
 				// If the target lies outsize the radius of the ball
 			} else {
 				if(dist + _tau >= node.threshold) {         // if there can still be neighbors outside the ball, recursively search right child first
-					search(node.right, target, k, heap);
+					_tau = search(node.right, target, k, heap, _tau);
 				}
 
 				if (dist - _tau <= node.threshold) {         // if there can still be neighbors inside the ball, recursively search left child
-					search(node.left, target, k, heap);
+					_tau = search(node.left, target, k, heap, _tau);
 				}
 			}
+			return _tau;
 		}
 	}
 }
