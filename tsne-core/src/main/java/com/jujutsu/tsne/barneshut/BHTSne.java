@@ -501,14 +501,14 @@ public class BHTSne implements BarnesHutTSne {
 			double sum_P = 0.;
 			while(!found && iter < 200) {
 
-				// Compute Gaussian kernel row
-				for(int m = 0; m < K; m++) cur_P[m] = exp(-beta * distances.get(m + 1));
-
-				// Compute entropy of current row
+				// Compute Gaussian kernel row and entropy of current row
 				sum_P = Double.MIN_VALUE;
-				for(int m = 0; m < K; m++) sum_P += cur_P[m];
 				double H = .0;
-				for(int m = 0; m < K; m++) H += beta * (distances.get(m + 1) * cur_P[m]);
+				for(int m = 0; m < K; m++) {
+					cur_P[m] = exp(-beta * distances.get(m + 1));
+					sum_P += cur_P[m];
+					H += beta * (distances.get(m + 1) * cur_P[m]);
+				}
 				H = (H / sum_P) + log(sum_P);
 
 				// Evaluate whether the entropy is within the tolerance level
@@ -537,9 +537,9 @@ public class BHTSne implements BarnesHutTSne {
 				iter++;
 			}
 
-			// Row-normalize current row of P and store in matrix
-			for(int m = 0; m < K; m++) cur_P[m] /= sum_P;
+			// Row-normalize current row of P and store in matrix 
 			for(int m = 0; m < K; m++) {
+				cur_P[m] /= sum_P;
 				col_P[row_P[n] + m] = indices.get(m + 1).index();
 				val_P[row_P[n] + m] = cur_P[m];
 			}
