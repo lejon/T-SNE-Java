@@ -9,6 +9,8 @@ NEWS 2016-11-02!
 
 The Barnes Hut version can also be run in parallel! We have seen from 40 % performance improvements on moderate datasets (ca 10 000 samples) to 400 % improvements on larger datasets (MNIST 60000 samples) compared to standard Barnes Hut.
 
+Running the parallel Barnes Hut t-SNE on MNIST 60000 takes 18.3 minutes on a 2013 Macbook Pro (theta=0.5, perplexity = 50, 1000 iterations)
+
 Both standard and parallel Barnes Hut is of course magnitudes faster than vanilla t-SNE. 
 
 Great research by Dr. Maaten!!
@@ -36,20 +38,20 @@ Examples:
 
 Run TSne on file without headers and no labels.
 ```shell
-java -jar target/tsne-demos-2.3.0.jar -nohdr -nolbls src/main/resources/datasets/iris_X.txt 
+java -jar target/tsne-demos-2.4.0.jar -nohdr -nolbls src/main/resources/datasets/iris_X.txt 
 ```
 Run TSne on CSV file with headers and label column nr. 5.
 ```shell
-java -jar target/tsne-demos-2.3.0.jar --lblcolno 5 src/main/resources/datasets/iris.csv
+java -jar target/tsne-demos-2.4.0.jar --lblcolno 5 src/main/resources/datasets/iris.csv
 ```
 Run TSne on file without headers and no labels but supply a separate label file (with the same ordering as the data file).
 ```shell
-java -jar target/tsne-demos-2.3.0.jar --nohdr --nolbls --label_file=src/main/resources/datasets/iris_X_labels.txt src/main/resources/datasets/iris_X.txt
+java -jar target/tsne-demos-2.4.0.jar --nohdr --nolbls --label_file=src/main/resources/datasets/iris_X_labels.txt src/main/resources/datasets/iris_X.txt
 ```
 
 Same as above but using parallelization.
 ```shell
-java -jar target/tsne-demos-2.3.0.jar --parallel --nohdr --nolbls --label_file=src/main/resources/datasets/iris_X_labels.txt src/main/resources/datasets/iris_X.txt
+java -jar target/tsne-demos-2.4.0.jar --parallel --nohdr --nolbls --label_file=src/main/resources/datasets/iris_X_labels.txt src/main/resources/datasets/iris_X.txt
 ```
 Example graph of the MNIST data set (60000 samples) generated with Barnes Hut implementation of t-SNE:
 
@@ -117,9 +119,8 @@ public class TSneTest {
 
 Version
 -------
-Demo: 2.3.0
-
-Core: 2.2.0
+Demo: 2.4.0
+Core: 2.3.0
 
 Enjoy!
 -Leif
