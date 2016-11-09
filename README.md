@@ -9,7 +9,7 @@ NEWS 2016-11-02!
 
 The Barnes Hut version can also be run in parallel! We have seen from 40 % performance improvements on moderate datasets (ca 10 000 samples) to 400 % improvements on larger datasets (MNIST 60000 samples) compared to standard Barnes Hut.
 
-Running the parallel Barnes Hut t-SNE on MNIST 60000 takes 18.3 minutes on a 2013 Macbook Pro (theta=0.5, perplexity = 50, 1000 iterations)
+The t-SNE part of running the parallel Barnes Hut t-SNE on MNIST 60000 takes 18.3 minutes on a 2013 Macbook Pro (theta=0.5, perplexity = 50, 1000 iterations)
 
 Both standard and parallel Barnes Hut is of course magnitudes faster than vanilla t-SNE. 
 
