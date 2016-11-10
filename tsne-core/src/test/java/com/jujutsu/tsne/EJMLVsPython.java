@@ -52,7 +52,7 @@ public class EJMLVsPython {
 	
 	@Test
 	public void testSum() {
-		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		DenseMatrix64F X = new DenseMatrix64F(Xin);
 		System.out.println("TSne.sum(X) = " + elementSum(X));
 		assertEquals(172.0,elementSum(X), epsilon);
@@ -61,7 +61,7 @@ public class EJMLVsPython {
 	@Test
 	public void testMSum() {
 		double [] pysum0 = {30.,  30.,  38.,  42.,  32.};
-		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		DenseMatrix64F X = new DenseMatrix64F(Xin);
 		DenseMatrix64F sumC = new DenseMatrix64F(1,X.numCols);
 		double [][] sum0 = EjmlOps.extractDoubleArray(sumCols(X,sumC));
@@ -82,7 +82,7 @@ public class EJMLVsPython {
 
 	@Test
 	public void testTranspose() {
-		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		DenseMatrix64F X = new DenseMatrix64F(Xin);
 		double [][] pytranspose = {
 				{ 1.,  6.,  3.,  7.,  2.,  3.,  8.},
@@ -97,7 +97,7 @@ public class EJMLVsPython {
 
 	@Test
 	public void testSquare() {
-		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		DenseMatrix64F X = new DenseMatrix64F(Xin);
 		double [][] pysquare = {
 				{ 1.,   4.,   9.,  16.,  25.},
@@ -116,7 +116,7 @@ public class EJMLVsPython {
 	
 	@Test
 	public void testTimes() {
-		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		DenseMatrix64F X = new DenseMatrix64F(Xin);
 		double [][] pydot = {
 				{  55.,  105.,   60.,   74.,  108.,   57.,   73.},
@@ -137,7 +137,7 @@ public class EJMLVsPython {
 
 	@Test
 	public void testScaleTimes() {
-		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		DenseMatrix64F X = new DenseMatrix64F(Xin);
 		double [][] pyscle = 
 				{{ -2.,  -4.,  -6.,  -8., -10.},
@@ -155,7 +155,7 @@ public class EJMLVsPython {
 
 	@Test
 	public void testScalarPlus() {
-		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		DenseMatrix64F X = new DenseMatrix64F(Xin);
 		double [][] pyplus = 
 				{{  3.,   4.,   5.,   6.,   7.},
@@ -173,7 +173,7 @@ public class EJMLVsPython {
 	
 	@Test
 	public void testScalarInverse() {
-		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		DenseMatrix64F X = new DenseMatrix64F(Xin);
 		double [][] pyinv = 
 				{{ 1.,          0.5,         0.33333333,  0.25,        0.2       },
@@ -191,7 +191,7 @@ public class EJMLVsPython {
 	
 	@Test
 	public void testScalarInverseVector() {
-		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		DenseMatrix64F X = new DenseMatrix64F(Xin);
 		double [] pyinv = { 0.14285714,  0.33333333,  0.16666667,  0.14285714,  0.33333333 };
 		DenseMatrix64F row = extract(X,3,4,0,5);
@@ -202,7 +202,7 @@ public class EJMLVsPython {
 
 	@Test
 	public void testScalarDivide() {
-		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		DenseMatrix64F X = new DenseMatrix64F(Xin);
 		divide(X, 2.0);
 		double [][] div = EjmlOps.extractDoubleArray(X); 
@@ -220,7 +220,7 @@ public class EJMLVsPython {
 
 	@Test
 	public void testScalarMultiply() {
-		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		DenseMatrix64F X = new DenseMatrix64F(Xin);
 		double [][] pysm = 
 				{{  1.,   4.,   9.,  16.,  25.},
@@ -238,7 +238,7 @@ public class EJMLVsPython {
 
 	@Test
 	public void testRangeAssign() {
-		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		DenseMatrix64F X = new DenseMatrix64F(Xin);
 		EjmlOps.assignAtIndex(X, tsne.range(4), tsne.range(4), 0);
 		double [][] pyasgn = 
@@ -255,7 +255,7 @@ public class EJMLVsPython {
 
 	@Test
 	public void testMinus() {
-		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		DenseMatrix64F X = new DenseMatrix64F(Xin);
 		DenseMatrix64F mins = new DenseMatrix64F(X.numRows,X.numCols);
 		double [][] pymin = 
@@ -274,7 +274,7 @@ public class EJMLVsPython {
 
 	@Test
 	public void testTile() {
-		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		double [][] PQrowi  = tsne.copyCols(Xin,4);
 		DenseMatrix64F tile = new DenseMatrix64F(PQrowi);
 		DenseMatrix64F X = EjmlOps.tile(tile, 3, 1);
@@ -295,7 +295,7 @@ public class EJMLVsPython {
 	
 	@Test
 	public void testAssignCol() {
-		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		DenseMatrix64F X = new DenseMatrix64F(Xin);
 		DenseMatrix64F sumR = new DenseMatrix64F(1,X.numCols);
 		sumCols(X,sumR);
@@ -314,7 +314,7 @@ public class EJMLVsPython {
 
 	@Test
 	public void testAssignAllLessThan() {
-		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		DenseMatrix64F X = new DenseMatrix64F(Xin);
 		EjmlOps.assignAllLessThan(X,3,-1);
 		double [][] pylt =
@@ -331,7 +331,7 @@ public class EJMLVsPython {
 	
 	@Test
 	public void testSign() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		tsne.assignAllLessThan(X,3,-1);
 		//System.out.println("TSne.sign(TSne.assignAllLessThan(X,3,-1)) = \n" 
 		//+ ArrayString.printDoubleArray(tsne.sign(X)));
@@ -339,8 +339,8 @@ public class EJMLVsPython {
 	
 	@Test
 	public void testEqual() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");		
-		double [][] Y = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");		
+		double [][] Y = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		tsne.assignAllLessThan(X,3,-1);
 		tsne.assignAllLessThan(Y,2,-1);
 		System.out.println("equal(sign(X),sign(Y) ="); 
@@ -358,7 +358,7 @@ public class EJMLVsPython {
 
 	@Test
 	public void testMMean() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		//System.out.println("TSne.mean(X,0) = \n" + ArrayString.printDoubleArray(tsne.mean(X,0)));
 		double [] pymean0 = { 4.28571429,  4.28571429,  5.42857143,  6.,          4.57142857};
 		double [][] mean0 = tsne.mean(X,0);
@@ -377,15 +377,15 @@ public class EJMLVsPython {
 	
 	@Test
 	public void testVMean() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		System.out.println("TSne.mean(X[3,:]) = \n" + tsne.mean(X[3]));
 		assertEquals(5.2, tsne.mean(X[3]), epsilon);
 	}
 
 	@Test
 	public void testElementWiseDivide() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");		
-		double [][] Y = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");		
+		double [][] Y = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		Y = tsne.scalarDivide(Y, 2);
 		//System.out.println("Y=\n" + ArrayString.printDoubleArray(Y));
 		//System.out.println(" X / (X/2) =" 
@@ -405,7 +405,7 @@ public class EJMLVsPython {
 	
 	@Test
 	public void testSqrt() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		double [] pysqrt = { 2.64575131,  1.73205081,  2.44948974,  2.64575131,  1.73205081};
 		//System.out.println("sqrt(X[3,:]) =\n" + ArrayString.printDoubleArray(tsne.sqrt(X[3])));
 		assertEqualDoubleVectors(pysqrt, tsne.sqrt(X[3]), epsilon);	
@@ -413,7 +413,7 @@ public class EJMLVsPython {
 	
 	@Test
 	public void testExp() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");		
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");		
 		//System.out.println(" exp(X) =" + ArrayString.printDoubleArray(tsne.exp(X)));
 		double [][] pyexp = 
 				{{  2.71828183e+00,   7.38905610e+00,   2.00855369e+01,   5.45981500e+01,	    1.48413159e+02},
@@ -429,7 +429,7 @@ public class EJMLVsPython {
 	
 	@Test
 	public void testLog() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");		
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");		
 		//System.out.println(" log(X) =" + ArrayString.printDoubleArray(tsne.log(X)));
 		double [][] pylog = 
 				{{ 0.,          0.69314718,  1.09861229,  1.38629436,  1.60943791},

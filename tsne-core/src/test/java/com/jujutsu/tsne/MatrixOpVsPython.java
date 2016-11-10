@@ -37,7 +37,7 @@ public class MatrixOpVsPython {
 	
 	@Test
 	public void testSum() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		System.out.println("TSne.sum(X) = " + MatrixOps.sum(X));
 		assertEquals(172.0,MatrixOps.sum(X), epsilon);
 	}
@@ -45,7 +45,7 @@ public class MatrixOpVsPython {
 	@Test
 	public void testMSum() {
 		double [] pysum0 = {30.,  30.,  38.,  42.,  32.};
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		//System.out.println("TSne.sum(X,0) = \n" + ArrayString.printDoubleArray(tsne.sum(X,0)));
 		double [][] sum0 = mo.sum(X,0);
 		for (int i = 0; i < sum0.length; i++) {
@@ -65,7 +65,7 @@ public class MatrixOpVsPython {
 
 	@Test
 	public void testTranspose() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		//System.out.println("TSne.transpose(X) = \n" 
 		//+ ArrayString.printDoubleArray(tsne.transpose(X)));
 		double [][] pytranspose = {
@@ -80,7 +80,7 @@ public class MatrixOpVsPython {
 
 	@Test
 	public void testSquare() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		//System.out.println("TSne.square(X) = \n" 
 		//+ ArrayString.printDoubleArray(tsne.square(X)));
 		double [][] pysquare = {
@@ -98,7 +98,7 @@ public class MatrixOpVsPython {
 	
 	@Test
 	public void testTimes() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		//System.out.println("TSne.times(X,tsne.transpose(X)) = \n" 
 		//+ ArrayString.printDoubleArray(tsne.times(X,tsne.transpose(X))));
 		double [][] pydot = {
@@ -116,7 +116,7 @@ public class MatrixOpVsPython {
 
 	@Test
 	public void testScaleTimes() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		//System.out.println("TSne.scalarMult(X,-2) = \n" 
 		//+ ArrayString.printDoubleArray(tsne.scalarMult(X,-2)));
 		double [][] pyscle = 
@@ -134,7 +134,7 @@ public class MatrixOpVsPython {
 
 	@Test
 	public void testScalarPlus() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		//System.out.println("TSne.scalarPlus(X,2) = \n" 
 		//+ ArrayString.printDoubleArray(tsne.scalarPlus(X,2)));
 		double [][] pyplus = 
@@ -152,7 +152,7 @@ public class MatrixOpVsPython {
 	
 	@Test
 	public void testScalarInverse() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		//System.out.println("TSne.scalarInverse(X) = \n" 
 		//+ ArrayString.printDoubleArray(tsne.scalarInverse(X)));
 		double [][] pyinv = 
@@ -170,7 +170,7 @@ public class MatrixOpVsPython {
 	
 	@Test
 	public void testScalarInverseVector() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		//System.out.println("TSne.scalarInverse(X[3,:]) = \n" 
 		//+ ArrayString.printDoubleArray(tsne.scalarInverse(X[3])));
 		double [] pyinv = { 0.14285714,  0.33333333,  0.16666667,  0.14285714,  0.33333333 };
@@ -180,7 +180,7 @@ public class MatrixOpVsPython {
 
 	@Test
 	public void testScalarDivide() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		//System.out.println("TSne.scalarDivide(X, 2) = \n" 
 		//+ ArrayString.printDoubleArray(tsne.scalarDivide(X, 2)));
 		double [][] div = mo.scalarDivide(X, 2);
@@ -198,7 +198,7 @@ public class MatrixOpVsPython {
 
 	@Test
 	public void testScalarMultiply() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		//System.out.println("TSne.scalarMultiply(X, X) = \n" 
 		//+ ArrayString.printDoubleArray(tsne.scalarMultiply(X, X)));
 		double [][] pysm = 
@@ -216,7 +216,7 @@ public class MatrixOpVsPython {
 
 	@Test
 	public void testRangeAssign() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		mo.assignAtIndex(X, MatrixOps.range(4), MatrixOps.range(4), 0);
 		//System.out.println("assignAtIndex(num, range(n), range(n), 0) = \n" 
 		//+ ArrayString.printDoubleArray(X));
@@ -234,7 +234,7 @@ public class MatrixOpVsPython {
 
 	@Test
 	public void testMinus() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		//System.out.println("TSne.minus(X, X) = \n" 
 		//+ ArrayString.printDoubleArray(tsne.sMinus(X, X)));
 		double [][] pymin = 
@@ -252,7 +252,7 @@ public class MatrixOpVsPython {
 
 	@Test
 	public void testParMinus() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		//System.out.println("TSne.minus(X, X) = \n" 
 		//+ ArrayString.printDoubleArray(tsne.parScalarMinus(X, X)));
 		double [][] pymin = 
@@ -270,7 +270,7 @@ public class MatrixOpVsPython {
 
 	@Test
 	public void testTile() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		double [][] PQrowi  = mo.copyCols(X,4);
 		//System.out.println("TSne.tile(X, 3, 1) = \n" 
 		//+ ArrayString.printDoubleArray(tsne.tile(PQrowi, 3, 1)));
@@ -294,7 +294,7 @@ public class MatrixOpVsPython {
 	
 	@Test
 	public void testAssignCol() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		X[3] = mo.sum(X,0)[0];
 		//System.out.println("TSne.sum(X,0)[0] = \n" 
 		//+ ArrayString.printDoubleArray(X));
@@ -312,7 +312,7 @@ public class MatrixOpVsPython {
 
 	@Test
 	public void testAssignAllLessThan() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		mo.assignAllLessThan(X,3,-1);
 		//System.out.println("TSne.assignAllLessThan(X,3,-1) = \n" 
 		//+ ArrayString.printDoubleArray(X));
@@ -330,7 +330,7 @@ public class MatrixOpVsPython {
 	
 	@Test
 	public void testSign() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		mo.assignAllLessThan(X,3,-1);
 		//System.out.println("TSne.sign(TSne.assignAllLessThan(X,3,-1)) = \n" 
 		//+ ArrayString.printDoubleArray(tsne.sign(X)));
@@ -338,8 +338,8 @@ public class MatrixOpVsPython {
 	
 	@Test
 	public void testEqual() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");		
-		double [][] Y = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");		
+		double [][] Y = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		mo.assignAllLessThan(X,3,-1);
 		mo.assignAllLessThan(Y,2,-1);
 		System.out.println("equal(sign(X),sign(Y) ="); 
@@ -357,7 +357,7 @@ public class MatrixOpVsPython {
 
 	@Test
 	public void testMMean() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		//System.out.println("TSne.mean(X,0) = \n" + ArrayString.printDoubleArray(tsne.mean(X,0)));
 		double [] pymean0 = { 4.28571429,  4.28571429,  5.42857143,  6.,          4.57142857};
 		double [][] mean0 = MatrixOps.mean(X,0);
@@ -376,15 +376,15 @@ public class MatrixOpVsPython {
 	
 	@Test
 	public void testVMean() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		System.out.println("TSne.mean(X[3,:]) = \n" + mo.mean(X[3]));
 		assertEquals(5.2, mo.mean(X[3]), epsilon);
 	}
 
 	@Test
 	public void testElementWiseDivide() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");		
-		double [][] Y = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");		
+		double [][] Y = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		Y = mo.scalarDivide(Y, 2);
 		//System.out.println("Y=\n" + ArrayString.printDoubleArray(Y));
 		//System.out.println(" X / (X/2) =" 
@@ -404,7 +404,7 @@ public class MatrixOpVsPython {
 	
 	@Test
 	public void testSqrt() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		double [] pysqrt = { 2.64575131,  1.73205081,  2.44948974,  2.64575131,  1.73205081};
 		//System.out.println("sqrt(X[3,:]) =\n" + ArrayString.printDoubleArray(tsne.sqrt(X[3])));
 		assertEqualDoubleVectors(pysqrt, MatrixOps.sqrt(X[3]), epsilon);	
@@ -412,7 +412,7 @@ public class MatrixOpVsPython {
 	
 	@Test
 	public void testExp() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");		
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");		
 		//System.out.println(" exp(X) =" 
 		//+ ArrayString.printDoubleArray(tsne.exp(X)));
 		double [][] pyexp = 
@@ -429,7 +429,7 @@ public class MatrixOpVsPython {
 	
 	@Test
 	public void testLog() {
-		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/python/small_ds.txt"), " ");		
+		double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");		
 		//System.out.println(" log(X) =" 
 		//+ ArrayString.printDoubleArray(tsne.log(X)));
 		double [][] pylog = 
