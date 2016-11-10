@@ -8,10 +8,19 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class VpTree<StorageType, DistanceType> {
+public class VpTree<StorageType> {
 
 	DataPoint [] _items;
 	Node _root;
+	Distance distance; 
+	
+	public VpTree() {
+		distance = new EuclideanDistance();
+	}
+
+	public VpTree(Distance distance) {
+		this.distance = distance;
+	}
 
 	public void create(DataPoint [] items) {
 		_items = items.clone();
@@ -82,7 +91,7 @@ public class VpTree<StorageType, DistanceType> {
 		return node;
 	}
 	
-	protected VpTree<StorageType, DistanceType>.Node createNode() {
+	protected VpTree<StorageType>.Node createNode() {
 		return new Node();
 	}
 
@@ -114,10 +123,10 @@ public class VpTree<StorageType, DistanceType> {
 		}
 	}
 
-	public double distance(DataPoint dataPoint, DataPoint dataPoint2) {
-		return dataPoint.euclidean_distance(dataPoint2);
+	public double distance(DataPoint dataPoint1, DataPoint dataPoint2) {
+		return distance.distance(dataPoint1, dataPoint2);
 	}
-
+	
 	private void swap(DataPoint [] items, int idx1,int idx2) {
 		DataPoint dp = items[idx1];
 		items[idx1] = items[idx2];

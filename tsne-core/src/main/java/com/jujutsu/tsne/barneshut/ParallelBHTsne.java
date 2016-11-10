@@ -221,7 +221,7 @@ public class ParallelBHTsne extends BHTSne {
 		for(int n = 0; n < N; n++) row_P[n + 1] = row_P[n] + K;    
 
 		// Build ball tree on data set
-		ParallelVpTree<DataPoint, EuclideanDistance> tree = new ParallelVpTree<DataPoint, EuclideanDistance>(gradientPool);
+		ParallelVpTree<DataPoint> tree = new ParallelVpTree<DataPoint>(gradientPool);
 		final DataPoint [] obj_X = new DataPoint [N];
 		for(int n = 0; n < N; n++) {
 			double [] row = MatrixOps.extractRowFromFlatMatrix(X,n,D);
@@ -242,10 +242,10 @@ public class ParallelBHTsne extends BHTSne {
 
 		// Loop over all points to find nearest neighbors
 		System.out.println("Searching tree...");
-		List<Future<ParallelVpTree<DataPoint, EuclideanDistance>.ParallelTreeNode.TreeSearchResult>> results = tree.searchMultiple(tree, obj_X, K+1);
+		List<Future<ParallelVpTree<DataPoint>.ParallelTreeNode.TreeSearchResult>> results = tree.searchMultiple(tree, obj_X, K+1);
 
-		for (Future<ParallelVpTree<DataPoint, EuclideanDistance>.ParallelTreeNode.TreeSearchResult> result : results) {
-			ParallelVpTree<DataPoint, EuclideanDistance>.ParallelTreeNode.TreeSearchResult res = null;
+		for (Future<ParallelVpTree<DataPoint>.ParallelTreeNode.TreeSearchResult> result : results) {
+			ParallelVpTree<DataPoint>.ParallelTreeNode.TreeSearchResult res = null;
 			List<Double> distances = null;
 			List<DataPoint> indices = null;
 			int n = -1;

@@ -10,7 +10,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 
-public class ParallelVpTree<StorageType, DistanceType> extends VpTree<StorageType, DistanceType> {
+public class ParallelVpTree<StorageType> extends VpTree<StorageType> {
 
 	private ForkJoinPool searcherPool;
 	
@@ -18,7 +18,7 @@ public class ParallelVpTree<StorageType, DistanceType> extends VpTree<StorageTyp
 		searcherPool = pool;
 	}
 	
-	public List<Future<ParallelTreeNode.TreeSearchResult>> searchMultiple(ParallelVpTree<StorageType, DistanceType> tree, DataPoint [] targets, int k) {
+	public List<Future<ParallelTreeNode.TreeSearchResult>> searchMultiple(ParallelVpTree<StorageType> tree, DataPoint [] targets, int k) {
 		List<ParallelTreeNode.ParallelTreeSearcher> searchers = new ArrayList<>();
 		for(int n = 0; n < targets.length; n++) {
 			@SuppressWarnings("unchecked")
@@ -30,11 +30,11 @@ public class ParallelVpTree<StorageType, DistanceType> extends VpTree<StorageTyp
 	}
 
 	@Override
-	protected VpTree<StorageType, DistanceType>.Node createNode() {
+	protected VpTree<StorageType>.Node createNode() {
 		return new ParallelTreeNode();
 	}
 
-	class ParallelTreeNode extends VpTree<StorageType, DistanceType>.Node {
+	class ParallelTreeNode extends VpTree<StorageType>.Node {
 		
 		class TreeSearchResult {
 			int n;
