@@ -44,6 +44,8 @@ import com.jujutsu.utils.MatrixOps;
 
 public class BHTSne implements BarnesHutTSne {
 
+	protected final EuclideanDistance distance = new EuclideanDistance();
+
 	@Override
 	public double[][] tsne(double[][] X, int no_dims, int initial_dims, double perplexity) {
 		return tsne(X,no_dims,initial_dims,perplexity,20000,true);
@@ -456,7 +458,7 @@ public class BHTSne implements BarnesHutTSne {
 		for(int n = 0; n < N; n++) row_P[n + 1] = row_P[n] + K;    
 
 		// Build ball tree on data set
-		VpTree<DataPoint> tree = new VpTree<DataPoint>(new EuclideanDistance() );
+		VpTree<DataPoint> tree = new VpTree<DataPoint>(distance);
 		final DataPoint [] obj_X = new DataPoint [N];
 		for(int n = 0; n < N; n++) {
 			double [] row = MatrixOps.extractRowFromFlatMatrix(X,n,D);

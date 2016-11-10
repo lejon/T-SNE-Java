@@ -76,7 +76,7 @@ public class VpTree<StorageType> {
 
 			// Partition around the median distance
 			int median = (upper + lower) / 2;
-			nth_element(_items, lower + 1,	median,	upper, new DistanceComparator(_items[lower]));
+			nth_element(_items, lower + 1,	median,	upper, new DistanceComparator(_items[lower],distance));
 
 			// Threshold of the new node will be the distance to the median
 			node.threshold = distance(_items[lower], _items[median]);
