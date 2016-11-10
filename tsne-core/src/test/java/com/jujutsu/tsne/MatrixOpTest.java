@@ -7,7 +7,6 @@ import java.io.File;
 
 import org.junit.Test;
 
-import com.jujutsu.tsne.barneshut.SPTree;
 import com.jujutsu.utils.MatrixOps;
 import com.jujutsu.utils.MatrixUtils;
 
