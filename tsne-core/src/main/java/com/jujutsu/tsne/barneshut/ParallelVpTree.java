@@ -14,6 +14,11 @@ public class ParallelVpTree<StorageType> extends VpTree<StorageType> {
 
 	private ForkJoinPool searcherPool;
 	
+	public ParallelVpTree(ForkJoinPool pool, Distance distance) {
+		super(distance);
+		searcherPool = pool;
+	}
+	
 	public ParallelVpTree(ForkJoinPool pool) {
 		searcherPool = pool;
 	}

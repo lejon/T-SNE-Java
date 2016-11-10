@@ -221,7 +221,7 @@ public class ParallelBHTsne extends BHTSne {
 		for(int n = 0; n < N; n++) row_P[n + 1] = row_P[n] + K;    
 
 		// Build ball tree on data set
-		ParallelVpTree<DataPoint> tree = new ParallelVpTree<DataPoint>(gradientPool);
+		ParallelVpTree<DataPoint> tree = new ParallelVpTree<DataPoint>(gradientPool,new EuclideanDistance());
 		final DataPoint [] obj_X = new DataPoint [N];
 		for(int n = 0; n < N; n++) {
 			double [] row = MatrixOps.extractRowFromFlatMatrix(X,n,D);
