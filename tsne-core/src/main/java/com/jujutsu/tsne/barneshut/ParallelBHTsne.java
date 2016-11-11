@@ -241,7 +241,6 @@ public class ParallelBHTsne extends BHTSne {
 		//			printer.printTreeHorizontal(tree.getRoot());
 
 		// Loop over all points to find nearest neighbors
-		System.out.println("Searching tree...");
 		List<Future<ParallelVpTree<DataPoint>.ParallelTreeNode.TreeSearchResult>> results = tree.searchMultiple(tree, obj_X, K+1);
 
 		for (Future<ParallelVpTree<DataPoint>.ParallelTreeNode.TreeSearchResult> result : results) {
