@@ -49,6 +49,7 @@ public class BlasTSne implements TSne {
 		if(use_pca && X[0].length > initial_dims && initial_dims > 0) {
 			PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
 			X = pca.pca(X, initial_dims);
+			//X = BlasOps.pca(new DoubleMatrix(X), initial_dims).toArray2();
 			System.out.println("X:Shape after PCA is = " + X.length + " x " + X[0].length);
 		}
 		int n                    = X.length;
