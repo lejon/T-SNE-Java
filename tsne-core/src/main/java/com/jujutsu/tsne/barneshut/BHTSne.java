@@ -44,7 +44,7 @@ import com.jujutsu.utils.MatrixOps;
 
 public class BHTSne implements BarnesHutTSne {
 
-	protected final EuclideanDistance distance = new EuclideanDistance();
+	protected final Distance distance = new EuclideanDistance();
 
 	@Override
 	public double[][] tsne(double[][] X, int no_dims, int initial_dims, double perplexity) {
@@ -126,7 +126,7 @@ public class BHTSne implements BarnesHutTSne {
 		// Normalize input data (to prevent numerical problems)
 		System.out.println("Computing input similarities...");
 		long start = System.currentTimeMillis();
-		zeroMean(X, N, D);
+		//zeroMean(X, N, D);
 		double max_X = .0;
 		for(int i = 0; i < N * D; i++) {
 			if(X[i] > max_X) max_X = X[i];
