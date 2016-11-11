@@ -401,7 +401,7 @@ public class BarnesHutTSneCsv {
 			}
 		}
 		
-		if(doPlot)
+		if(doPlot && output_dims==2)
 			plot2D(labels, Y);
 	}
 
