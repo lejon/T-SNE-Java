@@ -59,33 +59,8 @@ Example graph of the MNIST data set (60000 samples) generated with Barnes Hut im
 
 For some tips working with t-sne [Klick here] (http://lejon.github.io) or [here] (https://lvdmaaten.github.io/tsne/#faq) (observe that the last link discusses some implementation details of Laurens implementation of t-SNE and not this Java version, but also some general tips and tricks which applies to t-SNE in general) .
 
-Basic code usage: 
------------------
-
-```java
-import java.io.File;
-
-import com.jujutsu.tsne.FastTSne;
-import com.jujutsu.tsne.TSne;
-import com.jujutsu.utils.MatrixOps;
-import com.jujutsu.utils.MatrixUtils;
-
-public class TSneTest {
-  public static void main(String [] args) {
-    int initial_dims = 55;
-    double perplexity = 20.0;
-    double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/resources/datasets/mnist2500_X.txt"), "   ");
-    System.out.println(MatrixOps.doubleArrayToPrintString(X, ", ", 50,10));
-    TSne tsne = new FastTSne();
-    double [][] Y = tsne.tsne(X, 2, initial_dims, perplexity);   
-
-    // Plot Y or save Y to file and plot with some other tool such as for instance R
-
-  }
-}
-```
-
-To use the Barnes Hut version:
+To use the Barnes Hut version (recommended):
+--------------------------------------------
 
 ```java
 import java.io.File;
@@ -115,6 +90,32 @@ public class TSneTest {
   }
 }
 
+```
+
+Basic code usage (not recommended, slow standard t-SNE (yes, well it was fast at the time. :)): 
+-----------------------------------------------------------------------------------------------
+
+```java
+import java.io.File;
+
+import com.jujutsu.tsne.FastTSne;
+import com.jujutsu.tsne.TSne;
+import com.jujutsu.utils.MatrixOps;
+import com.jujutsu.utils.MatrixUtils;
+
+public class TSneTest {
+  public static void main(String [] args) {
+    int initial_dims = 55;
+    double perplexity = 20.0;
+    double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/resources/datasets/mnist2500_X.txt"), "   ");
+    System.out.println(MatrixOps.doubleArrayToPrintString(X, ", ", 50,10));
+    TSne tsne = new FastTSne();
+    double [][] Y = tsne.tsne(X, 2, initial_dims, perplexity);   
+
+    // Plot Y or save Y to file and plot with some other tool such as for instance R
+
+  }
+}
 ```
 
 Version
