@@ -57,7 +57,7 @@ Example graph of the MNIST data set (60000 samples) generated with Barnes Hut im
 
 ![image of MNIST clusters](https://raw.githubusercontent.com/lejon/T-SNE-Java/master/images/mnist-full.png "MNIST (60000 samples)")
 
-For some tips working with t-sne [Klick here] (http://lejon.github.io) or [here] (https://lvdmaaten.github.io/tsne/#faq).
+For some tips working with t-sne [Klick here] (http://lejon.github.io) or [here] (https://lvdmaaten.github.io/tsne/#faq) (observe that the last link discusses some implementation details of Laurens implementation of t-SNE and not this Java version, but also some general tips and tricks which applies to t-SNE in general) .
 
 Basic code usage: 
 -----------------
