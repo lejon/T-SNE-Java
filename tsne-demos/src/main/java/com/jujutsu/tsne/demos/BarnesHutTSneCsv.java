@@ -50,7 +50,8 @@ public class BarnesHutTSneCsv {
 	static int     iterations      = 2000;
 	static int     label_col_no    = 0;
 	static String  label_col_name  = null;
-	static boolean parallel        = false;
+	static boolean parallel        = true;
+	static boolean silent          = false;
 
 	public static DataFrame<Object> processCommandline(String [] args) throws IOException {
 		CommandLineParser parser = new PosixParser();
@@ -103,9 +104,12 @@ public class BarnesHutTSneCsv {
 		options.addOption( "ss", "subsample",    false, 
 				"the current implementation does not handle very large datasets due to memory and time constraints. Adding this flag will uniformly subsample the dataset" );
 		options.addOption( "pa", "parallel",     false, 
-				"Run parts of algorithm in parallel. Using this option will hog your CPUs!" );
+				"Run parts of algorithm in parallel. Using this option will hog your CPUs! (default = true)" );
+		options.addOption( "npa", "no_parallel",     false, 
+				"DON'T run in parallel. (default = false)" );
 		options.addOption( "odim", "output_dims",    true, 
 				"Alternatives are '2D' or '3D' default is (" + output_dims + "D " );
+		options.addOption( "si", "silent",     false, "Be quiet (no progress info during fitting)!" );
 
 
 		CommandLine parsedCommandLine = null;
@@ -218,9 +222,19 @@ public class BarnesHutTSneCsv {
 			subSample = true;
 		}
 		
+		if (parsedCommandLine.hasOption( "no_parallel" )) {
+			System.out.println("Not running in parallel...");
+			parallel = false;
+		}
+
 		if (parsedCommandLine.hasOption( "parallel" )) {
-			System.out.println("Using parallel Barnes Hut t-SNE...");
+			System.out.println("Using parallel Barnes Hut t-SNE (default=true)...");
 			parallel = true;
+		}
+
+		if (parsedCommandLine.hasOption( "silent" )) {
+			System.out.println("No progress info during fitting...");
+			silent = true;
 		}
 		
 		if (parsedCommandLine.hasOption( "output_dims" )) {
@@ -355,7 +369,7 @@ public class BarnesHutTSneCsv {
 		} else {
 			tsne = new BHTSne();
 		}
-		double [][] Y = tsne.tsne(matrix, output_dims, initial_dims, perplexity, iterations, true, theta);
+		double [][] Y = tsne.tsne(matrix, output_dims, initial_dims, perplexity, iterations, true, theta, silent);
 		if(transpose_after) Y = MatrixOps.transposeSerial(matrix);
 		long t2 = System.currentTimeMillis();
 		System.out.println("TSne took: " + ((double) (t2-t1) / 1000.0) + " seconds");

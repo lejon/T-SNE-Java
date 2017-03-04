@@ -60,12 +60,16 @@ public class BHTSne implements BarnesHutTSne {
 	public double[][] tsne(double[][] X, int no_dims, int initial_dims, double perplexity, int max_iter, boolean use_pca) {
 		return tsne(X,no_dims,initial_dims,perplexity,max_iter,use_pca, 0.5);
 	}
+	
+	public double[][] tsne(double[][] X, int no_dims, int initial_dims, double perplexity, int max_iter, boolean use_pca, double theta) {
+		return tsne(X,  no_dims,  initial_dims,  perplexity,  max_iter,  use_pca,  theta, false);
+	}
 
 	@Override
-	public double[][] tsne(double[][] X, int no_dims, int initial_dims, double perplexity, int max_iter, boolean use_pca, double theta) {
+	public double[][] tsne(double[][] X, int no_dims, int initial_dims, double perplexity, int max_iter, boolean use_pca, double theta, boolean silent) {
 		int N = X.length;
 		int D = X[0].length;
-		return run(X, N, D, no_dims, initial_dims, perplexity, max_iter, use_pca, theta);
+		return run(X, N, D, no_dims, initial_dims, perplexity, max_iter, use_pca, theta, silent);
 	}
 
 	private double[] flatten(double[][] x) {
@@ -93,7 +97,7 @@ public class BHTSne implements BarnesHutTSne {
 
 	// Perform t-SNE
 	double [][] run(double [][] Xin, int N, int D, int no_dims, int initial_dims, double perplexity, 
-			int max_iter, boolean use_pca, double theta) {
+			int max_iter, boolean use_pca, double theta, boolean silent) {
 		boolean exact = (theta == .0) ? true : false;
 		if(exact) throw new IllegalArgumentException("The Barnes Hut implementation does not support exact inference yet (theta==0.0), if you want exact t-SNE please use one of the standard t-SNE implementations (FastTSne for instance)");
 		
@@ -216,7 +220,7 @@ public class BHTSne implements BarnesHutTSne {
 			if(iter == mom_switch_iter) momentum = final_momentum;
 
 			// Print out progress
-			if((iter > 0 && iter % 50 == 0) || iter == max_iter - 1) {
+			if(((iter > 0 && iter % 50 == 0) || iter == max_iter - 1) && !silent ) {
 				end = System.currentTimeMillis();
 				double C = .0;
 				if(exact) C = evaluateError(P, Y, N, no_dims);
