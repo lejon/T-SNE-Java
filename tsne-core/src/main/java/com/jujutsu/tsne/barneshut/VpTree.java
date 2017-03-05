@@ -182,7 +182,7 @@ public class VpTree<StorageType> {
 
 			// If current node within radius tau
 			if(dist < _tau) {
-				if(heap.size() == k) heap.remove();           // remove furthest node from result list (if we already have k results)
+				if(heap.size() == k) heap.remove();           // remove farthest node from result list (if we already have k results)
 				heap.add(new HeapItem(node.index, dist));     // add current node to result list
 				if(heap.size() == k) _tau = heap.peek().dist; // update value of tau (farthest point in result list)
 			}
@@ -202,7 +202,7 @@ public class VpTree<StorageType> {
 					_tau = search(node.right, target, k, heap, _tau);
 				}
 
-				// If the target lies outsize the radius of the ball
+				// If the target lies outside the radius of the ball
 			} else {
 				if(dist + _tau >= node.threshold) {         // if there can still be neighbors outside the ball, recursively search right child first
 					_tau = search(node.right, target, k, heap, _tau);
