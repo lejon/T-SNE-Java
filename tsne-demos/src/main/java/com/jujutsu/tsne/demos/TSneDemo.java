@@ -20,8 +20,10 @@ import com.jujutsu.tsne.FastTSne;
 import com.jujutsu.tsne.PrincipalComponentAnalysis;
 import com.jujutsu.tsne.SimpleTSne;
 import com.jujutsu.tsne.TSne;
+import com.jujutsu.tsne.barneshut.TSneConfiguration;
 import com.jujutsu.utils.MatrixOps;
 import com.jujutsu.utils.MatrixUtils;
+import com.jujutsu.utils.TSneUtils;
 
 public class TSneDemo {
 	
@@ -76,7 +78,8 @@ public class TSneDemo {
     	double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/resources/datasets/iris_X.txt"), ",");
         System.out.println(MatrixOps.doubleArrayToPrintString(X, ", ", 50,10));
         TSne tsne = new SimpleTSne();
-		double [][] Y = tsne.tsne(X, 2, initial_dims, perplexity);        
+		TSneConfiguration config = TSneUtils.buildConfig(X, 2, initial_dims, perplexity, 1000);
+		double [][] Y = tsne.tsne(config);
         System.out.println(MatrixOps.doubleArrayToPrintString(Y, ", ", 50,10));
         plotIris(Y);
     }
@@ -149,7 +152,8 @@ public class TSneDemo {
 		}
         System.out.println("Shape is: " + X.length + " x " + X[0].length);
         System.out.println("Starting TSNE: " + new Date());
-        double [][] Y = tsne.tsne(X, 2, initial_dims, perplexity, iters);
+		TSneConfiguration config = TSneUtils.buildConfig(X, 2, initial_dims, perplexity, iters);
+		double [][] Y = tsne.tsne(config);
         System.out.println("Finished TSNE: " + new Date());
         //System.out.println("Result is = " + Y.length + " x " + Y[0].length + " => \n" + MatrixOps.doubleArrayToString(Y));
         System.out.println("Result is = " + Y.length + " x " + Y[0].length);
@@ -177,7 +181,8 @@ public class TSneDemo {
         X = MatrixOps.centerAndScale(X);
         System.out.println("Shape is: " + X.length + " x " + X[0].length);
         System.out.println("Starting TSNE: " + new Date());
-        double [][] Y = tsne.tsne(X, 2, initial_dims, perplexity, iters);
+		TSneConfiguration config = TSneUtils.buildConfig(X, 2, initial_dims, perplexity, iters);
+		double [][] Y = tsne.tsne(config);
         System.out.println("Finished TSNE: " + new Date());
         //System.out.println("Result is = " + Y.length + " x " + Y[0].length + " => \n" + MatrixOps.doubleArrayToString(Y));
         System.out.println("Result is = " + Y.length + " x " + Y[0].length);
@@ -226,7 +231,8 @@ public class TSneDemo {
 		}
         System.out.println("Shape is: " + X.length + " x " + X[0].length);
         System.out.println("Starting TSNE: " + new Date());
-        double [][] Y = tsne.tsne(X, 2, initial_dims, perplexity);
+		TSneConfiguration config = TSneUtils.buildConfig(X, 2, initial_dims, perplexity, 1000);
+		double [][] Y = tsne.tsne(config);
         System.out.println("Finished TSNE: " + new Date());
         //System.out.println("Result is = " + Y.length + " x " + Y[0].length + " => \n" + MatrixOps.doubleArrayToString(Y));
         System.out.println("Result is = " + Y.length + " x " + Y[0].length);
@@ -252,7 +258,8 @@ public class TSneDemo {
 		}
         System.out.println("Shape is: " + X.length + " x " + X[0].length);
         TSne tsne = new SimpleTSne();
-        double [][] Y = tsne.tsne(X, 2, initial_dims, perplexity, 1000, true);
+		TSneConfiguration config = TSneUtils.buildConfig(X, 2, initial_dims, perplexity, 1000);
+		double [][] Y = tsne.tsne(config);
         System.out.println(MatrixOps.doubleArrayToPrintString(Y));
         Plot2DPanel plot = new Plot2DPanel();
         

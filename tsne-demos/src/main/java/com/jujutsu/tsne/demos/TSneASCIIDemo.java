@@ -15,8 +15,10 @@ import org.math.plot.plots.ScatterPlot;
 
 import com.jujutsu.tsne.SimpleTSne;
 import com.jujutsu.tsne.TSne;
+import com.jujutsu.tsne.barneshut.TSneConfiguration;
 import com.jujutsu.utils.MatrixOps;
 import com.jujutsu.utils.MatrixUtils;
+import com.jujutsu.utils.TSneUtils;
 
 public class TSneASCIIDemo {
 
@@ -67,7 +69,9 @@ public class TSneASCIIDemo {
     public static double [][] runTSne(double [][] matrix) {
     	System.out.println("Shape is: " + matrix.length + " x " + matrix[0].length);
     	TSne tsne = new SimpleTSne();
-    	double [][] Y = tsne.tsne(matrix, 2, initial_dims, perplexity);
+		TSneConfiguration config = TSneUtils.buildConfig(matrix, 2, initial_dims, perplexity, 1000);
+
+    	double [][] Y = tsne.tsne(config);
     	System.out.println("Result is = " + Y.length + " x " + Y[0].length + " => \n" + MatrixOps.doubleArrayToPrintString(Y));
     	return Y;
     }

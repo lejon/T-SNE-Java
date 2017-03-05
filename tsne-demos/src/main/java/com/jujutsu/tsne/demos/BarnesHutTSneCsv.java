@@ -9,10 +9,6 @@ import java.util.Random;
 
 import javax.swing.JFrame;
 
-import joinery.DataFrame;
-import joinery.DataFrame.NumberDefault;
-import joinery.DataFrame.Predicate;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -27,8 +23,14 @@ import org.math.plot.plots.ScatterPlot;
 import com.jujutsu.tsne.barneshut.BHTSne;
 import com.jujutsu.tsne.barneshut.BarnesHutTSne;
 import com.jujutsu.tsne.barneshut.ParallelBHTsne;
+import com.jujutsu.tsne.barneshut.TSneConfiguration;
 import com.jujutsu.utils.MatrixOps;
 import com.jujutsu.utils.MatrixUtils;
+import com.jujutsu.utils.TSneUtils;
+
+import joinery.DataFrame;
+import joinery.DataFrame.NumberDefault;
+import joinery.DataFrame.Predicate;
 
 public class BarnesHutTSneCsv {
 	static int     initial_dims    = -1;
@@ -52,6 +54,7 @@ public class BarnesHutTSneCsv {
 	static String  label_col_name  = null;
 	static boolean parallel        = true;
 	static boolean silent          = false;
+	static boolean print_error     = true;
 
 	public static DataFrame<Object> processCommandline(String [] args) throws IOException {
 		CommandLineParser parser = new PosixParser();
@@ -104,12 +107,13 @@ public class BarnesHutTSneCsv {
 		options.addOption( "ss", "subsample",    false, 
 				"the current implementation does not handle very large datasets due to memory and time constraints. Adding this flag will uniformly subsample the dataset" );
 		options.addOption( "pa", "parallel",     false, 
-				"Run parts of algorithm in parallel. Using this option will hog your CPUs! (default = true)" );
+				"Run parts of algorithm in parallel. Using this option will hog your CPUs but will be much faster on large datasets! (default = true)" );
 		options.addOption( "npa", "no_parallel",     false, 
 				"DON'T run in parallel. (default = false)" );
 		options.addOption( "odim", "output_dims",    true, 
 				"Alternatives are '2D' or '3D' default is (" + output_dims + "D " );
 		options.addOption( "si", "silent",     false, "Be quiet (no progress info during fitting)!" );
+		options.addOption( "npe", "no_print_error",false, "Don't print error each iteration (takes a some extra time) (default=false)" );
 
 
 		CommandLine parsedCommandLine = null;
@@ -235,6 +239,11 @@ public class BarnesHutTSneCsv {
 		if (parsedCommandLine.hasOption( "silent" )) {
 			System.out.println("No progress info during fitting...");
 			silent = true;
+		}
+
+		if (parsedCommandLine.hasOption( "no_print_error" )) {
+			System.out.println("Won't print error during fitting...");
+			print_error = false;
 		}
 		
 		if (parsedCommandLine.hasOption( "output_dims" )) {
@@ -369,7 +378,10 @@ public class BarnesHutTSneCsv {
 		} else {
 			tsne = new BHTSne();
 		}
-		double [][] Y = tsne.tsne(matrix, output_dims, initial_dims, perplexity, iterations, true, theta, silent);
+		
+		TSneConfiguration config = TSneUtils.buildConfig(matrix, output_dims, initial_dims, perplexity, iterations, true, theta, silent, print_error);
+		
+		double [][] Y = tsne.tsne(config);
 		if(transpose_after) Y = MatrixOps.transposeSerial(matrix);
 		long t2 = System.currentTimeMillis();
 		System.out.println("TSne took: " + ((double) (t2-t1) / 1000.0) + " seconds");

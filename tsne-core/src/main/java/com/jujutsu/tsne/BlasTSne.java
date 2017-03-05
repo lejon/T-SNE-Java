@@ -19,6 +19,7 @@ import static com.jujutsu.utils.MatrixOps.times;
 
 import org.jblas.DoubleMatrix;
 
+import com.jujutsu.tsne.barneshut.TSneConfiguration;
 import com.jujutsu.utils.BlasOps;
 import com.jujutsu.utils.MatrixOps;
 
@@ -33,15 +34,15 @@ public class BlasTSne implements TSne {
 	
 	MatrixOps mo = new MatrixOps();
 
-	public double [][] tsne(double[][] X, int k, int initial_dims, double perplexity) {
-		return tsne(X,k,initial_dims, perplexity, 2000, true);
-	}
-
-	public double [][] tsne(double[][] X, int k, int initial_dims, double perplexity, int maxIterations) {
-		return tsne(X,k,initial_dims, perplexity, maxIterations, true);
-	}
-
-	public double [][] tsne(double[][] X, int no_dims, int initial_dims, double perplexity, int max_iter, boolean use_pca) {
+	@Override
+	public double [][] tsne(TSneConfiguration config) {
+		double[][] X      = config.getXin();
+		int no_dims       = config.getOutputDims();
+		int initial_dims  = config.getInitialDims(); 
+		double perplexity = config.getPerplexity();
+		int max_iter      = config.getMaxIter();
+		boolean use_pca   = config.usePca();
+		
 		String IMPLEMENTATION_NAME = this.getClass().getSimpleName();
 		System.out.println("X:Shape is = " + X.length + " x " + X[0].length);
 		System.out.println("Running " + IMPLEMENTATION_NAME + ".");

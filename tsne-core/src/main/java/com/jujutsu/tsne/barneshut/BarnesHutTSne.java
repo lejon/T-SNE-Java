@@ -36,5 +36,5 @@ package com.jujutsu.tsne.barneshut;
 import com.jujutsu.tsne.TSne;
 
 public interface BarnesHutTSne extends TSne {
-	public double[][] tsne(double[][] X, int no_dims, int initial_dims, double perplexity, int max_iter, boolean use_pca, double theta, boolean silent);
+	public double[][] tsne(TSneConfiguration config);
 }

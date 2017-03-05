@@ -26,8 +26,10 @@ import org.math.plot.plots.ScatterPlot;
 
 import com.jujutsu.tsne.MemOptimizedTSne;
 import com.jujutsu.tsne.TSne;
+import com.jujutsu.tsne.barneshut.TSneConfiguration;
 import com.jujutsu.utils.MatrixOps;
 import com.jujutsu.utils.MatrixUtils;
+import com.jujutsu.utils.TSneUtils;
 
 public class TSneCsv {
 	static int     initial_dims    = -1;
@@ -338,7 +340,8 @@ public class TSneCsv {
 		TSne tsne = new MemOptimizedTSne();
 		//TSne tsne = new BlasTSne();
 		long t1 = System.currentTimeMillis();
-		double [][] Y = tsne.tsne(matrix, output_dims, initial_dims, perplexity, iterations);
+		TSneConfiguration config = TSneUtils.buildConfig(matrix, output_dims, initial_dims, perplexity, iterations);
+		double [][] Y = tsne.tsne(config);
 		if(transpose_after) Y = MatrixOps.transposeSerial(matrix);
 		long t2 = System.currentTimeMillis();
 		System.out.println("TSne took: " + ((double) (t2-t1) / 1000.0) + " seconds");

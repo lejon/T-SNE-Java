@@ -47,29 +47,8 @@ public class BHTSne implements BarnesHutTSne {
 	protected final Distance distance = new EuclideanDistance();
 
 	@Override
-	public double[][] tsne(double[][] X, int no_dims, int initial_dims, double perplexity) {
-		return tsne(X,no_dims,initial_dims,perplexity,20000,true);
-	}
-
-	@Override
-	public double[][] tsne(double[][] X, int no_dims, int initial_dims, double perplexity, int maxIterations) {
-		return tsne(X,no_dims,initial_dims,perplexity,maxIterations,true);
-	}
-
-	@Override
-	public double[][] tsne(double[][] X, int no_dims, int initial_dims, double perplexity, int max_iter, boolean use_pca) {
-		return tsne(X,no_dims,initial_dims,perplexity,max_iter,use_pca, 0.5);
-	}
-	
-	public double[][] tsne(double[][] X, int no_dims, int initial_dims, double perplexity, int max_iter, boolean use_pca, double theta) {
-		return tsne(X,  no_dims,  initial_dims,  perplexity,  max_iter,  use_pca,  theta, false);
-	}
-
-	@Override
-	public double[][] tsne(double[][] X, int no_dims, int initial_dims, double perplexity, int max_iter, boolean use_pca, double theta, boolean silent) {
-		int N = X.length;
-		int D = X[0].length;
-		return run(X, N, D, no_dims, initial_dims, perplexity, max_iter, use_pca, theta, silent);
+	public double[][] tsne(TSneConfiguration config) {
+		return run(config);
 	}
 
 	private double[] flatten(double[][] x) {
@@ -96,24 +75,30 @@ public class BHTSne implements BarnesHutTSne {
 	static double sign_tsne(double x) { return (x == .0 ? .0 : (x < .0 ? -1.0 : 1.0)); }
 
 	// Perform t-SNE
-	double [][] run(double [][] Xin, int N, int D, int no_dims, int initial_dims, double perplexity, 
-			int max_iter, boolean use_pca, double theta, boolean silent) {
-		boolean exact = (theta == .0) ? true : false;
-		if(exact) throw new IllegalArgumentException("The Barnes Hut implementation does not support exact inference yet (theta==0.0), if you want exact t-SNE please use one of the standard t-SNE implementations (FastTSne for instance)");
+	double [][] run(TSneConfiguration parameterObject) {
+		int D = parameterObject.getXStartDim();
+		double[][] Xin = parameterObject.getXin();
+		boolean exact = (parameterObject.getTheta() == .0);
 		
-		if(use_pca && D > initial_dims && initial_dims > 0) {
+		if(exact) throw new IllegalArgumentException("The Barnes Hut implementation does not support exact inference yet (theta==0.0), if you want exact t-SNE please use one of the standard t-SNE implementations (FastTSne for instance)");
+
+		if(parameterObject.usePca() && D > parameterObject.getInitialDims() && parameterObject.getInitialDims() > 0) {
 			PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
-			Xin = pca.pca(Xin, initial_dims);
-			D = initial_dims;
+			Xin = pca.pca(Xin, parameterObject.getInitialDims());
+			D = parameterObject.getInitialDims();
 			System.out.println("X:Shape after PCA is = " + Xin.length + " x " + Xin[0].length);
 		}
+		
 		double [] X = flatten(Xin);	
+		int N = parameterObject.getNrRows();
+		int no_dims = parameterObject.getOutputDims();
 		
 		double [] Y = new double[N*no_dims];
 		System.out.println("X:Shape is = " + N + " x " + D);
 		// Determine whether we are using an exact algorithm
+		double perplexity = parameterObject.getPerplexity();
 		if(N - 1 < 3 * perplexity) { throw new IllegalArgumentException("Perplexity too large for the number of data points!\n"); }
-		System.out.printf("Using no_dims = %d, perplexity = %f, and theta = %f\n", no_dims, perplexity, theta);
+		System.out.printf("Using no_dims = %d, perplexity = %f, and theta = %f\n", no_dims, perplexity, parameterObject.getTheta());
 
 		// Set learning parameters
 		double total_time = 0;
@@ -201,12 +186,12 @@ public class BHTSne implements BarnesHutTSne {
 		if(exact) System.out.printf("Done in %4.2f seconds!\nLearning embedding...\n", (end - start) / 1000.0);
 		else System.out.printf("Done in %4.2f seconds (sparsity = %f)!\nLearning embedding...\n", (end - start) / 1000.0, (double) row_P[N] / ((double) N * (double) N));
 		start = System.currentTimeMillis();
-		for(int iter = 0; iter < max_iter; iter++) {
-			
+		for(int iter = 0; iter < parameterObject.getMaxIter(); iter++) {
+
 			if(exact) computeExactGradient(P, Y, N, no_dims, dY);
 			// Compute (approximate) gradient
-			else computeGradient(P, row_P, col_P, val_P, Y, N, no_dims, dY, theta);
-			
+			else computeGradient(P, row_P, col_P, val_P, Y, N, no_dims, dY, parameterObject.getTheta());
+
 			updateGradient(N, no_dims, Y, momentum, eta, dY, uY, gains);
 
 			// Make solution zero-mean
@@ -220,16 +205,20 @@ public class BHTSne implements BarnesHutTSne {
 			if(iter == mom_switch_iter) momentum = final_momentum;
 
 			// Print out progress
-			if(((iter > 0 && iter % 50 == 0) || iter == max_iter - 1) && !silent ) {
+			if(((iter > 0 && iter % 50 == 0) || iter == parameterObject.getMaxIter() - 1) && !parameterObject.silent() ) {
 				end = System.currentTimeMillis();
-				double C = .0;
-				if(exact) C = evaluateError(P, Y, N, no_dims);
-				else      C = evaluateError(row_P, col_P, val_P, Y, N, no_dims, theta);  // doing approximate computation here!
+				String err_string = "not_calculated";
+				if(parameterObject.printError()) {
+					double C = .0;
+					if(exact) C = evaluateError(P, Y, N, no_dims);
+					else      C = evaluateError(row_P, col_P, val_P, Y, N, no_dims, parameterObject.getTheta());  // doing approximate computation here!
+					err_string = "" + C;
+				}
 				if(iter == 0)
-					System.out.printf("Iteration %d: error is %f\n", iter + 1, C);
+					System.out.printf("Iteration %d: error is %s\n", iter + 1, err_string);
 				else {
 					total_time += (end - start) / 1000.0;
-					System.out.printf("Iteration %d: error is %f (50 iterations in %4.2f seconds)\n", iter, C, (end - start) / 1000.0);
+					System.out.printf("Iteration %d: error is %s (50 iterations in %4.2f seconds)\n", iter, err_string, (end - start) / 1000.0);
 				}
 				start = System.currentTimeMillis();
 			}

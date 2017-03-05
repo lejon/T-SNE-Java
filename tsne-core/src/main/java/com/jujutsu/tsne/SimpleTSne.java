@@ -31,6 +31,7 @@ import static com.jujutsu.utils.MatrixOps.sum;
 import static com.jujutsu.utils.MatrixOps.tile;
 import static com.jujutsu.utils.MatrixOps.times;
 
+import com.jujutsu.tsne.barneshut.TSneConfiguration;
 import com.jujutsu.utils.MatrixOps;
 
 /**
@@ -45,15 +46,14 @@ import com.jujutsu.utils.MatrixOps;
 public class SimpleTSne implements TSne {
 	MatrixOps mo = new MatrixOps();
 
-	public double [][] tsne(double[][] X, int k, int initial_dims, double perplexity) {
-		return tsne(X,k,initial_dims, perplexity, 2000, true);
-	}
-
-	public double [][] tsne(double[][] X, int k, int initial_dims, double perplexity, int maxIterations) {
-		return tsne(X,k,initial_dims, perplexity, maxIterations, true);
-	}
-
-	public double [][] tsne(double[][] X, int no_dims, int initial_dims, double perplexity, int max_iter, boolean use_pca) {
+	public double [][] tsne(TSneConfiguration config) {
+		double[][] X      = config.getXin();
+		int no_dims       = config.getOutputDims();
+		int initial_dims  = config.getInitialDims(); 
+		double perplexity = config.getPerplexity();
+		int max_iter      = config.getMaxIter();
+		boolean use_pca   = config.usePca();
+		
 		String IMPLEMENTATION_NAME = this.getClass().getSimpleName();
 		System.out.println("X:Shape is = " + X.length + " x " + X[0].length);
 		System.out.println("Running " + IMPLEMENTATION_NAME + ".");

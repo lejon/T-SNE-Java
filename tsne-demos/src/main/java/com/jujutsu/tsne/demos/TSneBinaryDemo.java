@@ -12,7 +12,9 @@ import org.math.plot.plots.ScatterPlot;
 
 import com.jujutsu.tsne.SimpleTSne;
 import com.jujutsu.tsne.TSne;
+import com.jujutsu.tsne.barneshut.TSneConfiguration;
 import com.jujutsu.utils.MatrixOps;
+import com.jujutsu.utils.TSneUtils;
 
 public class TSneBinaryDemo {
 
@@ -24,7 +26,8 @@ public class TSneBinaryDemo {
 	public static void runTSne(double [][] matrix) {
 		TSne tsne = new SimpleTSne();
 		System.out.println("Shape is: " + matrix.length + " x " + matrix[0].length);
-		double [][] Y = tsne.tsne(matrix, 2, initial_dims, perplexity, 2500, false);
+		TSneConfiguration config = TSneUtils.buildConfig(matrix, 2, initial_dims, perplexity, 1000);
+		double [][] Y = tsne.tsne(config);
 		System.out.println("Result is = " + Y.length + " x " + Y[0].length + " => \n" + MatrixOps.doubleArrayToPrintString(Y));
 		displayResult(Y);
 	}
