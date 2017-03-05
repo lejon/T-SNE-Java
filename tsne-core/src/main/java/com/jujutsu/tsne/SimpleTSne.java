@@ -46,6 +46,7 @@ import com.jujutsu.utils.MatrixOps;
 public class SimpleTSne implements TSne {
 	MatrixOps mo = new MatrixOps();
 
+	@Override
 	public double [][] tsne(TSneConfiguration config) {
 		double[][] X      = config.getXin();
 		int no_dims       = config.getOutputDims();
