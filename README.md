@@ -127,7 +127,7 @@ Core: 2.3.0
 
 Acknowledgements
 ----------------
-I'm a very satisfied user of the YourKit profiler. A Great product with great support.
+I'm a very satisfied user of the YourKit profiler. A Great product with great support. It has been sucessfully used for profiling in this project.
 
 ![YourKit](https://www.yourkit.com/images/yklogo.png)
 
