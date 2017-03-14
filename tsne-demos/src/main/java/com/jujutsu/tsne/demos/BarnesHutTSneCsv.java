@@ -189,6 +189,7 @@ public class BarnesHutTSneCsv {
 		System.out.println("Loaded CSV with: " + df.length()+ " rows and " + df.size() +" columns.");
 
 		if (parsedCommandLine.hasOption( "transpose" )) {
+			System.out.println("Transposing data before t-SNE...");
 			df = df.transpose();
 		}
 		if (parsedCommandLine.hasOption( "perplexity" )) {
