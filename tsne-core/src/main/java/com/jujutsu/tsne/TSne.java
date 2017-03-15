@@ -14,6 +14,7 @@ import com.jujutsu.tsne.barneshut.TSneConfiguration;
 public interface TSne {
 
 	double [][] tsne(TSneConfiguration config);
+	void abort();
 
 	static class R {
 		double [][] P;

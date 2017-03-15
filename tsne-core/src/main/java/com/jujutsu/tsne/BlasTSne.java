@@ -33,6 +33,7 @@ import com.jujutsu.utils.MatrixOps;
 public class BlasTSne implements TSne {
 	
 	MatrixOps mo = new MatrixOps();
+	protected volatile boolean abort = false;
 
 	@Override
 	public double [][] tsne(TSneConfiguration config) {
@@ -75,7 +76,7 @@ public class BlasTSne implements TSne {
 		System.out.println("Y:Shape is = " + Y.rows + " x " + Y.columns);
 		
 		// Run iterations
-		for (int iter = 0; iter < max_iter; iter++) {
+		for (int iter = 0; iter < max_iter && !abort; iter++) {
 			// Compute pairwise affinities
 			DoubleMatrix sum_Y = BlasOps.square(Y).rowSums().transpose();
 			DoubleMatrix num = BlasOps.scalarInverse(Y.mmul(Y.transpose()).mul(-2).addRowVector(sum_Y).transpose().addRowVector(sum_Y).add(1));
@@ -204,5 +205,10 @@ public class BlasTSne implements TSne {
 		System.out.println("Mean value of sigma: " + sigma);
 
 		return r;
+	}
+
+	@Override
+	public void abort() {
+		abort=true;
 	}
 }

@@ -45,6 +45,7 @@ import com.jujutsu.utils.MatrixOps;
 */
 public class SimpleTSne implements TSne {
 	MatrixOps mo = new MatrixOps();
+	protected volatile boolean abort = false;
 
 	@Override
 	public double [][] tsne(TSneConfiguration config) {
@@ -86,7 +87,7 @@ public class SimpleTSne implements TSne {
 		System.out.println("Y:Shape is = " + Y.length + " x " + Y[0].length);
 		
 		// Run iterations
-		for (int iter = 0; iter < max_iter; iter++) {
+		for (int iter = 0; iter < max_iter && !abort; iter++) {
 			// Compute pairwise affinities
 			double [][] sum_Y = mo.transpose(sum(square(Y), 1));
 			double [][] num = scalarInverse(scalarPlus(addRowVector(mo.transpose(addRowVector(scalarMult(
@@ -205,5 +206,10 @@ public class SimpleTSne implements TSne {
 		System.out.println("Mean value of sigma: " + sigma);
 
 		return r;
+	}
+
+	@Override
+	public void abort() {
+		abort = true;
 	}
 }

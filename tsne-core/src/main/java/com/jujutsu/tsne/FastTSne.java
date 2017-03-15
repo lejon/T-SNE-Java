@@ -67,6 +67,7 @@ import com.jujutsu.utils.MatrixOps;
 */
 public class FastTSne implements TSne {
 	MatrixOps mo = new MatrixOps();
+	protected volatile boolean abort = false;
 
 	public static double[][] readBinaryDoubleMatrix(int rows, int columns, String fn) throws FileNotFoundException, IOException {
 		File matrixFile = new File(fn);
@@ -137,7 +138,7 @@ public class FastTSne implements TSne {
 		DenseMatrix64F num   = new DenseMatrix64F(Y.numRows, Y.numRows);
 		DenseMatrix64F Q     = new DenseMatrix64F(P.numRows,P.numCols);
 		
-		for (int iter = 0; iter < max_iter; iter++) {
+		for (int iter = 0; iter < max_iter && !abort; iter++) {
 			// Compute pairwise affinities
 			elementPower(Y, 2, sqed);
 			sumRows(sqed, sum_Y);
@@ -302,5 +303,10 @@ public class FastTSne implements TSne {
 		System.out.println("Mean value of sigma: " + sigma);
 
 		return r;
+	}
+
+	@Override
+	public void abort() {
+		abort = true;
 	}
 }

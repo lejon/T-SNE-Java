@@ -45,6 +45,7 @@ import com.jujutsu.utils.MatrixOps;
 public class BHTSne implements BarnesHutTSne {
 
 	protected final Distance distance = new EuclideanDistance();
+	protected volatile boolean abort = false;
 
 	@Override
 	public double[][] tsne(TSneConfiguration config) {
@@ -186,7 +187,7 @@ public class BHTSne implements BarnesHutTSne {
 		if(exact) System.out.printf("Done in %4.2f seconds!\nLearning embedding...\n", (end - start) / 1000.0);
 		else System.out.printf("Done in %4.2f seconds (sparsity = %f)!\nLearning embedding...\n", (end - start) / 1000.0, (double) row_P[N] / ((double) N * (double) N));
 		start = System.currentTimeMillis();
-		for(int iter = 0; iter < parameterObject.getMaxIter(); iter++) {
+		for(int iter = 0; iter < parameterObject.getMaxIter() && !abort; iter++) {
 
 			if(exact) computeExactGradient(P, Y, N, no_dims, dY);
 			// Compute (approximate) gradient
@@ -863,6 +864,11 @@ public class BHTSne implements BarnesHutTSne {
 				X[n][d] -= mean[d];
 			}
 		}
+	}
+
+	@Override
+	public void abort() {
+		abort = true;
 	}
 
 }

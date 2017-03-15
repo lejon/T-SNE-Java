@@ -33,6 +33,9 @@ import joinery.DataFrame.NumberDefault;
 import joinery.DataFrame.Predicate;
 
 public class BarnesHutTSneCsv {
+	
+	protected static BarnesHutTSne tsne;
+	
 	static int     initial_dims    = -1;
 	static int     output_dims     = 2;
 	static double  perplexity      = 20.0;
@@ -372,7 +375,6 @@ public class BarnesHutTSneCsv {
 		if(addNoise)  matrix = MatrixOps.addNoise(matrix);
 		System.out.println(MatrixOps.doubleArrayToPrintString(matrix,5,5,20));
 
-		BarnesHutTSne tsne;
 		long t1 = System.currentTimeMillis();
 		if(parallel) {			
 			tsne = new ParallelBHTsne();
@@ -480,7 +482,20 @@ public class BarnesHutTSneCsv {
 	}
 
 	public static void main(String [] args) throws IOException {
+		
+		final Thread mainThread = Thread.currentThread();
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+		    public void run() {
+				System.out.println("Got shudown request, shutting down...");
+				tsne.abort();
+		        try {
+					mainThread.join(10000);
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
+		    }
+		});
+		
 		tsne_csv(args);
 	}
-
 }
