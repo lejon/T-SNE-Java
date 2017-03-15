@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/lejon/T-SNE-Java.svg?branch=master)](https://travis-ci.org/lejon/T-SNE-Java)
 
+![YourKit](https://www.yourkit.com/images/yklogo.png)
+
 T-SNE-Java
 ==========
 
@@ -122,6 +124,17 @@ Version
 -------
 Demo: 2.4.0
 Core: 2.3.0
+
+Acknowledgements
+----------------
+I'm a very satisfied user of the YourKit profiler. A Great product with great support. It has been sucessfully used for profiling in this project.
+
+![YourKit](https://www.yourkit.com/images/yklogo.png)
+
+YourKit supports open source projects with its full-featured Java Profiler.
+YourKit, LLC is the creator of [YourKit Java Profiler](https://www.yourkit.com/java/profiler/)
+and [YourKit .NET Profiler](https://www.yourkit.com/.net/profiler/),
+innovative and intelligent tools for profiling Java and .NET applications.
 
 Enjoy!
 -Leif
