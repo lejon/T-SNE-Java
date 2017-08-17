@@ -53,6 +53,20 @@ Same as above but using parallelization.
 ```shell
 java -jar target/tsne-demos-2.4.0.jar --parallel --nohdr --nolbls --label_file=src/main/resources/datasets/iris_X_labels.txt src/main/resources/datasets/iris_X.txt
 ```
+
+
+Aborting BarnesHutTSneCsv
+-------------------------
+The BarnesHutTSneCsv program now supports aborting gracefully. 
+
+If the output is monitored and it is concluded that the process has converged, the BarnesHutTSneCsv process can be stopped with a graceful exit by sending the process an interrupt signal.
+
+```shell
+kill -2 <PID>
+```
+
+The program now exits and produces the same output as usual except for the plot which must be done manually.
+
 Example graph of the MNIST data set (60000 samples) generated with Barnes Hut implementation of t-SNE:
 
 ![image of MNIST clusters](https://raw.githubusercontent.com/lejon/T-SNE-Java/master/images/mnist-full.png "MNIST (60000 samples)")
