@@ -109,6 +109,8 @@ public class TSneTest {
 Usage using Jitpack
 -------------------
 
+T-SNE-Java is not on Maven Central, however you can use it through Jitpack by adding the following lines to you POM file.
+
 ```xml
 <repositories>
 <repository>
