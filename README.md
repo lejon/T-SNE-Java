@@ -104,6 +104,25 @@ public class TSneTest {
     // Plot Y or save Y to file and plot with some other tool such as for instance R
   }
 }
+```
+
+Usage using Jitpack
+-------------------
+
+```xml
+<repositories>
+<repository>
+    <id>jitpack.io</id>
+    <url>https://jitpack.io</url>
+</repository>
+</repositories>
+
+<dependency>
+    <groupId>com.github.User</groupId>
+    <artifactId>Repo</artifactId>
+    <version>Tag</version>
+</dependency>
+```
 
 Version
 -------
