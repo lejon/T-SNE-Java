@@ -98,39 +98,12 @@ public class TSneTest {
 	} else {
 		tsne = new BHTSne();
 	}
-    double [][] Y = tsne.tsne(X, 2, initial_dims, perplexity);   
+        TSneConfiguration config = TSneUtils.buildConfig(X, 2, initial_dims, perplexity, 1000);
+	double [][] Y = tsne.tsne(config); 
     
     // Plot Y or save Y to file and plot with some other tool such as for instance R
   }
 }
-
-```
-
-Basic code usage (not recommended, slow standard t-SNE (yes, well it was fast at the time. :)): 
------------------------------------------------------------------------------------------------
-
-```java
-import java.io.File;
-
-import com.jujutsu.tsne.FastTSne;
-import com.jujutsu.tsne.TSne;
-import com.jujutsu.utils.MatrixOps;
-import com.jujutsu.utils.MatrixUtils;
-
-public class TSneTest {
-  public static void main(String [] args) {
-    int initial_dims = 55;
-    double perplexity = 20.0;
-    double [][] X = MatrixUtils.simpleRead2DMatrix(new File("src/main/resources/datasets/mnist2500_X.txt"), "   ");
-    System.out.println(MatrixOps.doubleArrayToPrintString(X, ", ", 50,10));
-    TSne tsne = new FastTSne();
-    double [][] Y = tsne.tsne(X, 2, initial_dims, perplexity);   
-
-    // Plot Y or save Y to file and plot with some other tool such as for instance R
-
-  }
-}
-```
 
 Version
 -------
