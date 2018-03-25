@@ -7,8 +7,10 @@
 	<!-- v2.0.0: Barnes Hut Implementation -->
 	<!-- 2.1.0: Added support for configurable theta -->
 	<!-- 2.2.0: Substantial improvements in parallelization -->
-	<!-- 2.3.0: Substantial improvements in parallelization. Added parallelization of vp tree search-->
-	<version>2.3.0</version>
+	<!-- 2.3.0: Substantial improvements in parallelization. Added parallelization of vp tree search -->
+	<!-- 2.4.0: More parallelization -->
+	<!-- 2.5.0: Moved TSneConfiguration to better package location -->
+	<version>2.5.0</version>
 	<name>Java T-SNE</name>
 	
 	<properties>
