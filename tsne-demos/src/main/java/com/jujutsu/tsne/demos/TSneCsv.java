@@ -26,7 +26,7 @@ import org.math.plot.plots.ScatterPlot;
 
 import com.jujutsu.tsne.MemOptimizedTSne;
 import com.jujutsu.tsne.TSne;
-import com.jujutsu.tsne.barneshut.TSneConfiguration;
+import com.jujutsu.tsne.TSneConfiguration;
 import com.jujutsu.utils.MatrixOps;
 import com.jujutsu.utils.MatrixUtils;
 import com.jujutsu.utils.TSneUtils;

@@ -34,6 +34,7 @@ package com.jujutsu.tsne.barneshut;
  */
 
 import com.jujutsu.tsne.TSne;
+import com.jujutsu.tsne.TSneConfiguration;
 
 public interface BarnesHutTSne extends TSne {
 	public double[][] tsne(TSneConfiguration config);

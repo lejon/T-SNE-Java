@@ -31,7 +31,6 @@ import static com.jujutsu.utils.MatrixOps.sum;
 import static com.jujutsu.utils.MatrixOps.tile;
 import static com.jujutsu.utils.MatrixOps.times;
 
-import com.jujutsu.tsne.barneshut.TSneConfiguration;
 import com.jujutsu.utils.MatrixOps;
 
 /**

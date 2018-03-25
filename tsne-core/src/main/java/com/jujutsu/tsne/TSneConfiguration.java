@@ -1,4 +1,4 @@
-package com.jujutsu.tsne.barneshut;
+package com.jujutsu.tsne;
 
 public interface TSneConfiguration {
 

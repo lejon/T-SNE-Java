@@ -13,6 +13,7 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 import java.util.concurrent.RecursiveAction;
 
+import com.jujutsu.tsne.TSneConfiguration;
 import com.jujutsu.utils.MatrixOps;
 
 public class ParallelBHTsne extends BHTSne {

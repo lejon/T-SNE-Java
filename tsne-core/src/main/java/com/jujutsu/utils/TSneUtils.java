@@ -1,7 +1,7 @@
 package com.jujutsu.utils;
 
-import com.jujutsu.tsne.barneshut.TSneConfig;
-import com.jujutsu.tsne.barneshut.TSneConfiguration;
+import com.jujutsu.tsne.TSneConfig;
+import com.jujutsu.tsne.TSneConfiguration;
 
 public class TSneUtils {
 	

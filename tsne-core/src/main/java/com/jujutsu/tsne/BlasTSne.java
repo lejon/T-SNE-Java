@@ -19,7 +19,6 @@ import static com.jujutsu.utils.MatrixOps.times;
 
 import org.jblas.DoubleMatrix;
 
-import com.jujutsu.tsne.barneshut.TSneConfiguration;
 import com.jujutsu.utils.BlasOps;
 import com.jujutsu.utils.MatrixOps;
 

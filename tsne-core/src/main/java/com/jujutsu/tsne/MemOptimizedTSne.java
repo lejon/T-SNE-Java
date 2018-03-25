@@ -34,7 +34,6 @@ import static org.ejml.ops.CommonOps.transpose;
 
 import org.ejml.data.DenseMatrix64F;
 
-import com.jujutsu.tsne.barneshut.TSneConfiguration;
 import com.jujutsu.utils.MatrixOps;
 /**
  *

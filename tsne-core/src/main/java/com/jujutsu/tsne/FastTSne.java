@@ -54,7 +54,6 @@ import java.io.IOException;
 
 import org.ejml.data.DenseMatrix64F;
 
-import com.jujutsu.tsne.barneshut.TSneConfiguration;
 import com.jujutsu.utils.MatrixOps;
 /**
 *

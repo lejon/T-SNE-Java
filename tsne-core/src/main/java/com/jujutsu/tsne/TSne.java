@@ -1,7 +1,5 @@
 package com.jujutsu.tsne;
 
-import com.jujutsu.tsne.barneshut.TSneConfiguration;
-
 /**
 *
 * Author: Leif Jonsson (leif.jonsson@gmail.com)

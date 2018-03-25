@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import com.jujutsu.tsne.PrincipalComponentAnalysis;
+import com.jujutsu.tsne.TSneConfiguration;
 import com.jujutsu.utils.MatrixOps;
 
 public class BHTSne implements BarnesHutTSne {
