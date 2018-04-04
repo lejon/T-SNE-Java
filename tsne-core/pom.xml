@@ -10,7 +10,8 @@
 	<!-- 2.3.0: Substantial improvements in parallelization. Added parallelization of vp tree search -->
 	<!-- 2.4.0: More parallelization -->
 	<!-- 2.5.0: Moved TSneConfiguration to better package location -->
-	<version>2.5.0</version>
+	<!-- 2.5.1: Added check method -->
+	<version>2.5.1</version>
 	<name>Java T-SNE</name>
 	
 	<properties>
