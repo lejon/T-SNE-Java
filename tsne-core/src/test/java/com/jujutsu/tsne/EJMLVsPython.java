@@ -1,23 +1,23 @@
 package com.jujutsu.tsne;
 
-import static org.ejml.ops.CommonOps.add;
-import static org.ejml.ops.CommonOps.divide;
-import static org.ejml.ops.CommonOps.elementMult;
-import static org.ejml.ops.CommonOps.elementPower;
-import static org.ejml.ops.CommonOps.elementSum;
-import static org.ejml.ops.CommonOps.extract;
-import static org.ejml.ops.CommonOps.insert;
-import static org.ejml.ops.CommonOps.mult;
-import static org.ejml.ops.CommonOps.scale;
-import static org.ejml.ops.CommonOps.subtract;
-import static org.ejml.ops.CommonOps.sumCols;
-import static org.ejml.ops.CommonOps.sumRows;
-import static org.ejml.ops.CommonOps.transpose;
+import static org.ejml.dense.row.CommonOps_DDRM.add;
+import static org.ejml.dense.row.CommonOps_DDRM.divide;
+import static org.ejml.dense.row.CommonOps_DDRM.elementMult;
+import static org.ejml.dense.row.CommonOps_DDRM.elementPower;
+import static org.ejml.dense.row.CommonOps_DDRM.elementSum;
+import static org.ejml.dense.row.CommonOps_DDRM.extract;
+import static org.ejml.dense.row.CommonOps_DDRM.insert;
+import static org.ejml.dense.row.CommonOps_DDRM.mult;
+import static org.ejml.dense.row.CommonOps_DDRM.scale;
+import static org.ejml.dense.row.CommonOps_DDRM.subtract;
+import static org.ejml.dense.row.CommonOps_DDRM.sumCols;
+import static org.ejml.dense.row.CommonOps_DDRM.sumRows;
+import static org.ejml.dense.row.CommonOps_DDRM.transpose;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 
-import org.ejml.data.DenseMatrix64F;
+import org.ejml.data.DMatrixRMaj;
 import org.junit.Test;
 
 import com.jujutsu.utils.EjmlOps;
@@ -53,7 +53,7 @@ public class EJMLVsPython {
 	@Test
 	public void testSum() {
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
-		DenseMatrix64F X = new DenseMatrix64F(Xin);
+		DMatrixRMaj X = new DMatrixRMaj(Xin);
 		System.out.println("TSne.sum(X) = " + elementSum(X));
 		assertEquals(172.0,elementSum(X), epsilon);
 	}
@@ -62,8 +62,8 @@ public class EJMLVsPython {
 	public void testMSum() {
 		double [] pysum0 = {30.,  30.,  38.,  42.,  32.};
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
-		DenseMatrix64F X = new DenseMatrix64F(Xin);
-		DenseMatrix64F sumC = new DenseMatrix64F(1,X.numCols);
+		DMatrixRMaj X = new DMatrixRMaj(Xin);
+		DMatrixRMaj sumC = new DMatrixRMaj(1,X.numCols);
 		double [][] sum0 = EjmlOps.extractDoubleArray(sumCols(X,sumC));
 		for (int i = 0; i < sum0.length; i++) {
 			for (int j = 0; j < sum0[i].length; j++) {
@@ -71,7 +71,7 @@ public class EJMLVsPython {
 			}
 		}
 		double [] pysum1 = {15.,  35.,  19.,  26.,  30.,  18.,  29.};
-		DenseMatrix64F sumR = new DenseMatrix64F(X.numRows,1);
+		DMatrixRMaj sumR = new DMatrixRMaj(X.numRows,1);
 		double [][] sum1 = EjmlOps.extractDoubleArray(sumRows(X,sumR));
 		for (int i = 0; i < sum1.length; i++) {
 			for (int j = 0; j < sum1[i].length; j++) {
@@ -83,7 +83,7 @@ public class EJMLVsPython {
 	@Test
 	public void testTranspose() {
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
-		DenseMatrix64F X = new DenseMatrix64F(Xin);
+		DMatrixRMaj X = new DMatrixRMaj(Xin);
 		double [][] pytranspose = {
 				{ 1.,  6.,  3.,  7.,  2.,  3.,  8.},
 				{ 2.,  7.,  4.,  3.,  4.,  4.,  6.},
@@ -98,7 +98,7 @@ public class EJMLVsPython {
 	@Test
 	public void testSquare() {
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
-		DenseMatrix64F X = new DenseMatrix64F(Xin);
+		DMatrixRMaj X = new DMatrixRMaj(Xin);
 		double [][] pysquare = {
 				{ 1.,   4.,   9.,  16.,  25.},
 				{ 36.,  49.,  64.,  81.,  25.},
@@ -108,7 +108,7 @@ public class EJMLVsPython {
 				{  9.,  16.,   9.,   9.,  25.},
 				{ 64.,  36.,  81.,  16.,   4.},
 				};
-		DenseMatrix64F sq = new DenseMatrix64F(X.numRows,X.numCols);
+		DMatrixRMaj sq = new DMatrixRMaj(X.numRows,X.numCols);
 		elementPower(X,2,sq);
 		double [][] square = EjmlOps.extractDoubleArray(sq);
 		assertEqualDoubleArrays(pysquare, square, epsilon);
@@ -117,7 +117,7 @@ public class EJMLVsPython {
 	@Test
 	public void testTimes() {
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
-		DenseMatrix64F X = new DenseMatrix64F(Xin);
+		DMatrixRMaj X = new DMatrixRMaj(Xin);
 		double [][] pydot = {
 				{  55.,  105.,   60.,   74.,  108.,   57.,   73.},
 				{ 105.,  255.,  140.,  189.,  213.,  122.,  208.},
@@ -127,8 +127,8 @@ public class EJMLVsPython {
 				{  57.,  122.,   67.,   87.,  112.,   68.,   97.},
 				{  73.,  208.,  100.,  162.,  153.,   97.,  201.}
 				};
-		DenseMatrix64F tr = new DenseMatrix64F(X.numCols,X.numRows);
-		DenseMatrix64F mult = new DenseMatrix64F(X.numRows,tr.numCols);
+		DMatrixRMaj tr = new DMatrixRMaj(X.numCols,X.numRows);
+		DMatrixRMaj mult = new DMatrixRMaj(X.numRows,tr.numCols);
 		transpose(X,tr);
 		mult(X,tr,mult);
 		double [][] times = EjmlOps.extractDoubleArray(mult); 
@@ -138,7 +138,7 @@ public class EJMLVsPython {
 	@Test
 	public void testScaleTimes() {
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
-		DenseMatrix64F X = new DenseMatrix64F(Xin);
+		DMatrixRMaj X = new DMatrixRMaj(Xin);
 		double [][] pyscle = 
 				{{ -2.,  -4.,  -6.,  -8., -10.},
 				 {-12., -14., -16., -18., -10.},
@@ -156,7 +156,7 @@ public class EJMLVsPython {
 	@Test
 	public void testScalarPlus() {
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
-		DenseMatrix64F X = new DenseMatrix64F(Xin);
+		DMatrixRMaj X = new DMatrixRMaj(Xin);
 		double [][] pyplus = 
 				{{  3.,   4.,   5.,   6.,   7.},
 				 {  8.,   9.,  10.,  11.,   7.},
@@ -174,7 +174,7 @@ public class EJMLVsPython {
 	@Test
 	public void testScalarInverse() {
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
-		DenseMatrix64F X = new DenseMatrix64F(Xin);
+		DMatrixRMaj X = new DMatrixRMaj(Xin);
 		double [][] pyinv = 
 				{{ 1.,          0.5,         0.33333333,  0.25,        0.2       },
 				 { 0.16666667,  0.14285714,  0.125,       0.11111111,  0.2       },
@@ -192,9 +192,9 @@ public class EJMLVsPython {
 	@Test
 	public void testScalarInverseVector() {
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
-		DenseMatrix64F X = new DenseMatrix64F(Xin);
+		DMatrixRMaj X = new DMatrixRMaj(Xin);
 		double [] pyinv = { 0.14285714,  0.33333333,  0.16666667,  0.14285714,  0.33333333 };
-		DenseMatrix64F row = extract(X,3,4,0,5);
+		DMatrixRMaj row = extract(X,3,4,0,5);
 		divide(1.0, row);
 		double [] inv = EjmlOps.extractDoubleArray(row)[0];
 		assertEqualDoubleVectors(pyinv, inv, epsilon);
@@ -203,7 +203,7 @@ public class EJMLVsPython {
 	@Test
 	public void testScalarDivide() {
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
-		DenseMatrix64F X = new DenseMatrix64F(Xin);
+		DMatrixRMaj X = new DMatrixRMaj(Xin);
 		divide(X, 2.0);
 		double [][] div = EjmlOps.extractDoubleArray(X); 
 		double [][] pydiv = 
@@ -221,7 +221,7 @@ public class EJMLVsPython {
 	@Test
 	public void testScalarMultiply() {
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
-		DenseMatrix64F X = new DenseMatrix64F(Xin);
+		DMatrixRMaj X = new DMatrixRMaj(Xin);
 		double [][] pysm = 
 				{{  1.,   4.,   9.,  16.,  25.},
 				 { 36.,  49.,  64.,  81.,  25.},
@@ -239,7 +239,7 @@ public class EJMLVsPython {
 	@Test
 	public void testRangeAssign() {
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
-		DenseMatrix64F X = new DenseMatrix64F(Xin);
+		DMatrixRMaj X = new DMatrixRMaj(Xin);
 		EjmlOps.assignAtIndex(X, tsne.range(4), tsne.range(4), 0);
 		double [][] pyasgn = 
 				{{ 0.,  2.,  3.,  4.,  5.},
@@ -256,8 +256,8 @@ public class EJMLVsPython {
 	@Test
 	public void testMinus() {
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
-		DenseMatrix64F X = new DenseMatrix64F(Xin);
-		DenseMatrix64F mins = new DenseMatrix64F(X.numRows,X.numCols);
+		DMatrixRMaj X = new DMatrixRMaj(Xin);
+		DMatrixRMaj mins = new DMatrixRMaj(X.numRows,X.numCols);
 		double [][] pymin = 
 				{{ 0.,  0.,  0.,  0.,  0.},
 				 { 0.,  0.,  0.,  0.,  0.},
@@ -276,8 +276,8 @@ public class EJMLVsPython {
 	public void testTile() {
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
 		double [][] PQrowi  = tsne.copyCols(Xin,4);
-		DenseMatrix64F tile = new DenseMatrix64F(PQrowi);
-		DenseMatrix64F X = EjmlOps.tile(tile, 3, 1);
+		DMatrixRMaj tile = new DMatrixRMaj(PQrowi);
+		DMatrixRMaj X = EjmlOps.tile(tile, 3, 1);
 		double [][] pytile1 = 
 				{{ 5.,  5.,  3.,  3.,  9.,  5.,  2.,},
 				 { 5.,  5.,  3.,  3.,  9.,  5.,  2.,},
@@ -296,8 +296,8 @@ public class EJMLVsPython {
 	@Test
 	public void testAssignCol() {
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
-		DenseMatrix64F X = new DenseMatrix64F(Xin);
-		DenseMatrix64F sumR = new DenseMatrix64F(1,X.numCols);
+		DMatrixRMaj X = new DMatrixRMaj(Xin);
+		DMatrixRMaj sumR = new DMatrixRMaj(1,X.numCols);
 		sumCols(X,sumR);
 		double [][] pyasgn = 
 				{{  1.,   2.,   3.,   4.,   5.},
@@ -315,7 +315,7 @@ public class EJMLVsPython {
 	@Test
 	public void testAssignAllLessThan() {
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/python/small_ds.txt"), " ");
-		DenseMatrix64F X = new DenseMatrix64F(Xin);
+		DMatrixRMaj X = new DMatrixRMaj(Xin);
 		EjmlOps.assignAllLessThan(X,3,-1);
 		double [][] pylt =
 				{{-1., -1.,  3.,  4.,  5.},

@@ -9,7 +9,7 @@ import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.ThreadLocalRandom;
 
 import Jama.Matrix;
-import org.ejml.data.DenseMatrix64F;
+import org.ejml.data.DMatrixRMaj;
 
 public class MatrixOps {
 	Random rnd = new Random();
@@ -1479,7 +1479,7 @@ public class MatrixOps {
 		return res;
 	}
 
-	public static double [][] extractDoubleArray(DenseMatrix64F p) {
+	public static double [][] extractDoubleArray(DMatrixRMaj p) {
 		int rows = p.getNumRows();
 		int cols = p.getNumCols();
 		double [][] result = new double[rows][cols];
@@ -1491,7 +1491,7 @@ public class MatrixOps {
 		return result;
 	}
 	
-	public static double [] extractDoubleVector(DenseMatrix64F p) {
+	public static double [] extractDoubleVector(DMatrixRMaj p) {
 		int rows = p.getNumRows();
 		int cols = p.getNumCols();
 		

@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.ejml.data.DenseMatrix64F;
+import org.ejml.data.DMatrixRMaj;
 import org.jblas.ComplexDoubleMatrix;
 import org.jblas.DoubleMatrix;
 import org.jblas.Eigen;
@@ -77,11 +77,11 @@ public class BlasOps {
 		return pInv.reshape(myPrecision.rows, myPrecision.columns);
 	}
 
-	public static DenseMatrix64F blasInvertDense(DenseMatrix64F myPrecision) {
+	public static DMatrixRMaj blasInvertDense(DMatrixRMaj myPrecision) {
 		DoubleMatrix mp = new DoubleMatrix(myPrecision.getData().clone());
 		mp = mp.reshape(myPrecision.numRows, myPrecision.numCols);
 		DoubleMatrix inv = blasInvert(mp);
-		DenseMatrix64F res = new DenseMatrix64F(inv.toArray2());
+		DMatrixRMaj res = new DMatrixRMaj(inv.toArray2());
 		return res;
 	}
 
@@ -323,7 +323,7 @@ public class BlasOps {
 		ComplexDoubleMatrix[] eigVectorsVal = Eigen.eigenvectors(covMatrix);
 		ComplexDoubleMatrix eigVectors = eigVectorsVal[0];
 		//Sort sigen vector from big to small by eigen values 
-		List<PCABean> beans = new ArrayList<BlasOps.PCABean>();
+		List<PCABean> beans = new ArrayList<PCABean>();
 		for (int i = 0; i < eigVectors.columns; i++)
 		{
 			beans.add(new PCABean(eigVal.get(i).real(), eigVectors.getColumn(i)));

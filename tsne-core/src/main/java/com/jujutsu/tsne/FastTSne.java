@@ -28,22 +28,22 @@ import static com.jujutsu.utils.MatrixOps.sqrt;
 import static com.jujutsu.utils.MatrixOps.square;
 import static com.jujutsu.utils.MatrixOps.sum;
 import static com.jujutsu.utils.MatrixOps.times;
-import static org.ejml.ops.CommonOps.add;
-import static org.ejml.ops.CommonOps.addEquals;
-import static org.ejml.ops.CommonOps.divide;
-import static org.ejml.ops.CommonOps.elementDiv;
-import static org.ejml.ops.CommonOps.elementExp;
-import static org.ejml.ops.CommonOps.elementLog;
-import static org.ejml.ops.CommonOps.elementMult;
-import static org.ejml.ops.CommonOps.elementPower;
-import static org.ejml.ops.CommonOps.elementSum;
-import static org.ejml.ops.CommonOps.mult;
-import static org.ejml.ops.CommonOps.multAddTransB;
-import static org.ejml.ops.CommonOps.scale;
-import static org.ejml.ops.CommonOps.subtract;
-import static org.ejml.ops.CommonOps.subtractEquals;
-import static org.ejml.ops.CommonOps.sumRows;
-import static org.ejml.ops.CommonOps.transpose;
+import static org.ejml.dense.row.CommonOps_DDRM.add;
+import static org.ejml.dense.row.CommonOps_DDRM.addEquals;
+import static org.ejml.dense.row.CommonOps_DDRM.divide;
+import static org.ejml.dense.row.CommonOps_DDRM.elementDiv;
+import static org.ejml.dense.row.CommonOps_DDRM.elementExp;
+import static org.ejml.dense.row.CommonOps_DDRM.elementLog;
+import static org.ejml.dense.row.CommonOps_DDRM.elementMult;
+import static org.ejml.dense.row.CommonOps_DDRM.elementPower;
+import static org.ejml.dense.row.CommonOps_DDRM.elementSum;
+import static org.ejml.dense.row.CommonOps_DDRM.mult;
+import static org.ejml.dense.row.CommonOps_DDRM.multAddTransB;
+import static org.ejml.dense.row.CommonOps_DDRM.scale;
+import static org.ejml.dense.row.CommonOps_DDRM.subtract;
+import static org.ejml.dense.row.CommonOps_DDRM.subtractEquals;
+import static org.ejml.dense.row.CommonOps_DDRM.sumRows;
+import static org.ejml.dense.row.CommonOps_DDRM.transpose;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -52,7 +52,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.ejml.data.DenseMatrix64F;
+import org.ejml.data.DMatrixRMaj;
 
 import com.jujutsu.utils.MatrixOps;
 /**
@@ -108,20 +108,20 @@ public class FastTSne implements TSne {
 		double final_momentum   = 0.8;
 		int eta                 = 500;
 		double min_gain         = 0.01;
-		DenseMatrix64F Y        = new DenseMatrix64F(rnorm(n,no_dims));
-		DenseMatrix64F Ysqlmul  = new DenseMatrix64F(Y.numRows,Y.numRows);
-		DenseMatrix64F dY       = new DenseMatrix64F(fillMatrix(n,no_dims,0.0));
-		DenseMatrix64F iY       = new DenseMatrix64F(fillMatrix(n,no_dims,0.0));
-		DenseMatrix64F gains    = new DenseMatrix64F(fillMatrix(n,no_dims,1.0));
-		DenseMatrix64F btNeg    = new DenseMatrix64F(n,no_dims);
-		DenseMatrix64F bt       = new DenseMatrix64F(n,no_dims);
+		DMatrixRMaj Y        = new DMatrixRMaj(rnorm(n,no_dims));
+		DMatrixRMaj Ysqlmul  = new DMatrixRMaj(Y.numRows,Y.numRows);
+		DMatrixRMaj dY       = new DMatrixRMaj(fillMatrix(n,no_dims,0.0));
+		DMatrixRMaj iY       = new DMatrixRMaj(fillMatrix(n,no_dims,0.0));
+		DMatrixRMaj gains    = new DMatrixRMaj(fillMatrix(n,no_dims,1.0));
+		DMatrixRMaj btNeg    = new DMatrixRMaj(n,no_dims);
+		DMatrixRMaj bt       = new DMatrixRMaj(n,no_dims);
 		
 		// Compute P-values
-		DenseMatrix64F P        = new DenseMatrix64F(x2p(X, 1e-5, perplexity).P); // P = n x n
-		DenseMatrix64F Ptr      = new DenseMatrix64F(P.numRows,P.numCols);
-		DenseMatrix64F L        = new DenseMatrix64F(P); // L = n x n
-		DenseMatrix64F logdivide = new DenseMatrix64F(P.numRows,P.numCols);
-		DenseMatrix64F diag     = new DenseMatrix64F(fillMatrix(L.numRows,L.numCols,0.0));
+		DMatrixRMaj P        = new DMatrixRMaj(x2p(X, 1e-5, perplexity).P); // P = n x n
+		DMatrixRMaj Ptr      = new DMatrixRMaj(P.numRows,P.numCols);
+		DMatrixRMaj L        = new DMatrixRMaj(P); // L = n x n
+		DMatrixRMaj logdivide = new DMatrixRMaj(P.numRows,P.numCols);
+		DMatrixRMaj diag     = new DMatrixRMaj(fillMatrix(L.numRows, L.numCols, 0.0));
 		
 		transpose(P,Ptr);
 		addEquals(P,Ptr);
@@ -132,10 +132,10 @@ public class FastTSne implements TSne {
 		
 		System.out.println("Y:Shape is = " + Y.getNumRows() + " x " + Y.getNumCols());
 
-		DenseMatrix64F sqed  = new DenseMatrix64F(Y.numRows,Y.numCols);
-		DenseMatrix64F sum_Y = new DenseMatrix64F(1,Y.numRows);
-		DenseMatrix64F num   = new DenseMatrix64F(Y.numRows, Y.numRows);
-		DenseMatrix64F Q     = new DenseMatrix64F(P.numRows,P.numCols);
+		DMatrixRMaj sqed  = new DMatrixRMaj(Y.numRows,Y.numCols);
+		DMatrixRMaj sum_Y = new DMatrixRMaj(1,Y.numRows);
+		DMatrixRMaj num   = new DMatrixRMaj(Y.numRows, Y.numRows);
+		DMatrixRMaj Q     = new DMatrixRMaj(P.numRows,P.numCols);
 		
 		for (int iter = 0; iter < max_iter && !abort; iter++) {
 			// Compute pairwise affinities
@@ -157,7 +157,7 @@ public class FastTSne implements TSne {
 			// Compute gradient
 			subtract(P, Q, L);
 			elementMult(L, num);
-			DenseMatrix64F rowsum = sumRows(L,null); // rowsum = nx1
+			DMatrixRMaj rowsum = sumRows(L,null); // rowsum = nx1
 			double [] rsum  = new double[rowsum.numRows];
 			for (int i = 0; i < rsum.length; i++) {
 				rsum[i] = rowsum.get(i,0);
@@ -179,8 +179,8 @@ public class FastTSne implements TSne {
 			setData(btNeg, abs(negate(boolMtrx)));
 			setData(bt, abs(boolMtrx));
 			
-			DenseMatrix64F gainsSmall = new DenseMatrix64F(gains);
-			DenseMatrix64F gainsBig   = new DenseMatrix64F(gains);
+			DMatrixRMaj gainsSmall = new DMatrixRMaj(gains);
+			DMatrixRMaj gainsBig   = new DMatrixRMaj(gains);
 			add(gainsSmall,0.2);
 			scale(0.8,gainsBig);
 			
@@ -191,18 +191,18 @@ public class FastTSne implements TSne {
 			assignAllLessThan(gains, min_gain, min_gain);
 			
 			scale(momentum,iY);
-			DenseMatrix64F gainsdY = new DenseMatrix64F(gains.numRows,dY.numCols);
+			DMatrixRMaj gainsdY = new DMatrixRMaj(gains.numRows,dY.numCols);
 			elementMult(gains , dY, gainsdY);
 			scale(eta,gainsdY);
 			subtractEquals(iY , gainsdY);
 			addEquals(Y , iY);
-			DenseMatrix64F colMeanY = colMean(Y, 0);
-			DenseMatrix64F meanTile = tile(colMeanY, n, 1);
+			DMatrixRMaj colMeanY = colMean(Y, 0);
+			DMatrixRMaj meanTile = tile(colMeanY, n, 1);
 			subtractEquals(Y , meanTile);
 
 			// Compute current value of cost function
 			if (iter % 100 == 0)   {
-				DenseMatrix64F Pdiv = new DenseMatrix64F(P);
+				DMatrixRMaj Pdiv = new DMatrixRMaj(P);
 				elementDiv(Pdiv , Q);
 				elementLog(Pdiv,logdivide);
 				replaceNaN(logdivide,Double.MIN_VALUE);
@@ -231,11 +231,11 @@ public class FastTSne implements TSne {
 	}
 	
 	public R Hbeta (double [][] D, double beta){
-    	DenseMatrix64F P  = new DenseMatrix64F(D);
+    	DMatrixRMaj P  = new DMatrixRMaj(D);
     	scale(-beta,P);
     	elementExp(P,P);
 		double sumP = elementSum(P);   // sumP confirmed scalar
-		DenseMatrix64F Dd  = new DenseMatrix64F(D);
+		DMatrixRMaj Dd  = new DMatrixRMaj(D);
 		elementMult(Dd, P);
 		double H = Math.log(sumP) + beta * elementSum(Dd) / sumP;
 		scale(1/sumP,P);

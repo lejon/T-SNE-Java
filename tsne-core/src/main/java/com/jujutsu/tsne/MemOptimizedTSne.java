@@ -16,31 +16,31 @@ import static com.jujutsu.utils.MatrixOps.fillMatrix;
 import static com.jujutsu.utils.MatrixOps.negate;
 import static com.jujutsu.utils.MatrixOps.range;
 import static com.jujutsu.utils.MatrixOps.rnorm;
-import static org.ejml.ops.CommonOps.add;
-import static org.ejml.ops.CommonOps.addEquals;
-import static org.ejml.ops.CommonOps.divide;
-import static org.ejml.ops.CommonOps.elementDiv;
-import static org.ejml.ops.CommonOps.elementLog;
-import static org.ejml.ops.CommonOps.elementMult;
-import static org.ejml.ops.CommonOps.elementPower;
-import static org.ejml.ops.CommonOps.elementSum;
-import static org.ejml.ops.CommonOps.mult;
-import static org.ejml.ops.CommonOps.multAddTransB;
-import static org.ejml.ops.CommonOps.scale;
-import static org.ejml.ops.CommonOps.subtract;
-import static org.ejml.ops.CommonOps.subtractEquals;
-import static org.ejml.ops.CommonOps.sumRows;
-import static org.ejml.ops.CommonOps.transpose;
+import static org.ejml.dense.row.CommonOps_DDRM.add;
+import static org.ejml.dense.row.CommonOps_DDRM.addEquals;
+import static org.ejml.dense.row.CommonOps_DDRM.divide;
+import static org.ejml.dense.row.CommonOps_DDRM.elementDiv;
+import static org.ejml.dense.row.CommonOps_DDRM.elementLog;
+import static org.ejml.dense.row.CommonOps_DDRM.elementMult;
+import static org.ejml.dense.row.CommonOps_DDRM.elementPower;
+import static org.ejml.dense.row.CommonOps_DDRM.elementSum;
+import static org.ejml.dense.row.CommonOps_DDRM.mult;
+import static org.ejml.dense.row.CommonOps_DDRM.multAddTransB;
+import static org.ejml.dense.row.CommonOps_DDRM.scale;
+import static org.ejml.dense.row.CommonOps_DDRM.subtract;
+import static org.ejml.dense.row.CommonOps_DDRM.subtractEquals;
+import static org.ejml.dense.row.CommonOps_DDRM.sumRows;
+import static org.ejml.dense.row.CommonOps_DDRM.transpose;
 
-import org.ejml.data.DenseMatrix64F;
+import org.ejml.data.DMatrixRMaj;
 
 import com.jujutsu.utils.MatrixOps;
 /**
  *
  * Author: Leif Jonsson (leif.jonsson@gmail.com)
- * 
- * This is a Java implementation of van der Maaten and Hintons t-sne 
- * dimensionality reduction technique that is particularly well suited 
+ *
+ * This is a Java implementation of van der Maaten and Hintons t-sne
+ * dimensionality reduction technique that is particularly well suited
  * for the visualization of high-dimensional datasets
  *
  */
@@ -74,18 +74,18 @@ public class MemOptimizedTSne extends FastTSne {
 		double final_momentum   = 0.8;
 		int eta                 = 500;
 		double min_gain         = 0.01;
-		DenseMatrix64F Y        = new DenseMatrix64F(rnorm(n,no_dims));
-		DenseMatrix64F Ysqlmul  = new DenseMatrix64F(Y.numRows,Y.numRows); // Ysqlmul = n x n
-		DenseMatrix64F dY       = new DenseMatrix64F(fillMatrix(n,no_dims,0.0));
-		DenseMatrix64F iY       = new DenseMatrix64F(fillMatrix(n,no_dims,0.0));
-		DenseMatrix64F gains    = new DenseMatrix64F(fillMatrix(n,no_dims,1.0));
-		DenseMatrix64F btNeg    = new DenseMatrix64F(n,no_dims);
-		DenseMatrix64F bt       = new DenseMatrix64F(n,no_dims);
+		DMatrixRMaj Y        = new DMatrixRMaj(rnorm(n,no_dims));
+		DMatrixRMaj Ysqlmul  = new DMatrixRMaj(Y.numRows,Y.numRows); // Ysqlmul = n x n
+		DMatrixRMaj dY       = new DMatrixRMaj(fillMatrix(n,no_dims,0.0));
+		DMatrixRMaj iY       = new DMatrixRMaj(fillMatrix(n,no_dims,0.0));
+		DMatrixRMaj gains    = new DMatrixRMaj(fillMatrix(n, no_dims, 1.0));
+		DMatrixRMaj btNeg    = new DMatrixRMaj(n,no_dims);
+		DMatrixRMaj bt       = new DMatrixRMaj(n,no_dims);
 		
 		// Compute P-values
-		DenseMatrix64F P        = new DenseMatrix64F(x2p(X, 1e-5, perplexity).P); // P = n x n
-		DenseMatrix64F Psized   = new DenseMatrix64F(P.numRows,P.numCols);        // L = n x n
-		DenseMatrix64F diag     = new DenseMatrix64F(fillMatrix(Psized.numRows,Psized.numCols,0.0));
+		DMatrixRMaj P        = new DMatrixRMaj(x2p(X, 1e-5, perplexity).P); // P = n x n
+		DMatrixRMaj Psized   = new DMatrixRMaj(P.numRows,P.numCols);        // L = n x n
+		DMatrixRMaj diag     = new DMatrixRMaj(fillMatrix(Psized.numRows,Psized.numCols,0.0));
 		
 		transpose(P,Psized);
 		addEquals(P,Psized);
@@ -97,9 +97,9 @@ public class MemOptimizedTSne extends FastTSne {
 		System.out.println("Using perplexity: " + perplexity);
 		System.out.println("Y:Shape is = " + Y.getNumRows() + " x " + Y.getNumCols());
 
-		DenseMatrix64F sqed  = new DenseMatrix64F(Y.numRows,Y.numCols);  // sqed = n x n
-		DenseMatrix64F sum_Y = new DenseMatrix64F(1,Y.numRows);
-		DenseMatrix64F Q     = new DenseMatrix64F(P.numRows,P.numCols);  // Q = n x n
+		DMatrixRMaj sqed  = new DMatrixRMaj(Y.numRows,Y.numCols);  // sqed = n x n
+		DMatrixRMaj sum_Y = new DMatrixRMaj(1,Y.numRows);
+		DMatrixRMaj Q     = new DMatrixRMaj(P.numRows,P.numCols);  // Q = n x n
 		
 		for (int iter = 0; iter < max_iter; iter++) {
 			// Compute pairwise affinities
@@ -120,7 +120,7 @@ public class MemOptimizedTSne extends FastTSne {
 			// Compute gradient
 			subtract(P, Q, Psized);
 			elementMult(Psized, Ysqlmul);
-			DenseMatrix64F rowsum = sumRows(Psized,null); // rowsum = nx1
+			DMatrixRMaj rowsum = sumRows(Psized,null); // rowsum = nx1
 			double [] rsum  = new double[rowsum.numRows];
 			for (int i = 0; i < rsum.length; i++) {
 				rsum[i] = rowsum.get(i,0);
@@ -142,8 +142,8 @@ public class MemOptimizedTSne extends FastTSne {
 			setData(btNeg, abs(negate(boolMtrx)));
 			setData(bt, abs(boolMtrx));
 			
-			DenseMatrix64F gainsSmall = new DenseMatrix64F(gains);
-			DenseMatrix64F gainsBig   = new DenseMatrix64F(gains);
+			DMatrixRMaj gainsSmall = new DMatrixRMaj(gains);
+			DMatrixRMaj gainsBig   = new DMatrixRMaj(gains);
 			add(gainsSmall,0.2);
 			scale(0.8,gainsBig);
 			
@@ -154,18 +154,18 @@ public class MemOptimizedTSne extends FastTSne {
 			assignAllLessThan(gains, min_gain, min_gain);
 			
 			scale(momentum,iY);
-			DenseMatrix64F gainsdY = new DenseMatrix64F(gains.numRows,dY.numCols);
+			DMatrixRMaj gainsdY = new DMatrixRMaj(gains.numRows,dY.numCols);
 			elementMult(gains , dY, gainsdY);
 			scale(eta,gainsdY);
 			subtractEquals(iY , gainsdY);
 			addEquals(Y , iY);
-			DenseMatrix64F colMeanY = colMean(Y, 0);
-			DenseMatrix64F meanTile = tile(colMeanY, n, 1);
+			DMatrixRMaj colMeanY = colMean(Y, 0);
+			DMatrixRMaj meanTile = tile(colMeanY, n, 1);
 			subtractEquals(Y , meanTile);
 
 			// Compute current value of the cost function
 			if (iter % 50 == 0)   {
-				DenseMatrix64F Pdiv = new DenseMatrix64F(P);
+				DMatrixRMaj Pdiv = new DMatrixRMaj(P);
 				elementDiv(Pdiv , Q);
 				elementLog(Pdiv,Psized);
 				replaceNaN(Psized,Double.MIN_VALUE);
