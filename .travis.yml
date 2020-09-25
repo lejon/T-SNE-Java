@@ -1,6 +1,6 @@
 # Travis CI file for java projects
 # See: https://docs.travis-ci.com/user/languages/java
-
+dist: trusty
 language: java
 jdk:
   - oraclejdk8
