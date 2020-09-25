@@ -41,6 +41,40 @@ public class MatrixUtils {
                 
         return array;
     }
+
+	public static double[][] simpleRead2DMatrix(File file, String columnDelimiter, boolean header) {
+		List<double[]> rows = new ArrayList<>();
+		
+        try (FileReader fr = new FileReader(file)) {
+            BufferedReader b = new BufferedReader(fr);
+            String line;
+            if(header) {
+            	// read off the header
+            	line = b.readLine();
+            }
+            while ((line = b.readLine()) != null && !line.matches("\\s*")) {
+                String[] cols = line.trim().split(columnDelimiter);
+                double [] row = new double[cols.length];
+                for (int j = 0; j < cols.length; j++) {
+                	if(!(cols[j].length()==0)) {
+                		row[j] = Double.parseDouble(cols[j].trim());
+                    }
+                }
+                rows.add(row);
+            }
+            b.close();
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
+        
+        double[][] array = new double[rows.size()][];
+        int currentRow = 0;
+        for (double[] ds : rows) {
+			array[currentRow++] = ds;
+		}
+                
+        return array;
+    }
 	
 	public static String[] simpleReadLines(File file) {
 		List<String> rows = new ArrayList<>();

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
-import java.util.concurrent.RecursiveAction;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
@@ -26,67 +25,19 @@ public class ParallelBHTsne extends BHTSne {
 		return Y;
 	}
 
-	class RecursiveGradientUpdater extends RecursiveAction {
-		final static long serialVersionUID = 1L;
-		int startIdx = -1;
-		int endIdx = -1;
-		int limit = 100;
-		int N;
-		int no_dims;
-		double[] Y;
-		double momentum;
-		double eta; 
-		double[] dY; 
-		double[] uY;
-		double[] gains;
-
-		public RecursiveGradientUpdater(int n, int no_dims, double[] Y, double momentum, double eta, double[] dY, double[] uY,
-				double[] gains, int startIdx, int endIdx, int limit) {
-			super();
-			this.startIdx = startIdx;
-			this.endIdx = endIdx;
-			this.limit = limit;
-			N = n;
-			this.no_dims = no_dims;
-			this.Y = Y;
-			this.momentum = momentum;
-			this.eta = eta;
-			this.dY = dY;
-			this.uY = uY;
-			this.gains = gains;
-		}
-
-		@Override
-		protected void compute() {
-			if ( (endIdx-startIdx) <= limit ) {
-				for (int n = startIdx; n < endIdx; n++) {
-					// Update gains
-					gains[n] = (sign_tsne(dY[n]) != sign_tsne(uY[n])) ? (gains[n] + .2) : (gains[n] * .8);
-					if(gains[n] < .01) gains[n] = .01;
-
-					// Perform gradient update (with momentum and gains)
-					Y[n] = Y[n] + uY[n];
-					uY[n] = momentum * uY[n] - eta * gains[n] * dY[n];
-				}
-			}
-			else {
-				int range = (endIdx-startIdx);
-				int startIdx1 = startIdx;
-				int endIdx1 = startIdx + (range / 2);
-				int endIdx2 = endIdx;
-				invokeAll(new RecursiveGradientUpdater(N, no_dims, Y, momentum, eta, dY, uY, gains, startIdx1, endIdx1, limit),
-						new RecursiveGradientUpdater(N, no_dims, Y, momentum, eta, dY, uY, gains, endIdx1, endIdx2, limit));
-			}
-		}
-	}
-
 	@Override
 	void updateGradient(int N, int no_dims, double[] Y, double momentum, double eta, double[] dY, double[] uY,
 			double[] gains) {
-		RecursiveGradientUpdater dslr = new RecursiveGradientUpdater(N, no_dims, Y, momentum, eta, dY, uY, gains,0,N * no_dims,N/(Runtime.getRuntime().availableProcessors()*10));                
-		gradientPool.invoke(dslr);
-	}
+		IntStream.range(0, N * no_dims).parallel().forEach(i -> {
+			// Update gains
+			gains[i] = (sign_tsne(dY[i]) != sign_tsne(uY[i])) ? (gains[i] + .2) : (gains[i] * .8);
+			if(gains[i] < .01) gains[i] = .01;
 
+			// Perform gradient update (with momentum and gains)
+			Y[i] = Y[i] + uY[i];
+			uY[i] = momentum * uY[i] - eta * gains[i] * dY[i];
+		});
+	}
 	// Compute gradient of the t-SNE cost function (using Barnes-Hut algorithm)
 	@Override
 	void computeGradient(double [] P, int [] inp_row_P, 
