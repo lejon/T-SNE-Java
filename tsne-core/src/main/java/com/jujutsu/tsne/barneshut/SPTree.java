@@ -27,6 +27,8 @@ public class SPTree {
     // Children
     SPTree [] children;
     int no_children;
+    
+    protected double[] buff;
 
 	public SPTree(int D, double[] inp_data, int N) {
 		// Compute mean, width, and height of current map (boundaries of SPTree)
@@ -77,6 +79,8 @@ public class SPTree {
 
 		children = getTreeArray(no_children);
 		for(int i = 0; i < no_children; i++) children[i] = null;
+		
+		buff = new double[dimension];
 	}
 	
 	// Constructor for SPTree with particular size and parent -- build the tree, too!
@@ -261,44 +265,52 @@ public class SPTree {
 		for(int i = 0; i < no_children; i++) depth = max(depth, children[i].getDepth());
 		return 1 + depth;
 	}
-
-
+	
 	// Compute non-edge forces using Barnes-Hut algorithm
-	double computeNonEdgeForces(int point_index, double theta, double [] neg_f, Object accumulator)
-	{
-		double [] sum_Q = (double []) accumulator;
-		double [] buff = new double[dimension];
-		// Make sure that we spend no time on empty nodes or self-interactions
-		if(cum_size == 0 || (is_leaf && size == 1 && index[0] == point_index)) return 0.0;
+    double computeNonEdgeForces(int point_index, double theta, double[] neg_f, 
+        double buff[], double[] sum_Q)
+    {
+        //double[] buff = new double[dimension];
 
-		// Compute distance between point and center-of-mass
-		double D = .0;
-		int ind = point_index * dimension;
-		// Check whether we can use this node as a "summary"
-		double max_width = 0.0;
-		double cur_width;
-		for(int d = 0; d < dimension; d++) {
-			buff[d] = data[ind + d] - center_of_mass[d];
-			D += buff[d] * buff[d];
-			cur_width = boundary.getWidth(d);
-			max_width = (max_width > cur_width) ? max_width : cur_width;
-		} 
+        // Make sure that we spend no time on empty nodes or self-interactions
+        if (cum_size == 0 || (is_leaf && size == 1 && index[0] == point_index))
+            return 0.0;
 
-		if(is_leaf || max_width / sqrt(D) < theta) {
-			// Compute and add t-SNE force between point and current node
-			D = 1.0 / (1.0 + D);
-			double mult = cum_size * D;
-			sum_Q[0] += mult;
-			mult *= D;
-			for(int d = 0; d < dimension; d++) neg_f[d] += mult * buff[d];
-		}
-		else {
+        // Compute distance between point and center-of-mass
+        double D = .0;
+        int ind = point_index * dimension;
+        // Check whether we can use this node as a "summary"
+        double max_width = 0.0;
+        double cur_width;
+        for (int d = 0; d < dimension; d++)
+        {
+            buff[d] = data[ind + d] - center_of_mass[d];
+            D += buff[d] * buff[d];
+            cur_width = boundary.getWidth(d);
+            max_width = (max_width > cur_width) ? max_width : cur_width;
+        }
 
-			// Recursively apply Barnes-Hut to children
-			for(int i = 0; i < no_children; i++) children[i].computeNonEdgeForces(point_index, theta, neg_f, sum_Q);
-		}
-		return sum_Q[0];
-	}
+        if (is_leaf || max_width / sqrt(D) < theta)
+        {
+            // Compute and add t-SNE force between point and current node
+            D = 1.0 / (1.0 + D);
+            double mult = cum_size * D;
+            sum_Q[point_index] += mult;
+            mult *= D;
+            for (int d = 0; d < dimension; d++)
+                neg_f[d] += mult * buff[d];
+        }
+        else
+        {
+
+            // Recursively apply Barnes-Hut to children
+            for (int i = 0; i < no_children; i++)
+                children[i].computeNonEdgeForces(point_index, theta, neg_f,
+                    buff, sum_Q);
+        }
+        return sum_Q[point_index];
+    }
+
 
 
 	// Computes edge forces

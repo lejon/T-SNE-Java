@@ -8,8 +8,8 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.ThreadLocalRandom;
 
-import Jama.Matrix;
 import org.ejml.data.DMatrixRMaj;
+import org.ejml.simple.SimpleMatrix;
 
 public class MatrixOps {
 	Random rnd = new Random();
@@ -1375,9 +1375,9 @@ public class MatrixOps {
 	
 	// Unit Tested
 	public static double[][] times(double[][] m1, double[][] m2) {
-		Matrix A = Matrix.constructWithCopy(m1);
-		Matrix B = Matrix.constructWithCopy(m2);
-		return A.times(B).getArray();
+		SimpleMatrix dataMatrix = new SimpleMatrix(m1);
+		SimpleMatrix omegaMatrix = new SimpleMatrix(m2);
+		return extractDoubleArray(dataMatrix.mult(omegaMatrix).getMatrix());
 	}
 
 	public static double [] scalarMultiply(double[] m1, double mul) {

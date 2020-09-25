@@ -11,7 +11,8 @@
 	<!-- 2.4.0: More parallelization -->
 	<!-- 2.5.0: Moved TSneConfiguration to better package location -->
 	<!-- 2.5.1: Added check method -->
-	<version>2.5.1</version>
+	<!-- 2.6.0: Cleanups and simplification of some parallelism  -->
+	<version>2.6.0</version>
 	<name>Java T-SNE</name>
 	
 	<properties>
@@ -23,11 +24,6 @@
 	</scm>
 
 	<dependencies>
-		<dependency>
-			<groupId>gov.nist.math</groupId>
-			<artifactId>jama</artifactId>
-			<version>1.0.2</version>
-		</dependency>
 		<dependency>
 			<groupId>org.ejml</groupId>
 			<artifactId>ejml-all</artifactId>

@@ -38,6 +38,7 @@ import static java.lang.Math.log;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.DoubleStream;
 
 import com.jujutsu.tsne.PrincipalComponentAnalysis;
 import com.jujutsu.tsne.TSneConfiguration;
@@ -81,7 +82,7 @@ public class BHTSne implements BarnesHutTSne {
 		int D = parameterObject.getXStartDim();
 		double[][] Xin = parameterObject.getXin();
 		boolean exact = (parameterObject.getTheta() == .0);
-		
+
 		if(exact) throw new IllegalArgumentException("The Barnes Hut implementation does not support exact inference yet (theta==0.0), if you want exact t-SNE please use one of the standard t-SNE implementations (FastTSne for instance)");
 
 		if(parameterObject.usePca() && D > parameterObject.getInitialDims() && parameterObject.getInitialDims() > 0) {
@@ -90,11 +91,11 @@ public class BHTSne implements BarnesHutTSne {
 			D = parameterObject.getInitialDims();
 			System.out.println("X:Shape after PCA is = " + Xin.length + " x " + Xin[0].length);
 		}
-		
+
 		double [] X = flatten(Xin);	
 		int N = parameterObject.getNrRows();
 		int no_dims = parameterObject.getOutputDims();
-		
+
 		double [] Y = new double[N*no_dims];
 		System.out.println("X:Shape is = " + N + " x " + D);
 		// Determine whether we are using an exact algorithm
@@ -245,27 +246,34 @@ public class BHTSne implements BarnesHutTSne {
 	}
 
 	// Compute gradient of the t-SNE cost function (using Barnes-Hut algorithm)
-	void computeGradient(double [] P, int [] inp_row_P, int [] inp_col_P, double [] inp_val_P, double [] Y, int N, int D, double [] dC, double theta)
+	void computeGradient(double[] P, int[] inp_row_P,
+			int[] inp_col_P, double[] inp_val_P, double[] Y, int N, int D,
+			double[] dC, double theta)
 	{
 		// Construct space-partitioning tree on current map
 		SPTree tree = new SPTree(D, Y, N);
 
-		// Compute all terms required for t-SNE gradient
-		double [] sum_Q = new double[1];
-		double [] pos_f = new double[N * D];
-		double [][] neg_f = new double[N][D];
-
+		double totalSum_Q = 0.0;
+		double[] sum_Q = new double[N];
+		double[] pos_f = new double[N * D];
+		double[][] neg_f = new double[N][D];
+		double[][] buff = new double[N][D];
 		tree.computeEdgeForces(inp_row_P, inp_col_P, inp_val_P, N, pos_f);
-		for(int n = 0; n < N; n++) tree.computeNonEdgeForces(n, theta, neg_f[n], sum_Q);
+
+		// Compute all terms required for t-SNE gradient
+		for (int n = 0; n < N; n++)
+			tree.computeNonEdgeForces(n, theta, neg_f[n], buff[n], sum_Q);
+		totalSum_Q = DoubleStream.of(sum_Q).sum();
 
 		// Compute final t-SNE gradient
-		for(int n = 0; n < N; n++) {
-			for(int d = 0; d < D; d++) {
-				dC[n*D+d] = pos_f[n*D+d] - (neg_f[n][d] / sum_Q[0]);
+		for (int n = 0; n < N; n++)
+		{
+			for (int d = 0; d < D; d++)
+			{
+				dC[n * D + d] = pos_f[n * D + d] - (neg_f[n][d] / totalSum_Q);
 			}
 		}
 	}
-
 	// Compute gradient of the t-SNE cost function (exact)
 	void computeExactGradient(double [] P, double [] Y, int N, int D, double [] dC) {
 
@@ -342,27 +350,40 @@ public class BHTSne implements BarnesHutTSne {
 	}
 
 	// Evaluate t-SNE cost function (approximately)
-	double evaluateError(int [] row_P, int [] col_P, double [] val_P, double [] Y, int N, int D, double theta)
+	private static double evaluateError(int[] row_P, int[] col_P,
+			double[] val_P, double[] Y, int N, int D, double theta)
 	{
 		// Get estimate of normalization term
 		SPTree tree = new SPTree(D, Y, N);
-		double [] buff = new double[D];
-		double [] sum_Q = new double[1];
-		for(int n = 0; n < N; n++) tree.computeNonEdgeForces(n, theta, buff, sum_Q);
+		double[] buff = new double[D];
+		double[][] buffs = new double[N][D];
+		double totalSum_Q = 0.0;
+		double[] sum_Q = new double[N];
+
+		// Compute all terms required for t-SNE gradient
+		for (int n = 0; n < N; n++)
+			tree.computeNonEdgeForces(n, theta, buff, buffs[n], sum_Q);
+		totalSum_Q = DoubleStream.of(sum_Q).sum();
 
 		// Loop over all edges to compute t-SNE error
 		int ind1, ind2;
 		double C = .0, Q;
-		for(int n = 0; n < N; n++) {
+		for (int n = 0; n < N; n++)
+		{
 			ind1 = n * D;
-			for(int i = row_P[n]; i < row_P[n + 1]; i++) {
+			for (int i = row_P[n]; i < row_P[n + 1]; i++)
+			{
 				Q = .0;
 				ind2 = col_P[i] * D;
-				for(int d = 0; d < D; d++) buff[d]  = Y[ind1 + d];
-				for(int d = 0; d < D; d++) buff[d] -= Y[ind2 + d];
-				for(int d = 0; d < D; d++) Q += buff[d] * buff[d];
-				Q = (1.0 / (1.0 + Q)) / sum_Q[0];
-				C += val_P[i] * log((val_P[i] + Double.MIN_VALUE) / (Q + Double.MIN_VALUE));
+				for (int d = 0; d < D; d++)
+					buff[d] = Y[ind1 + d];
+				for (int d = 0; d < D; d++)
+					buff[d] -= Y[ind2 + d];
+				for (int d = 0; d < D; d++)
+					Q += buff[d] * buff[d];
+				Q = (1.0 / (1.0 + Q)) / totalSum_Q;
+				C += val_P[i] * log(
+						(val_P[i] + Double.MIN_VALUE) / (Q + Double.MIN_VALUE));
 			}
 		}
 
