@@ -1,7 +1,5 @@
 package com.jujutsu.tsne.barneshut;
 
-import java.util.stream.IntStream;
-
 public class ParallelSPTree extends SPTree {
 
 	public ParallelSPTree(int D, double[] inp_data, int N) {
