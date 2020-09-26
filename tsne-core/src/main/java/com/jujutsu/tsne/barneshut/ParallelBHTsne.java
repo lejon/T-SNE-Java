@@ -4,26 +4,12 @@ import static java.lang.Math.exp;
 import static java.lang.Math.log;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.Future;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
-import com.jujutsu.tsne.TSneConfiguration;
 import com.jujutsu.utils.MatrixOps;
 
 public class ParallelBHTsne extends BHTSne {
-
-	private ForkJoinPool gradientPool;
-
-	@Override
-	double[][] run(TSneConfiguration config) {
-		gradientPool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
-		double [][] Y = super.run(config);
-		gradientPool.shutdown();
-		return Y;
-	}
 
 	@Override
 	void updateGradient(int N, int no_dims, double[] Y, double momentum, double eta, double[] dY, double[] uY,
@@ -88,7 +74,7 @@ public class ParallelBHTsne extends BHTSne {
 		for(int n = 0; n < N; n++) row_P[n + 1] = row_P[n] + K;    
 
 		// Build ball tree on data set
-		ParallelVpTree<DataPoint> tree = new ParallelVpTree<DataPoint>(gradientPool,distance);
+		ParallelVpTree<DataPoint> tree = new ParallelVpTree<DataPoint>(distance);
 		final DataPoint [] obj_X = new DataPoint [N];
 		for(int n = 0; n < N; n++) {
 			double [] row = MatrixOps.extractRowFromFlatMatrix(X,n,D);
@@ -108,21 +94,12 @@ public class ParallelBHTsne extends BHTSne {
 		//			printer.printTreeHorizontal(tree.getRoot());
 
 		// Loop over all points to find nearest neighbors
-		List<Future<ParallelVpTree<DataPoint>.ParallelTreeNode.TreeSearchResult>> results = tree.searchMultiple(tree, obj_X, K+1);
+		List<TreeSearchResult> results = tree.searchMultiple(tree, obj_X, K+1);
 
-		for (Future<ParallelVpTree<DataPoint>.ParallelTreeNode.TreeSearchResult> result : results) {
-			ParallelVpTree<DataPoint>.ParallelTreeNode.TreeSearchResult res = null;
-			List<Double> distances = null;
-			List<DataPoint> indices = null;
-			int n = -1;
-			try {
-				res = result.get();
-				distances = res.getDistances();
-				indices = res.getIndices();
-				n = res.getIndex();
-			} catch (InterruptedException | ExecutionException e) {
-				e.printStackTrace();
-			}
+		for (TreeSearchResult res : results) {
+			List<Double> distances = res.getDistances();
+			List<DataPoint> indices = res.getIndices();
+			int n = res.getIndex();
 
 			// Initialize some variables for binary search
 			boolean found = false;
