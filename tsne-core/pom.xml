@@ -12,8 +12,9 @@
 	<!-- 2.5.0: Moved TSneConfiguration to better package location -->
 	<!-- 2.5.1: Added check method -->
 	<!-- 2.6.0: Cleanups and simplification of some parallelism  -->
-	<!-- 2.6.0: Fixed hanging in "Learning Embedding" with small datasets (https://github.com/lejon/T-SNE-Java/issues/14)  -->
-	<version>2.6.1</version>
+	<!-- 2.6.1: Fixed hanging in "Learning Embedding" with small datasets (https://github.com/lejon/T-SNE-Java/issues/14)  -->
+	<!-- 2.6.2: More parallelization simplifications. Have seen up to 50% better performance, but this is not rigorously measured, but better performance than 2.5.1 for sure -->
+	<version>2.6.2</version>
 	<name>Java T-SNE</name>
 	
 	<properties>
