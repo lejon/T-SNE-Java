@@ -129,8 +129,8 @@ T-SNE-Java is not on Maven Central, however you can use it through Jitpack by ad
 
 Version
 -------
-Demo: 2.4.0
-Core: 2.5.0
+Demo: 2.5.1
+Core: 2.6.2
 
 Acknowledgements
 ----------------
