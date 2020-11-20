@@ -14,7 +14,8 @@
 	<!-- 2.6.0: Cleanups and simplification of some parallelism  -->
 	<!-- 2.6.1: Fixed hanging in "Learning Embedding" with small datasets (https://github.com/lejon/T-SNE-Java/issues/14)  -->
 	<!-- 2.6.2: More parallelization simplifications. Have seen up to 50% better performance, but this is not rigorously measured, but better performance than 2.5.1 for sure -->
-	<version>2.6.2</version>
+	<!-- 2.6.3: More parallelization... -->
+	<version>2.6.3</version>
 	<name>Java T-SNE</name>
 	
 	<properties>
@@ -34,7 +35,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.12</version>
+			<version>4.13.1</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

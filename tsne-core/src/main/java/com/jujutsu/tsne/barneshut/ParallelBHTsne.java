@@ -33,7 +33,6 @@ public class ParallelBHTsne extends BHTSne {
 		// Construct space-partitioning tree on current map
 		ParallelSPTree tree = new ParallelSPTree(D, Y, N);
 
-		double totalSum_Q = 0.0;
 		double[] sum_Q = new double[N];
 		double[] pos_f = new double[N * D];
 		double[][] neg_f = new double[N][D];
@@ -43,16 +42,15 @@ public class ParallelBHTsne extends BHTSne {
 		IntStream.range(0, N).parallel().forEach(i -> {
 			tree.computeNonEdgeForces(i, theta, neg_f[i], buff[i], sum_Q);
 		});
-		totalSum_Q = DoubleStream.of(sum_Q).sum();
-
+		double totalSum_Q = DoubleStream.of(sum_Q).sum();
+		
 		// Compute final t-SNE gradient
-		for (int n = 0; n < N; n++)
-		{
+		IntStream.range(0, N).parallel().forEach( n -> {
 			for (int d = 0; d < D; d++)
 			{
 				dC[n * D + d] = pos_f[n * D + d] - (neg_f[n][d] / totalSum_Q);
 			}
-		}
+		});
 	}
 
 	@Override
