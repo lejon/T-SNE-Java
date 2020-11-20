@@ -10,7 +10,8 @@
 	<!-- 2.4.0: Use latest core with better parallelization performance (VP Tree search) -->
 	<!-- 2.5.0: Use latest core with better parallelization performance -->
 	<!-- 2.5.1: Use latest core (2.6.2) with better parallelization performance -->
-	<version>2.5.1</version>
+	<!-- 2.5.2: Use latest core (2.6.3) with better parallelization performance -->
+	<version>2.5.2</version>
 	<name>Java T-SNE Demos</name>
 
 	<properties>
