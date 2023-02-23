@@ -12,7 +12,7 @@
 	<!-- 2.5.1: Use latest core (2.6.2) with better parallelization performance -->
 	<!-- 2.5.2: Use latest core (2.6.3) with better parallelization performance -->
 	<!-- 2.5.3: Use latest core (2.6.4) with new EJML -->
-	<version>2.5.2</version>
+	<version>2.5.3</version>
 	<name>Java T-SNE Demos</name>
 
 	<properties>
