@@ -49,6 +49,16 @@ public class MatrixOps {
 		return res;
 	}
 
+	public static String doubleFlatArrayToPrintString(double[] m, int nrCols) {
+		double [][] printMatrix = new double[m.length / nrCols][nrCols];
+		for(int i = 0; i < printMatrix.length; i++) {
+			for(int j = 0; j < printMatrix[0].length; j++) {
+				printMatrix[i][j] = m[i*nrCols+j];
+			}
+		}
+		return doubleArrayToPrintString(printMatrix, ", ", Integer.MAX_VALUE, m.length, Integer.MAX_VALUE, "\n");
+	}
+
 	public static String doubleArrayToPrintString(double[][] m) {
 		return doubleArrayToPrintString(m, ", ", Integer.MAX_VALUE, m.length, Integer.MAX_VALUE, "\n");
 	}

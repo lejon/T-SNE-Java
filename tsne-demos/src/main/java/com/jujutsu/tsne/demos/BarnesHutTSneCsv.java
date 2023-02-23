@@ -388,7 +388,7 @@ public class BarnesHutTSneCsv {
 		if(transpose_after) Y = MatrixOps.transposeSerial(matrix);
 		long t2 = System.currentTimeMillis();
 		System.out.println("TSne took: " + ((double) (t2-t1) / 1000.0) + " seconds");
-		
+		System.out.println(MatrixOps.doubleArrayToPrintString(Y,5,5,20));
 		if(doSave) {
 			DataFrame<Object> outdf;
 			if(labels!=null) {

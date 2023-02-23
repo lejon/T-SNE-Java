@@ -11,6 +11,7 @@
 	<!-- 2.5.0: Use latest core with better parallelization performance -->
 	<!-- 2.5.1: Use latest core (2.6.2) with better parallelization performance -->
 	<!-- 2.5.2: Use latest core (2.6.3) with better parallelization performance -->
+	<!-- 2.5.3: Use latest core (2.6.4) with new EJML -->
 	<version>2.5.2</version>
 	<name>Java T-SNE Demos</name>
 
@@ -36,10 +37,24 @@
 	</repositories>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>sh.joinery</groupId>
+			<artifactId>joinery-dataframe</artifactId>
+			<version>1.10</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>sh.joinery</groupId>
+			<artifactId>joinery-dataframe</artifactId>
+			<version>1.10</version>
+		</dependency>
+
 		<dependency>
 			<groupId>com.jujutsu.tsne</groupId>
 			<artifactId>tsne</artifactId>
-			<version>2.6.3</version>
+			<version>2.6.4</version>
 		</dependency>
 		<!-- http://mvnrepository.com/artifact/com.github.yannrichet/JMathPlot -->
 		<dependency>
@@ -66,11 +81,6 @@
 			<groupId>org.jfree</groupId>
 			<artifactId>jcommon</artifactId>
 			<version>1.0.23</version>
-		</dependency>
-		<dependency>
-			<groupId>joinery</groupId>
-			<artifactId>joinery-dataframe</artifactId>
-			<version>1.7</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-cli</groupId>

@@ -46,14 +46,18 @@ public class ParallelSPTree extends SPTree {
                 int ind2 = col_P[i] * dimension;
                 for (int d = 0; d < dimension; d++)
                 {
-                    buff[d] = data[ind1 + d] - data[ind2 + d];
+                    double d1 = data[ind1 + d];
+                    double d2 = data[ind2 + d];
+                    buff[d] = d1 - d2;
                     D += buff[d] * buff[d];
                 }
                 D = val_P[i] / D;
 
                 // Sum positive force
-                for (int d = 0; d < dimension; d++)
+                for (int d = 0; d < dimension; d++) {
                     pos_f[ind1 + d] += D * buff[d];
+                }
+        
             }
             ind1 += dimension;
         }

@@ -35,14 +35,20 @@ package com.jujutsu.tsne.barneshut;
 import static java.lang.Math.exp;
 import static java.lang.Math.log;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.DoubleStream;
 
 import com.jujutsu.tsne.PrincipalComponentAnalysis;
 import com.jujutsu.tsne.TSneConfiguration;
 import com.jujutsu.utils.MatrixOps;
+
+import me.tongfei.progressbar.ProgressBar;
+import me.tongfei.progressbar.ProgressBarBuilder;
+import me.tongfei.progressbar.ProgressBarStyle;
 
 public class BHTSne implements BarnesHutTSne {
 
@@ -75,7 +81,80 @@ public class BHTSne implements BarnesHutTSne {
 		return expanded;
 	}
 
+	public static double sd(double[] array) {
+		// get the sum of array
+		double sum = 0.0;
+		for (double i : array) {
+			sum += i;
+		}
+	
+		// get the mean of array
+		int length = array.length;
+		double mean = sum / length;
+	
+		// calculate the standard deviation
+		double standardDeviation = 0.0;
+		for (double num : array) {
+			standardDeviation += Math.pow(num - mean, 2);
+		}
+	
+		return Math.sqrt(standardDeviation / length);
+	}
+
 	static double sign_tsne(double x) { return (x == .0 ? .0 : (x < .0 ? -1.0 : 1.0)); }
+
+	public static void write (String filename, double[]arr) throws IOException {
+        BufferedWriter ow = null;
+        ow = new BufferedWriter(new FileWriter(filename));
+        for (int i = 0; i < arr.length; i++) {
+ 
+            ow.write(arr[i]+"");
+            ow.newLine();
+        }
+        ow.flush();
+        ow.close();
+    }
+
+	public static void write (String filename, int[]arr) throws IOException {
+        BufferedWriter ow = null;
+        ow = new BufferedWriter(new FileWriter(filename));
+        for (int i = 0; i < arr.length; i++) {
+ 
+            ow.write(arr[i]+"");
+            ow.newLine();
+        }
+        ow.flush();
+        ow.close();
+    }
+
+	public static void write (String filename, double [][] arr) throws IOException {
+        BufferedWriter ow = null;
+        ow = new BufferedWriter(new FileWriter(filename));
+        for (int i = 0; i < arr.length; i++) {
+			for (int j = 0; j < arr[i].length; j++) {
+            	ow.write(arr[i][j]+"");
+				if (j+1 == arr[i].length) {
+					ow.newLine();
+				} else {
+					ow.write(",");
+				}
+			}
+        }
+        ow.flush();
+        ow.close();
+    }
+
+	public static void write (String filename, List<Double> arr) throws IOException {
+        BufferedWriter ow = null;
+        ow = new BufferedWriter(new FileWriter(filename));
+        for (int i = 0; i < arr.size(); i++) {
+ 
+            ow.write(arr.get(i)+"");
+            ow.newLine();
+        }
+        ow.flush();
+        ow.close();
+    }
 
 	// Perform t-SNE
 	double [][] run(TSneConfiguration parameterObject) {
@@ -85,18 +164,29 @@ public class BHTSne implements BarnesHutTSne {
 
 		if(exact) throw new IllegalArgumentException("The Barnes Hut implementation does not support exact inference yet (theta==0.0), if you want exact t-SNE please use one of the standard t-SNE implementations (FastTSne for instance)");
 
+		PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
 		if(parameterObject.usePca() && D > parameterObject.getInitialDims() && parameterObject.getInitialDims() > 0) {
-			PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
 			Xin = pca.pca(Xin, parameterObject.getInitialDims());
 			D = parameterObject.getInitialDims();
 			System.out.println("X:Shape after PCA is = " + Xin.length + " x " + Xin[0].length);
 		}
 
 		double [] X = flatten(Xin);	
+
+		double [][] Yinit = pca.pca(Xin, parameterObject.getOutputDims());
+		double [] pc1 = MatrixOps.transposeSerial(Yinit)[0];
+		double sd = sd(pc1);
+
 		int N = parameterObject.getNrRows();
 		int no_dims = parameterObject.getOutputDims();
 
+		// Init y with PCA (from: The art of using t-SNE for single-cell transcriptomics)
 		double [] Y = new double[N*no_dims];
+		for(int n = 0; n < N; n++) {
+			for(int d = 0; d < no_dims; d++) {
+				Y[n*no_dims+d] = (Yinit[n][d] / sd) * 0.0001;
+			}
+		}
 		System.out.println("X:Shape is = " + N + " x " + D);
 		// Determine whether we are using an exact algorithm
 		double perplexity = parameterObject.getPerplexity();
@@ -124,16 +214,14 @@ public class BHTSne implements BarnesHutTSne {
 			if(X[i] > max_X) max_X = X[i];
 		}
 
-		for(int i = 0; i < N * D; i++) X[i] /= max_X;
+		//for(int i = 0; i < N * D; i++) X[i] /= max_X;
 
 		double [] P = null;
 		int K  = (int) (3 * perplexity);
 		int [] row_P = new int[N+1];
 		int [] col_P = new int[N*K];
 		double [] val_P = new double[N*K];
-		/**_row_P = (int*)    malloc((N + 1) * sizeof(int));
-		 *_col_P = (int*)    calloc(N * K, sizeof(int));
-		 *_val_P = (double*) calloc(N * K, sizeof(double));*/
+
 		// Compute input similarities for exact t-SNE
 		if(exact) {
 
@@ -164,7 +252,12 @@ public class BHTSne implements BarnesHutTSne {
 			// Compute asymmetric pairwise input similarities
 			computeGaussianPerplexity(X, N, D, row_P, col_P, val_P, perplexity, K);
 
-			// Verified that val_P,col_P,row_P is the same at this point
+			double [] val_P_print = new double[100];
+			int [] col_P_print = new int[100];
+			for (int i = 0; i < val_P_print.length; i++) {
+				val_P_print[i] = val_P[i];
+				col_P_print[i] = col_P[i];
+			}
 
 			// Symmetrize input similarities
 			SymResult res = symmetrizeMatrix(row_P, col_P, val_P, N);
@@ -182,18 +275,27 @@ public class BHTSne implements BarnesHutTSne {
 		if(exact) { for(int i = 0; i < N * N; i++)        P[i] *= 12.0; }
 		else {      for(int i = 0; i < row_P[N]; i++) val_P[i] *= 12.0; }
 
-		// Initialize solution (randomly)
-		for(int i = 0; i < N * no_dims; i++) Y[i] = ThreadLocalRandom.current().nextDouble() * 0.0001;
-
 		// Perform main training loop
 		if(exact) System.out.printf("Done in %4.2f seconds!\nLearning embedding...\n", (end - start) / 1000.0);
 		else System.out.printf("Done in %4.2f seconds (sparsity = %f)!\nLearning embedding...\n", (end - start) / 1000.0, (double) row_P[N] / ((double) N * (double) N));
 		start = System.currentTimeMillis();
+
+		String progressName = "Calc T-Sne";
+		ProgressBar pb = null;
+		if(!parameterObject.silent()) {
+			ProgressBarBuilder pbb = new ProgressBarBuilder()
+				    .setInitialMax(parameterObject.getMaxIter())
+				    //.setStyle(ProgressBarStyle.ASCII)
+				    .setTaskName(progressName)
+				    .setMaxRenderedLength(200);
+			
+			pb = pbb.build();
+		}
 		for(int iter = 0; iter < parameterObject.getMaxIter() && !abort; iter++) {
 
 			if(exact) computeExactGradient(P, Y, N, no_dims, dY);
 			// Compute (approximate) gradient
-			else computeGradient(P, row_P, col_P, val_P, Y, N, no_dims, dY, parameterObject.getTheta());
+			else computeGradient(row_P, col_P, val_P, Y, N, no_dims, dY, parameterObject.getTheta(), iter);
 
 			updateGradient(N, no_dims, Y, momentum, eta, dY, uY, gains);
 
@@ -217,15 +319,21 @@ public class BHTSne implements BarnesHutTSne {
 					else      C = evaluateError(row_P, col_P, val_P, Y, N, no_dims, parameterObject.getTheta());  // doing approximate computation here!
 					err_string = "" + C;
 				}
-				if(iter == 0)
-					System.out.printf("Iteration %d: error is %s\n", iter + 1, err_string);
-				else {
-					total_time += (end - start) / 1000.0;
-					System.out.printf("Iteration %d: error is %s (50 iterations in %4.2f seconds)\n", iter, err_string, (end - start) / 1000.0);
-				}
+				pb.setExtraMessage("Err: " + err_string);
+				pb.stepBy(50);
+//				if(iter == 0)
+//					System.out.printf("Iteration %d: error is %s\n", iter + 1, err_string);
+//				else {
+//					total_time += (end - start) / 1000.0;
+//					System.out.printf("Iteration %d: error is %s (50 iterations in %4.2f seconds)\n", iter, err_string, (end - start) / 1000.0);
+//				}
 				start = System.currentTimeMillis();
 			}
 		}
+		if(!parameterObject.silent()) {
+			pb.close();
+		}
+		
 		end = System.currentTimeMillis(); total_time += (end - start) / 1000.0;
 
 		System.out.printf("Fitting performed in %4.2f seconds.\n", total_time);
@@ -241,18 +349,21 @@ public class BHTSne implements BarnesHutTSne {
 
 			// Perform gradient update (with momentum and gains)
 			Y[i] = Y[i] + uY[i];
+			if(Double.isNaN(Y[i])) {
+				System.out.println("Point is NaN!");
+			}	
 			uY[i] = momentum * uY[i] - eta * gains[i] * dY[i];
 		}
 	}
 
 	// Compute gradient of the t-SNE cost function (using Barnes-Hut algorithm)
-	void computeGradient(double[] P, int[] inp_row_P,
+	void computeGradient(int[] inp_row_P,
 			int[] inp_col_P, double[] inp_val_P, double[] Y, int N, int D,
-			double[] dC, double theta)
+			double[] dC, double theta, int iter)
 	{
 		// Construct space-partitioning tree on current map
 		SPTree tree = new SPTree(D, Y, N);
-
+		
 		double totalSum_Q = 0.0;
 		double[] sum_Q = new double[N];
 		double[] pos_f = new double[N * D];
@@ -524,6 +635,9 @@ public class BHTSne implements BarnesHutTSne {
 				double H = .0;
 				for(int m = 0; m < K; m++) {
 					cur_P[m] = exp(-beta * distances.get(m + 1));
+					if(Double.isNaN(cur_P[m])) {
+						System.out.println("Point is NaN!");
+					}
 					sum_P += cur_P[m];
 					H += beta * (distances.get(m + 1) * cur_P[m]);
 				}
@@ -558,8 +672,16 @@ public class BHTSne implements BarnesHutTSne {
 			// Row-normalize current row of P and store in matrix 
 			for(int m = 0; m < K; m++) {
 				cur_P[m] /= sum_P;
+				if(Double.isNaN(cur_P[m])) {
+					System.out.println("Point is NaN!");
+				}	
+
 				col_P[row_P[n] + m] = indices.get(m + 1).index();
 				val_P[row_P[n] + m] = cur_P[m];
+				if(Double.isNaN(val_P[row_P[n] + m])) {
+					System.out.println("Point is NaN!");
+				}	
+
 			}
 		}
 	}
@@ -750,7 +872,10 @@ public class BHTSne implements BarnesHutTSne {
 				// Check whether element (col_P[i], n) is present
 				boolean present = false;
 				for(int m = row_P[col_P[i]]; m < row_P[col_P[i] + 1]; m++) {
-					if(col_P[m] == n) present = true;
+					if(col_P[m] == n) {
+						present = true;
+						break;
+					}
 				}
 				if(present) row_counts[n]++;
 				else {
@@ -785,7 +910,15 @@ public class BHTSne implements BarnesHutTSne {
 							sym_col_P[sym_row_P[n]        + offset[n]]        = col_P[i];
 							sym_col_P[sym_row_P[col_P[i]] + offset[col_P[i]]] = n;
 							sym_val_P[sym_row_P[n]        + offset[n]]        = val_P[i] + val_P[m];
+							if(Double.isNaN(sym_val_P[sym_row_P[n]        + offset[n]])) {
+								System.out.println("Point is NaN!");
+							}	
+				
 							sym_val_P[sym_row_P[col_P[i]] + offset[col_P[i]]] = val_P[i] + val_P[m];
+							if(Double.isNaN(sym_val_P[sym_row_P[col_P[i]] + offset[col_P[i]]] )) {
+								System.out.println("Point is NaN!");
+							}	
+							
 						}
 					}
 				}
@@ -862,6 +995,9 @@ public class BHTSne implements BarnesHutTSne {
 		for(int n = 0; n < N; n++) {
 			for(int d = 0; d < D; d++) {
 				X[n * D + d] -= mean[d];
+				if(Double.isNaN(X[n * D + d])) {
+					System.out.println("Point is NaN!");
+				}
 			}
 		}
 	}

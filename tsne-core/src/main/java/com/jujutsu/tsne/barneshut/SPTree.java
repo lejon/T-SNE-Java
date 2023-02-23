@@ -1,7 +1,8 @@
 package com.jujutsu.tsne.barneshut;
 
 import static java.lang.Math.max;
-import static java.lang.Math.sqrt;
+
+import java.util.Arrays;
 
 import com.jujutsu.utils.MatrixOps;
 
@@ -27,6 +28,7 @@ public class SPTree {
     // Children
     SPTree [] children;
     int no_children;
+    double max_width_sq;
     
     protected double[] buff;
 
@@ -42,7 +44,8 @@ public class SPTree {
 		}
 		for( int n = 0; n < N; n++) {
 			for( int d = 0; d < D; d++) {
-				mean_Y[d] += inp_data[n * D + d];
+				int idx = n * D + d;
+				mean_Y[d] += inp_data[idx];
 				if(inp_data[nD + d] < min_Y[d]) min_Y[d] = inp_data[nD + d];
 				if(inp_data[nD + d] > max_Y[d]) max_Y[d] = inp_data[nD + d];
 			}
@@ -71,16 +74,20 @@ public class SPTree {
 
 		center_of_mass = new double[D];
 		boundary = new Cell(dimension);
+		double max_width = 0.0;
 		for(int d = 0; d < D; d++) {
 			boundary.setCorner(d, inp_corner[d]);
 			boundary.setWidth( d, inp_width[d]);
 			center_of_mass[d] = .0;
+			max_width = (max_width > inp_width[d]) ? max_width : inp_width[d];
 		}
+		max_width_sq = max_width * max_width;
 
 		children = getTreeArray(no_children);
 		for(int i = 0; i < no_children; i++) children[i] = null;
 		
 		buff = new double[dimension];
+		
 	}
 	
 	// Constructor for SPTree with particular size and parent -- build the tree, too!
@@ -134,6 +141,10 @@ public class SPTree {
 		// Ignore objects which do not belong in this quad tree
 		double [] point = MatrixOps.extractRowFromFlatMatrix(data,new_index,dimension);
 
+		if(Double.isNaN(point[0]) || Double.isNaN(point[1])) {
+			System.err.println("Point is NaN!");
+		}
+
 		if(!boundary.containsPoint(point))
 			return false;
 
@@ -186,6 +197,7 @@ public class SPTree {
 		for(int i = 0; i < no_children; i++) {
 			int div = 1;
 			for(int d = 0; d < dimension; d++) {
+				//if(i == 3) { System.out.print("i = " + i + ", div = " + div + " => " + "exp = " + ((i / div) % 2) + " "); }
 				new_width[d] = .5 * boundary.getWidth(d);
 				if((i / div) % 2 == 1) new_corner[d] = boundary.getCorner(d) - .5 * boundary.getWidth(d);
 				else                   new_corner[d] = boundary.getCorner(d) + .5 * boundary.getWidth(d);
@@ -198,10 +210,17 @@ public class SPTree {
 		for(int i = 0; i < size; i++) {
 			boolean success = false;
 			for(int j = 0; j < no_children; j++) {
-				if(!success) success = children[j].insert(index[i]);
+				if(!success) {
+					success = children[j].insert(index[i]);
+					if(success) break;
+				}
 			}
+//			if(!success && no_children > 0) {
+//				System.err.println("Didn't manage to move point i=" + i + " => " + Arrays.toString(MatrixOps.extractRowFromFlatMatrix(data,i,dimension)));
+//			}
 			index[i] = -1;
 		}
+
 
 		// Empty parent node
 		size = 0;
@@ -215,7 +234,7 @@ public class SPTree {
 	// Build SPTree on dataset
 	void fill(int N)
 	{
-		for(int i = 0; i < N; i++) insert(i);
+		for(int i = 0; i < N; i++) { insert(i); }
 	}
 
 
@@ -280,17 +299,15 @@ public class SPTree {
         double D = .0;
         int ind = point_index * dimension;
         // Check whether we can use this node as a "summary"
-        double max_width = 0.0;
-        double cur_width;
         for (int d = 0; d < dimension; d++)
         {
             buff[d] = data[ind + d] - center_of_mass[d];
             D += buff[d] * buff[d];
-            cur_width = boundary.getWidth(d);
-            max_width = (max_width > cur_width) ? max_width : cur_width;
         }
 
-        if (is_leaf || max_width / sqrt(D) < theta)
+        // avoid sqrt in this function since it is used ALOT and is more
+        // computationally demanding than multiplication
+        if (is_leaf || max_width_sq < theta * theta * D)
         {
             // Compute and add t-SNE force between point and current node
             D = 1.0 / (1.0 + D);
@@ -340,17 +357,27 @@ public class SPTree {
 		}
 	}
 
-
 	// Print out tree
 	void print() 
 	{
+		print(0);
+	}	
+
+	// Print out tree
+	void print(int lvl) 
+	{
+		String prefix = "";
+		for(int i = 0; i < lvl; i++) {
+			prefix += "    ";
+		}
+		//System.out.println("Tree with:\n\tchildren:" + no_children);
 		if(cum_size == 0) {
-			System.out.printf("Empty node\n");
+			System.out.printf(prefix + "Empty node\n");
 			return;
 		}
 
 		if(is_leaf) {
-			System.out.printf("Leaf node; data = [");
+			System.out.printf(prefix + "Leaf node; data = [");
 			for(int i = 0; i < size; i++) {
 				double [] point = MatrixOps.extractRowFromFlatMatrix(data, index[i], dimension);
 				for(int d = 0; d < dimension; d++) System.out.printf("%f, ", point[d]);
@@ -360,10 +387,12 @@ public class SPTree {
 			}        
 		}
 		else {
-			System.out.printf("Intersection node with center-of-mass = [");
+			System.out.printf(prefix + "Intersection node with center-of-mass = [");
 			for(int d = 0; d < dimension; d++) System.out.printf("%f, ", center_of_mass[d]);
+			System.out.print(" +- ");
+			for(int d = 0; d < dimension; d++) System.out.printf("%f, ", boundary.width[d]);
 			System.out.printf("]; children are:\n");
-			for(int i = 0; i < no_children; i++) children[i].print();
+			for(int i = 0; i < no_children; i++) children[i].print(lvl+1);
 		}
 	}
 	

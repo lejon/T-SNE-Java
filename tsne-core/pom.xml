@@ -15,7 +15,8 @@
 	<!-- 2.6.1: Fixed hanging in "Learning Embedding" with small datasets (https://github.com/lejon/T-SNE-Java/issues/14)  -->
 	<!-- 2.6.2: More parallelization simplifications. Have seen up to 50% better performance, but this is not rigorously measured, but better performance than 2.5.1 for sure -->
 	<!-- 2.6.3: More parallelization... -->
-	<version>2.6.3</version>
+	<!-- 2.6.4: Upgraded EJML to 0.41 ... -->
+	<version>2.6.4</version>
 	<name>Java T-SNE</name>
 	
 	<properties>
@@ -27,10 +28,17 @@
 	</scm>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>sh.joinery</groupId>
+			<artifactId>joinery-dataframe</artifactId>
+			<version>1.10</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.ejml</groupId>
 			<artifactId>ejml-all</artifactId>
-			<version>0.39</version>
+			<version>0.41</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -48,6 +56,11 @@
 			<groupId>org.jblas</groupId>
 			<artifactId>jblas</artifactId>
 			<version>1.2.3</version>
+		</dependency>
+		<dependency>
+    		<groupId>me.tongfei</groupId>
+    		<artifactId>progressbar</artifactId>
+    		<version>0.9.4</version>
 		</dependency>
 	</dependencies>
 	

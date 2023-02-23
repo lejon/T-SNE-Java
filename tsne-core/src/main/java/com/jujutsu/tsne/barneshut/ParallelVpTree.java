@@ -8,6 +8,8 @@ import java.util.PriorityQueue;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import me.tongfei.progressbar.ProgressBar;
+
 public class ParallelVpTree<StorageType> extends VpTree<StorageType> {
 	
 	public ParallelVpTree(Distance distance) {
@@ -15,6 +17,42 @@ public class ParallelVpTree<StorageType> extends VpTree<StorageType> {
 	}
 	
 	public List<TreeSearchResult> searchMultiple(ParallelVpTree<StorageType> tree, DataPoint [] targets, int k) {
+		VpTree<StorageType>.Node node = tree.getRoot();
+		List<TreeSearchResult> results = Collections.synchronizedList(new ArrayList<TreeSearchResult>());
+		
+		ProgressBar.wrap(IntStream.range(0, targets.length).parallel(), "Perplexity").forEach(n -> {
+			DataPoint target = targets[n];
+			List<DataPoint> indices = new ArrayList<>();
+			List<Double> distances = new ArrayList<>();
+			PriorityQueue<HeapItem> heap = new PriorityQueue<HeapItem>(k,new Comparator<HeapItem>() {
+				@Override
+				public int compare(HeapItem o1, HeapItem o2) {
+					return -1 * o1.compareTo(o2);
+				}
+			}); 
+
+			double tau = Double.MAX_VALUE;
+			// Perform the search
+			node.search(node, target, k, heap, tau);
+
+			// Gather final results
+			while(!heap.isEmpty()) {
+				indices.add(_items[heap.peek().index]);
+				distances.add(heap.peek().dist);
+				heap.remove();
+			}
+			
+			// Results are in reverse order 
+			Collections.reverse(indices);
+			Collections.reverse(distances);
+
+			results.add(new TreeSearchResult(indices, distances,n));
+		});
+		
+		return results;
+	}
+
+	public List<TreeSearchResult> searchMultipleWOProgress(ParallelVpTree<StorageType> tree, DataPoint [] targets, int k) {
 		VpTree<StorageType>.Node node = tree.getRoot();
 		
 		List<TreeSearchResult> results =  
@@ -49,5 +87,4 @@ public class ParallelVpTree<StorageType> extends VpTree<StorageType> {
 		
 		return results;
 	}
-
 }

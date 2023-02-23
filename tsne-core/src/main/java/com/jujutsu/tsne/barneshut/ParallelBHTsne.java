@@ -3,6 +3,7 @@ package com.jujutsu.tsne.barneshut;
 import static java.lang.Math.exp;
 import static java.lang.Math.log;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
@@ -10,8 +11,13 @@ import java.util.stream.IntStream;
 import com.jujutsu.utils.MatrixOps;
 
 public class ParallelBHTsne extends BHTSne {
+	
+	double[] sum_Q = null;
+	double[] pos_f = null;
+	double[][] neg_f = null;
+	double[][] buff = null;
 
-	@Override
+	//@Override
 	void updateGradient(int N, int no_dims, double[] Y, double momentum, double eta, double[] dY, double[] uY,
 			double[] gains) {
 		IntStream.range(0, N * no_dims).parallel().forEach(i -> {
@@ -21,22 +27,37 @@ public class ParallelBHTsne extends BHTSne {
 
 			// Perform gradient update (with momentum and gains)
 			Y[i] = Y[i] + uY[i];
+			if(Double.isNaN(Y[i])) {
+				System.out.println("Point is NaN!");
+			}	
 			uY[i] = momentum * uY[i] - eta * gains[i] * dY[i];
 		});
 	}
 	// Compute gradient of the t-SNE cost function (using Barnes-Hut algorithm)
 	@Override
-	void computeGradient(double [] P, int [] inp_row_P, 
+	void computeGradient(int [] inp_row_P, 
 			int [] inp_col_P, double [] inp_val_P, 	double [] Y, int N, int D, 
-			double [] dC, double theta)
+			double [] dC, double theta, int iter)
 	{
+		// By having these as class members we don't have to ALLOCATE them in each iteration
+		if(pos_f==null) {
+			sum_Q = new double[N];
+			pos_f = new double[N * D];
+			neg_f = new double[N][D];
+			buff = new double[N][D];
+		}
+
+		// But we still need to reset them each round	
+		Arrays.fill(pos_f,0.0);
+		Arrays.fill(sum_Q,0.0);
+		for (int n=0; n < N; n++) {
+		    Arrays.fill(neg_f[n], 0.0);
+		    Arrays.fill(buff[n], 0.0);
+		}
+		
 		// Construct space-partitioning tree on current map
 		ParallelSPTree tree = new ParallelSPTree(D, Y, N);
 
-		double[] sum_Q = new double[N];
-		double[] pos_f = new double[N * D];
-		double[][] neg_f = new double[N][D];
-		double[][] buff = new double[N][D];
 		tree.computeEdgeForces(inp_row_P, inp_col_P, inp_val_P, N, pos_f);
 
 		IntStream.range(0, N).parallel().forEach(i -> {
@@ -80,17 +101,6 @@ public class ParallelBHTsne extends BHTSne {
 		}
 		tree.create(obj_X);
 
-		// VERIFIED THAT TREES LOOK THE SAME
-		//System.out.println("Created Tree is: ");
-		//			AdditionalInfoProvider pp = new AdditionalInfoProvider() {			
-		//				@Override
-		//				public String provideInfo(Node node) {
-		//					return "" + obj_X[node.index].index();
-		//				}
-		//			};
-		//			TreePrinter printer = new TreePrinter(pp);
-		//			printer.printTreeHorizontal(tree.getRoot());
-
 		// Loop over all points to find nearest neighbors
 		List<TreeSearchResult> results = tree.searchMultiple(tree, obj_X, K+1);
 
@@ -113,6 +123,7 @@ public class ParallelBHTsne extends BHTSne {
 
 				// Compute Gaussian kernel row and entropy of current row
 				sum_P = Double.MIN_VALUE;
+				//sum_P = 0.0;
 				double H = .0;
 				for(int m = 0; m < K; m++) {
 					cur_P[m] = exp(-beta * distances.get(m + 1));
@@ -150,8 +161,11 @@ public class ParallelBHTsne extends BHTSne {
 			// Row-normalize current row of P and store in matrix 
 			for(int m = 0; m < K; m++) {
 				cur_P[m] /= sum_P;
-				col_P[row_P[n] + m] = indices.get(m + 1).index();
-				val_P[row_P[n] + m] = cur_P[m];
+				int idx = row_P[n] + m;
+				int newval = indices.get(m + 1).index();
+				col_P[idx] = newval;
+				double newvalp = cur_P[m];
+				val_P[row_P[n] + m] = newvalp;
 			}
 		}
 	}

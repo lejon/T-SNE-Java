@@ -148,7 +148,7 @@ public class FastTSne implements TSne {
 			
 			add(Ysqlmul, 1.0);
 			divide(1.0,Ysqlmul);
-			num.set(Ysqlmul);
+			num.setTo(Ysqlmul);
 			assignAtIndex(num, range(n), range(n), 0);
 			divide(num , elementSum(num), Q);
 
