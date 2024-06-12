@@ -22,7 +22,7 @@ public class MatrixUtils {
                 String[] cols = line.trim().split(columnDelimiter);
                 double [] row = new double[cols.length];
                 for (int j = 0; j < cols.length; j++) {
-                	if(!(cols[j].length()==0)) {
+                	if (cols[j].length() != 0) {
                 		row[j] = Double.parseDouble(cols[j].trim());
                     }
                 }
